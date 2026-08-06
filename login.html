@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Worksheet Underwriting System</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome untuk Ikon -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Font Plus Jakarta Sans untuk Tipografi Modern & Bersih -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Supabase JS Library CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+      body {
+        font-family: "Plus Jakarta Sans", sans-serif;
+      }
+
+      /* Animated Glowing Orbs */
+      @keyframes float-slow {
+        0%,
+        100% {
+          transform: translateY(0px) scale(1);
+        }
+        50% {
+          transform: translateY(-20px) scale(1.05);
+        }
+      }
+      .animate-float-slow {
+        animation: float-slow 8s ease-in-out infinite;
+      }
+
+      @keyframes float-reverse {
+        0%,
+        100% {
+          transform: translateY(0px) scale(1);
+        }
+        50% {
+          transform: translateY(20px) scale(0.95);
+        }
+      }
+      .animate-float-reverse {
+        animation: float-reverse 10s ease-in-out infinite;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-slate-950 text-slate-800 antialiased min-h-screen flex items-center justify-center p-4 sm:p-6 relative overflow-x-hidden selection:bg-blue-500 selection:text-white"
+  >
+    <!-- BACKGROUND GLOW EFFECTS -->
+    <div
+      class="absolute top-10 -left-20 w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none animate-float-slow"
+    ></div>
+    <div
+      class="absolute bottom-10 -right-20 w-[500px] h-[500px] bg-indigo-600/20 rounded-full blur-[120px] pointer-events-none animate-float-reverse"
+    ></div>
+    <div
+      class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-600/10 rounded-full blur-[150px] pointer-events-none"
+    ></div>
+
+    <!-- MAIN CONTAINER CARD -->
+    <div
+      class="relative w-full max-w-4xl bg-white/95 backdrop-blur-2xl rounded-3xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] border border-slate-200/80 overflow-hidden grid grid-cols-1 md:grid-cols-12 min-h-[600px]"
+    >
+      <!-- PANEL KIRI (BRANDING & FEATURE HIGHLIGHTS) -->
+      <div
+        class="hidden md:flex md:col-span-5 bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 p-8 flex-col justify-between text-white relative overflow-hidden border-r border-slate-800/50"
+      >
+        <!-- Background Grid Pattern -->
+        <div
+          class="absolute inset-0 opacity-15 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:20px_20px]"
+        ></div>
+
+        <!-- Glow Accent Inside Panel -->
+        <div
+          class="absolute -top-20 -right-20 w-48 h-48 bg-blue-500/30 rounded-full blur-3xl pointer-events-none"
+        ></div>
+
+        <div class="relative z-10">
+          <div
+            class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 backdrop-blur-md border border-blue-400/20 text-xs text-blue-300 font-semibold tracking-wide"
+          >
+            <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
+            <i class="fa-solid fa-shield-halved text-blue-400"></i> Secure
+            Portal
+          </div>
+        </div>
+
+        <div class="relative z-10 my-auto py-6 space-y-6">
+          <div>
+            <h2
+              class="text-2xl font-extrabold tracking-tight text-white leading-snug"
+            >
+              Worksheet Underwriting System
+            </h2>
+            <p
+              class="text-xs text-slate-300 leading-relaxed font-normal mt-2.5"
+            >
+              Portal terpadu evaluasi underwriting, analisa risiko, dan
+              persetujuan bertingkat (*sequential workflow*).
+            </p>
+          </div>
+
+          <!-- Feature Bullets -->
+          <div class="space-y-3 pt-2">
+            <div class="flex items-center gap-3 text-xs text-slate-300">
+              <div
+                class="w-7 h-7 rounded-lg bg-blue-500/20 border border-blue-400/30 flex items-center justify-center text-blue-400 shrink-0"
+              >
+                <i class="fa-solid fa-bolt text-xs"></i>
+              </div>
+              <span>Autofill Data Master Excel Otomatis</span>
+            </div>
+            <div class="flex items-center gap-3 text-xs text-slate-300">
+              <div
+                class="w-7 h-7 rounded-lg bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-emerald-400 shrink-0"
+              >
+                <i class="fa-solid fa-sitemap text-xs"></i>
+              </div>
+              <span>Approval Matriks Berjenjang Berdasar UP</span>
+            </div>
+            <div class="flex items-center gap-3 text-xs text-slate-300">
+              <div
+                class="w-7 h-7 rounded-lg bg-amber-500/20 border border-amber-400/30 flex items-center justify-center text-amber-400 shrink-0"
+              >
+                <i class="fa-solid fa-file-pdf text-xs"></i>
+              </div>
+              <span>Cetak Kertas Kerja A4 Pas 1 Halaman</span>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="relative z-10 text-[11px] text-slate-400 border-t border-slate-800/80 pt-4 flex items-center justify-between"
+        >
+          <span>&copy; 2026 Underwriting System</span>
+          <span class="text-slate-500">v2.4 Pro</span>
+        </div>
+      </div>
+
+      <!-- PANEL KANAN (FORM LOGIN) -->
+      <div
+        class="md:col-span-7 p-6 sm:p-10 flex flex-col justify-between bg-white/90 backdrop-blur-xl"
+      >
+        <div>
+          <!-- LOGO HEKSA INSURANCE -->
+          <div class="flex items-center justify-between mb-8">
+            <img
+              src="logo.png"
+              alt="HEKSA Insurance Logo"
+              class="h-12 sm:h-14 w-auto object-contain hover:scale-105 transition-transform duration-300"
+            />
+            <span
+              class="md:hidden inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 border border-blue-100 text-[10px] font-bold text-blue-700 uppercase tracking-wider"
+            >
+              <i class="fa-solid fa-shield-halved text-blue-500"></i> UW Portal
+            </span>
+          </div>
+
+          <!-- HEADER FORM -->
+          <div class="mb-6">
+            <h1 class="text-2xl font-bold text-slate-900 tracking-tight">
+              Selamat Datang Kembali 👋
+            </h1>
+            <p class="text-xs text-slate-500 mt-1 font-medium">
+              Masukkan email dan password akun Anda untuk mengakses sistem
+              kertas kerja.
+            </p>
+          </div>
+
+          <!-- PESAN ERROR -->
+          <div
+            id="errorMessage"
+            class="hidden mb-5 p-3.5 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl flex items-start gap-2.5 transition-all duration-300 shadow-sm"
+          >
+            <i
+              class="fa-solid fa-circle-exclamation text-sm mt-0.5 text-rose-500 shrink-0"
+            ></i>
+            <span id="errorText" class="font-medium leading-tight"
+              >Email atau Password salah!</span
+            >
+          </div>
+
+          <!-- FORM LOGIN -->
+          <form onsubmit="handleLogin(event)" class="space-y-4">
+            <!-- INPUT EMAIL -->
+            <div>
+              <label
+                class="block text-xs font-bold text-slate-700 mb-1.5"
+                for="email"
+              >
+                Email Akun
+              </label>
+              <div class="relative group">
+                <div
+                  class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors"
+                >
+                  <i class="fa-solid fa-envelope text-xs"></i>
+                </div>
+                <input
+                  type="email"
+                  id="email"
+                  required
+                  autocomplete="email"
+                  placeholder="nama@heksainsurance.co.id"
+                  oninvalid="
+                    this.setCustomValidity(
+                      'Mohon masukkan alamat email yang valid!',
+                    )
+                  "
+                  oninput="this.setCustomValidity('')"
+                  class="w-full pl-9 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-semibold placeholder:text-slate-400 placeholder:font-normal focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 focus:outline-none transition-all duration-200"
+                />
+              </div>
+            </div>
+
+            <!-- INPUT PASSWORD -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label
+                  class="block text-xs font-bold text-slate-700"
+                  for="password"
+                >
+                  Password
+                </label>
+              </div>
+              <div class="relative group">
+                <div
+                  class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors"
+                >
+                  <i class="fa-solid fa-lock text-xs"></i>
+                </div>
+                <input
+                  type="password"
+                  id="password"
+                  required
+                  autocomplete="current-password"
+                  placeholder="Masukkan Password Anda"
+                  class="w-full pl-9 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-semibold placeholder:text-slate-400 placeholder:font-normal focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 focus:outline-none transition-all duration-200"
+                />
+                <button
+                  type="button"
+                  onclick="togglePasswordVisibility()"
+                  aria-label="Toggle password visibility"
+                  class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 text-xs cursor-pointer focus:outline-none"
+                >
+                  <i id="toggleEyeIcon" class="fa-solid fa-eye"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- SUBMIT BUTTON -->
+            <button
+              type="submit"
+              id="submitBtn"
+              class="w-full mt-2 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold py-3 rounded-xl text-xs transition duration-200 shadow-lg shadow-blue-500/25 active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
+            >
+              <i class="fa-solid fa-right-to-bracket text-xs"></i>
+              <span>Masuk ke System</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- FOOTER MOBILE -->
+        <div
+          class="md:hidden mt-8 border-t border-slate-100 pt-4 text-center text-[11px] text-slate-400 font-medium"
+        >
+          &copy; 2026 Underwriting System. Single Access Repository.
+        </div>
+      </div>
+    </div>
+
+    <!-- SCRIPT OTENTIKASI SUPABASE -->
+    <script>
+      // --- KONFIGURASI SUPABASE ---
+      const SUPABASE_URL = "https://ubahduvkhlfzvghrapwn.supabase.co";
+      const SUPABASE_ANON_KEY =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InViYWhkdXZraGxmenZnaHJhcHduIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5MzIzMTIsImV4cCI6MjEwMTUwODMxMn0.cDy4TexuHVG6e81U8vYRxiWB0zIDXMTQnOmr7Uo3SBM";
+
+      const { createClient } = supabase;
+      const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+      function togglePasswordVisibility() {
+        const passwordInput = document.getElementById("password");
+        const eyeIcon = document.getElementById("toggleEyeIcon");
+
+        if (passwordInput.type === "password") {
+          passwordInput.type = "text";
+          eyeIcon.classList.remove("fa-eye");
+          eyeIcon.classList.add("fa-eye-slash");
+        } else {
+          passwordInput.type = "password";
+          eyeIcon.classList.remove("fa-eye-slash");
+          eyeIcon.classList.add("fa-eye");
+        }
+      }
+
+      async function handleLogin(event) {
+        event.preventDefault();
+        const emailInput = document.getElementById("email").value.trim();
+        const passwordInput = document.getElementById("password").value;
+        const errorDiv = document.getElementById("errorMessage");
+        const submitBtn = document.getElementById("submitBtn");
+
+        errorDiv.classList.add("hidden");
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> <span>Memproses Autentikasi...</span>`;
+
+        try {
+          // Mencocokkan data langsung ke tabel user_roles di database Supabase
+          const { data: userData, error: userError } = await _supabase
+            .from("user_roles")
+            .select("*")
+            .eq("email", emailInput)
+            .eq("password", passwordInput)
+            .single();
+
+          if (userError || !userData) {
+            throw new Error("Email atau password salah!");
+          }
+
+          // Bersihkan session lama di localStorage
+          localStorage.removeItem("isLoggedIn");
+          localStorage.removeItem("username");
+          localStorage.removeItem("fullName");
+          localStorage.removeItem("userRoleLevel");
+          localStorage.removeItem("activeRoleLevel");
+          localStorage.removeItem("userModule");
+
+          // Simpan sesi baru ke localStorage untuk dibaca oleh file UW.html
+          localStorage.setItem("isLoggedIn", "true");
+          localStorage.setItem("username", userData.email);
+          localStorage.setItem("fullName", userData.email.split("@")[0]); // Mengambil nama depan otomatis
+          localStorage.setItem("userRoleLevel", userData.role);
+          localStorage.setItem("activeRoleLevel", userData.role);
+          localStorage.setItem("userModule", "uw");
+
+          // Redirect ke halaman utama sistem
+          window.location.replace("UW.html");
+        } catch (err) {
+          console.error("Login gagal:", err.message);
+          showError(err.message);
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = `<i class="fa-solid fa-right-to-bracket text-xs"></i> <span>Masuk ke System</span>`;
+        }
+      }
+
+      function showError(msg) {
+        const errorDiv = document.getElementById("errorMessage");
+        const errorText = document.getElementById("errorText");
+        errorText.textContent = msg;
+        errorDiv.classList.remove("hidden");
+      }
+    </script>
+  </body>
+</html>
