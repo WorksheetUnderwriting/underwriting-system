@@ -335,7 +335,7 @@
           localStorage.removeItem("activeRoleLevel");
           localStorage.removeItem("userModule");
 
-          // Simpan sesi baru ke localStorage untuk dibaca oleh file UW.html
+          // Simpan sesi baru ke localStorage untuk dibaca oleh file index.html
           localStorage.setItem("isLoggedIn", "true");
           localStorage.setItem("username", userData.email);
           localStorage.setItem("fullName", userData.email.split("@")[0]); // Mengambil nama depan otomatis
@@ -344,7 +344,7 @@
           localStorage.setItem("userModule", "uw");
 
           // Redirect ke halaman utama sistem
-          window.location.replace("UW.html");
+          window.location.replace("index.html");
         } catch (err) {
           console.error("Login gagal:", err.message);
           showError(err.message);
