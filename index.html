@@ -1636,29 +1636,35 @@
 
       // Perbaikan fungsi saveData agar dapat menerima target transaksi tertentu dan aman disimpan ke Supabase
       async function saveData(targetTx = null) {
-        try {
-          localStorage.setItem("uw_transactions", JSON.stringify(transactions));
-        } catch (err) {}
+  try {
+    localStorage.setItem("uw_transactions", JSON.stringify(transactions));
+  } catch (err) {
+    console.error("Gagal simpan ke localStorage:", err);
+  }
 
-        try {
-          const txToSave = targetTx || transactions[0];
-          if (txToSave) {
-            const { error } = await _supabase.from("uw_transactions").upsert(
-              { id_transaksi: txToSave.id, payload: txToSave, status: txToSave.status },
-              { onConflict: "id_transaksi" }
-            );
-            if (error) {
-              console.error("Gagal sinkronisasi ke Supabase:", error.message);
-            }
-          }
-        } catch (err) {
-          console.error("Kesalahan jaringan/database Supabase:", err);
-        }
-
-        renderRepository();
-        updateStats();
-        updateCharts();
+  try {
+    const txToSave = targetTx || transactions[0];
+    if (txToSave) {
+      const { data, error } = await _supabase.from("uw_transactions").upsert(
+        { id_transaksi: txToSave.id, payload: txToSave, status: txToSave.status },
+        { onConflict: "id_transaksi" }
+      );
+      
+      if (error) {
+        console.error("GAGAL SUPABASE UPSERT:", error.message);
+        alert("Gagal menyimpan ke database Supabase: " + error.message);
+      } else {
+        console.log("SUKSES simpan ke Supabase:", txToSave.id);
       }
+    }
+  } catch (err) {
+    console.error("Kesalahan jaringan/database Supabase:", err);
+  }
+
+  renderRepository();
+  updateStats();
+  updateCharts();
+}
 
       function renderRepository() {
         const tbody = document.getElementById("repo-table-body");
