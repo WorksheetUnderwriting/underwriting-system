@@ -1172,27 +1172,29 @@
       .order("created_at", { ascending: false });
 
     if (error) {
-      console.error("Error Supabase:", error.message);
-      throw error;
+      alert("Error dari Supabase: " + error.message);
+      return;
     }
 
     if (data && data.length > 0) {
-      // Ambil data payload dari setiap baris database
-      transactions = data.map(item => {
-        if (typeof item.payload === 'string') {
-          return JSON.parse(item.payload);
-        }
+      // Petakan data dari kolom payload database
+      transactions = data.map((item) => {
         return item.payload || item;
       });
-      
-      // Update LocalStorage dengan data terbaru dari database
-      localStorage.setItem("uw_transactions", JSON.stringify(transactions));
-      console.log("Berhasil memuat", transactions.length, "data dari Supabase.");
+      console.log("Data berhasil dimuat:", transactions);
+    } else {
+      console.warn("Tabel Supabase kosong atau tidak ada data.");
+      transactions = [];
     }
   } catch (err) {
-    console.warn("Gagal memuat dari Supabase, menggunakan LocalStorage:", err);
-    transactions = JSON.parse(localStorage.getItem("uw_transactions")) || [];
+    alert("Terjadi kesalahan koneksi: " + err.message);
+    transactions = [];
   }
+
+  renderRepository();
+  updateStats();
+  updateCharts();
+}
 
   renderRepository();
   updateStats();
