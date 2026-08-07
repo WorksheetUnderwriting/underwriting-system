@@ -1165,27 +1165,39 @@
       });
 
       async function loadTransactionsFromSupabase() {
-        try {
-          const { data, error } = await _supabase
-            .from("uw_transactions")
-            .select("*")
-            .order("created_at", { ascending: false });
+  try {
+    const { data, error } = await _supabase
+      .from("uw_transactions")
+      .select("*")
+      .order("created_at", { ascending: false });
 
-          if (error) throw error;
-          if (data && data.length > 0) {
-            // Mapping dengan validasi payload untuk mencegah data kosong/hilang
-            transactions = data.map((item) => item.payload || item);
-            localStorage.setItem("uw_transactions", JSON.stringify(transactions));
-          } else {
-            transactions = JSON.parse(localStorage.getItem("uw_transactions")) || [];
-          }
-        } catch (err) {
-          transactions = JSON.parse(localStorage.getItem("uw_transactions")) || [];
+    if (error) {
+      console.error("Error Supabase:", error.message);
+      throw error;
+    }
+
+    if (data && data.length > 0) {
+      // Ambil data payload dari setiap baris database
+      transactions = data.map(item => {
+        if (typeof item.payload === 'string') {
+          return JSON.parse(item.payload);
         }
-        renderRepository();
-        updateStats();
-        updateCharts();
-      }
+        return item.payload || item;
+      });
+      
+      // Update LocalStorage dengan data terbaru dari database
+      localStorage.setItem("uw_transactions", JSON.stringify(transactions));
+      console.log("Berhasil memuat", transactions.length, "data dari Supabase.");
+    }
+  } catch (err) {
+    console.warn("Gagal memuat dari Supabase, menggunakan LocalStorage:", err);
+    transactions = JSON.parse(localStorage.getItem("uw_transactions")) || [];
+  }
+
+  renderRepository();
+  updateStats();
+  updateCharts();
+}
 
       function setupSupabaseRealtime() {
         try {
