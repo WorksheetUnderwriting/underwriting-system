@@ -100,7 +100,6 @@
           0 10px 15px -5px rgba(59, 130, 246, 0.3);
       }
 
-      /* KESERAGAMAN TABEL REPOSITORY SUPAYA TIDAK NAIK TURUN */
       #repo-table-body td, 
       #repo-table-body th {
         vertical-align: middle !important;
@@ -1174,7 +1173,8 @@
 
           if (error) throw error;
           if (data && data.length > 0) {
-            transactions = data.map((item) => item.payload);
+            // Mapping dengan validasi payload untuk mencegah data kosong/hilang
+            transactions = data.map((item) => item.payload || item);
             localStorage.setItem("uw_transactions", JSON.stringify(transactions));
           } else {
             transactions = JSON.parse(localStorage.getItem("uw_transactions")) || [];
@@ -1608,7 +1608,7 @@
         };
 
         transactions.unshift(newTransaction);
-        await saveData();
+        await saveData(newTransaction);
 
         triggerEmailNotification(roleLevelNames[2], newId, "Pengajuan Kertas Kerja Baru Memerlukan Review", `Nasabah: ${newTransaction.nama} | UP: Rp ${formatNumberInput(newTransaction.up)}`);
 
@@ -1634,20 +1634,26 @@
         generateNextID();
       }
 
-      async function saveData() {
+      // Perbaikan fungsi saveData agar dapat menerima target transaksi tertentu dan aman disimpan ke Supabase
+      async function saveData(targetTx = null) {
         try {
           localStorage.setItem("uw_transactions", JSON.stringify(transactions));
         } catch (err) {}
 
         try {
-          const latestTx = transactions[0];
-          if (latestTx) {
-            await _supabase.from("uw_transactions").upsert(
-              { id_transaksi: latestTx.id, payload: latestTx, status: latestTx.status },
+          const txToSave = targetTx || transactions[0];
+          if (txToSave) {
+            const { error } = await _supabase.from("uw_transactions").upsert(
+              { id_transaksi: txToSave.id, payload: txToSave, status: txToSave.status },
               { onConflict: "id_transaksi" }
             );
+            if (error) {
+              console.error("Gagal sinkronisasi ke Supabase:", error.message);
+            }
           }
-        } catch (err) {}
+        } catch (err) {
+          console.error("Kesalahan jaringan/database Supabase:", err);
+        }
 
         renderRepository();
         updateStats();
@@ -1810,10 +1816,8 @@
               }
             }
 
-            try {
-              localStorage.setItem("uw_transactions", JSON.stringify(transactions));
-              await _supabase.from("uw_transactions").upsert({ id_transaksi: t.id, payload: t, status: t.status }, { onConflict: "id_transaksi" });
-            } catch (e) {}
+            // Simpan setiap item yang di-bulk approve langsung ke Supabase secara aman
+            await saveData(t);
           }
         }
 
@@ -2038,7 +2042,7 @@
         }
 
         document.getElementById("input-approval-catatan").value = "";
-        await saveData();
+        await saveData(t);
         closeModal("modal-detail");
         alert("Keputusan persetujuan berhasil disimpan!");
       }
