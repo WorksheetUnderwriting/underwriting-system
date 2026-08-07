@@ -4,21 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Worksheet Underwriting System</title>
-    <!-- Tailwind CSS CDN -->
+    <!-- Tailwind CSS CDN (Krusial untuk tampilan awal) -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons CDN -->
+    <!-- FontAwesome Icons CDN (Krusial untuk ikon) -->
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
     />
-    <!-- HTML2PDF CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <!-- SheetJS (XLSX Reader & Writer) CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <!-- Supabase JS Library CDN -->
+    <!-- Supabase JS Library CDN (Krusial untuk database awal) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Chart.js CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- SCRIPT PROTEKSI HAK AKSES -->
     <script>
@@ -1087,7 +1081,7 @@
       </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC ENGINE -->
+    <!-- JAVASCRIPT LOGIC ENGINE DENGAN LAZY LOADING CDN -->
     <script>
       const SUPABASE_URL = "https://ubahduvkhlfzvghrapwn.supabase.co";
       const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InViYWhkdXZraGxmenZnaHJhcHduIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5MzIzMTIsImV4cCI6MjEwMTUwODMxMn0.cDy4TexuHVG6e81U8vYRxiWB0zIDXMTQnOmr7Uo3SBM";
@@ -1154,13 +1148,59 @@
       let excelMasterData = [];
       let chartMonthlyInstance = null;
       let chartStatusInstance = null;
+      let cachedNextID = "";
+
+      // Flag status lazy-loading library berat agar hanya di-load sekali
+      let isChartLoaded = false;
+      let isExcelLoaded = false;
+      let isPdfLoaded = false;
+
+      function loadScript(src) {
+        return new Promise((resolve, reject) => {
+          if (document.querySelector(`script[src="${src}"]`)) {
+            resolve();
+            return;
+          }
+          const script = document.createElement("script");
+          script.src = src;
+          script.onload = () => resolve();
+          script.onerror = () => reject(new Error(`Gagal memuat skrip: ${src}`));
+          document.head.appendChild(script);
+        });
+      }
+
+      async function ensureChartJs() {
+        if (!isChartLoaded) {
+          await loadScript("https://cdn.jsdelivr.net/npm/chart.js");
+          isChartLoaded = true;
+        }
+      }
+
+      async function ensureExcelJs() {
+        if (!isExcelLoaded) {
+          await loadScript("https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js");
+          isExcelLoaded = true;
+        }
+      }
+
+      async function ensurePdfJs() {
+        if (!isPdfLoaded) {
+          await loadScript("https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js");
+          isPdfLoaded = true;
+        }
+      }
 
       document.addEventListener("DOMContentLoaded", async () => {
         initUserHeader();
         populateRoleSelector();
-        await loadTransactionsFromSupabase();
+        
+        // Ambil data transaksi dan pre-fetch ID secara paralel agar kilat (< 2 detik)
+        await Promise.all([
+          loadTransactionsFromSupabase(),
+          preFetchNextID()
+        ]);
+
         setupSupabaseRealtime();
-        initCharts();
       });
 
       async function loadTransactionsFromSupabase() {
@@ -1186,7 +1226,38 @@
 
         renderRepository();
         updateStats();
-        updateCharts();
+      }
+
+      async function preFetchNextID() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const prefix = `WS-${year}-${month}-${day}-`;
+
+        try {
+          const { data, error } = await _supabase
+            .from("uw_transactions")
+            .select("id_transaksi")
+            .ilike("id_transaksi", `${prefix}%`)
+            .order("id_transaksi", { ascending: false })
+            .limit(1);
+
+          if (error) throw error;
+
+          let nextNum = 1;
+          if (data && data.length > 0) {
+            const lastId = data[0].id_transaksi;
+            const lastNumStr = lastId.split('-').pop();
+            const parsedNum = parseInt(lastNumStr, 10);
+            if (!isNaN(parsedNum)) {
+              nextNum = parsedNum + 1;
+            }
+          }
+          cachedNextID = `${prefix}${String(nextNum).padStart(4, "0")}`;
+        } catch (err) {
+          cachedNextID = `${prefix}0001`;
+        }
       }
 
       function setupSupabaseRealtime() {
@@ -1272,11 +1343,15 @@
         return String(val).replace(/^'+|'+$/g, "").trim();
       }
 
-      function handleExcelUpload(input) {
+      async function handleExcelUpload(input) {
         if (!input.files || !input.files[0]) return;
         const file = input.files[0];
-        const reader = new FileReader();
+        
+        // Lazy load SheetJS library hanya saat tombol upload excel ditekan
+        document.getElementById("excel-status").innerText = "Memuat modul Excel...";
+        await ensureExcelJs();
 
+        const reader = new FileReader();
         reader.onload = function (e) {
           try {
             const data = new Uint8Array(e.target.result);
@@ -1290,6 +1365,7 @@
             alert(`File "${file.name}" berhasil diunggah! (${excelMasterData.length} data nasabah siap diautofill)`);
           } catch (err) {
             alert("Gagal membaca file Excel. Pastikan format file .xlsx/.xls valid!");
+            document.getElementById("excel-status").innerText = "Gagal memuat file";
           }
         };
         reader.readAsArrayBuffer(file);
@@ -1400,7 +1476,7 @@
         }
       }
 
-      function switchTab(tab) {
+      async function switchTab(tab) {
         ["dashboard", "form", "repository"].forEach((t) => {
           const tabElem = document.getElementById(`tab-${t}`);
           const navElem = document.getElementById(`nav-${t}`);
@@ -1422,48 +1498,16 @@
           document.getElementById("page-title").innerText = titles[tab];
         }
 
-        // Generate ID otomatis langsung dari Supabase saat membuka Form
         if (tab === "form") {
-          generateNextID();
+          // Gunakan ID yang sudah di-prefetch sebelumnya agar instan, lalu perbarui di background
+          document.getElementById("form-id-display").innerText = cachedNextID || "WS-2026-0001";
+          preFetchNextID();
         }
 
         if (tab === "dashboard") {
+          // Lazy load Chart.js hanya saat tab dashboard dibuka
+          await ensureChartJs();
           updateCharts();
-        }
-      }
-
-      async function generateNextID() {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const prefix = `WS-${year}-${month}-${day}-`;
-
-        try {
-          const { data, error } = await _supabase
-            .from("uw_transactions")
-            .select("id_transaksi")
-            .ilike("id_transaksi", `${prefix}%`)
-            .order("id_transaksi", { ascending: false })
-            .limit(1);
-
-          if (error) throw error;
-
-          let nextNum = 1;
-          if (data && data.length > 0) {
-            const lastId = data[0].id_transaksi;
-            const lastNumStr = lastId.split('-').pop();
-            const parsedNum = parseInt(lastNumStr, 10);
-            if (!isNaN(parsedNum)) {
-              nextNum = parsedNum + 1;
-            }
-          }
-
-          document.getElementById("form-id-display").innerText = `${prefix}${String(nextNum).padStart(4, "0")}`;
-          
-        } catch (err) {
-          console.error("Gagal ambil ID dari server:", err);
-          document.getElementById("form-id-display").innerText = `${prefix}0001`;
         }
       }
 
@@ -1668,7 +1712,9 @@
         document.getElementById("display-total-premi").innerText = "Rp 0";
         document.getElementById("display-status-resiko").innerText = "--";
         handleSegmenChange();
-        generateNextID();
+        preFetchNextID().then(() => {
+          document.getElementById("form-id-display").innerText = cachedNextID;
+        });
       }
 
       async function saveData(targetTx = null) {
@@ -1691,7 +1737,7 @@
 
         renderRepository();
         updateStats();
-        updateCharts();
+        if (chartMonthlyInstance && chartStatusInstance) updateCharts();
       }
 
       function renderRepository() {
@@ -1858,12 +1904,15 @@
         alert(`${selectedCheckboxes.length} transaksi berhasil diproses secara massal!`);
       }
 
-      function exportRepositoryToExcel() {
+      async function exportRepositoryToExcel() {
         const filtered = getFilteredTransactions();
         if (filtered.length === 0) {
           alert("Belum ada data transaksi untuk diexport!");
           return;
         }
+
+        // Lazy load SheetJS library untuk export Excel
+        await ensureExcelJs();
 
         const exportData = filtered.map((t, idx) => {
           let lastApproval = "-";
@@ -2106,48 +2155,6 @@
         document.getElementById("stat-digital").innerText = transactions.filter((t) => t.channel === "Digital Journey").length;
       }
 
-      function initCharts() {
-        const ctxMonthly = document.getElementById("chartMonthly").getContext("2d");
-        chartMonthlyInstance = new Chart(ctxMonthly, {
-          type: "bar",
-          data: {
-            labels: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"],
-            datasets: [{
-              label: "Jumlah Transaksi",
-              data: new Array(12).fill(0),
-              backgroundColor: "rgba(59, 130, 246, 0.7)",
-              borderColor: "rgba(59, 130, 246, 1)",
-              borderWidth: 1,
-              borderRadius: 6
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
-          }
-        });
-
-        const ctxStatus = document.getElementById("chartStatus").getContext("2d");
-        chartStatusInstance = new Chart(ctxStatus, {
-          type: "doughnut",
-          data: {
-            labels: ["Pending Review", "Approved Final", "Ditolak"],
-            datasets: [{
-              data: [0, 0, 0],
-              backgroundColor: ["#f59e0b", "#10b981", "#f43f5e"],
-              borderWidth: 2
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { position: "bottom", labels: { boxWidth: 12, font: { size: 11 } } } }
-          }
-        });
-      }
-
       function updateCharts() {
         if (!chartMonthlyInstance || !chartStatusInstance) return;
 
@@ -2196,7 +2203,10 @@
         document.getElementById("confirm-password").value = "";
       }
 
-      function downloadPDF() {
+      async function downloadPDF() {
+        // Lazy load html2pdf library hanya saat tombol Download PDF diklik
+        await ensurePdfJs();
+
         const element = document.querySelector(".pdf-template");
         html2pdf()
           .set({
