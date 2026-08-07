@@ -100,6 +100,13 @@
           0 10px 15px -5px rgba(59, 130, 246, 0.3);
       }
 
+      /* KESERAGAMAN TABEL REPOSITORY SUPAYA TIDAK NAIK TURUN */
+      #repo-table-body td, 
+      #repo-table-body th {
+        vertical-align: middle !important;
+        white-space: nowrap;
+      }
+
       .pdf-template {
         font-family: "Arial", sans-serif;
         color: #000;
@@ -690,7 +697,7 @@
               <!-- Lampiran Dokumen Persyaratan -->
               <div>
                 <h4 class="text-xs font-bold text-blue-600 uppercase tracking-wider mb-4 flex items-center gap-2">
-                  <i class="fa-solid fa-paperclip"></i> 4. Lampiran Dokumen Persyaratan
+                  <i class="fa-solid fa-paperclip"></i> 4. Lampiran Dokumen Persyaratan (Wajib & Pendukung)
                 </h4>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white/80 p-6 rounded-2xl border border-slate-200/80 shadow-sm">
                   <div class="bg-white p-4.5 rounded-xl border border-slate-200/80 shadow-sm">
@@ -724,8 +731,18 @@
                   </div>
 
                   <div class="bg-white p-4.5 rounded-xl border border-slate-200/80 shadow-sm">
-                    <label class="block text-xs font-bold text-slate-800 mb-1">4. Dokumen Lainnya / Data Kumpulan <span class="text-slate-400 font-normal">(Opsional)</span></label>
-                    <p class="text-[11px] text-slate-500 mb-2.5">Hasil Lab / MCU / Excel List (PDF / ZIP / XLSX - Max 1.5MB)</p>
+                    <label class="block text-xs font-bold text-slate-800 mb-1">4. Slip Gaji / Bukti Finansial <span class="text-slate-400 font-normal">(Opsional)</span></label>
+                    <p class="text-[11px] text-slate-500 mb-2.5">Bukti Penghasilan / Rekening (PDF / JPG / PNG - Max 1.5MB)</p>
+                    <input type="file" id="attach-gaji" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileChange(this, 'gaji-info')" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer transition" />
+                    <div id="gaji-info" class="mt-2 text-xs text-emerald-600 font-bold hidden flex items-center justify-between">
+                      <span class="file-name truncate max-w-[200px]"></span>
+                      <button type="button" onclick="clearFile('attach-gaji', 'gaji-info')" class="text-rose-500 hover:underline text-[11px] font-bold cursor-pointer">Hapus</button>
+                    </div>
+                  </div>
+
+                  <div class="bg-white p-4.5 rounded-xl border border-slate-200/80 shadow-sm md:col-span-2">
+                    <label class="block text-xs font-bold text-slate-800 mb-1">5. Hasil Lab / MCU / Dokumen Lainnya <span class="text-slate-400 font-normal">(Opsional)</span></label>
+                    <p class="text-[11px] text-slate-500 mb-2.5">Hasil Pemeriksaan Medis / Surat Keterangan / Excel List (PDF / ZIP / XLSX - Max 1.5MB)</p>
                     <input type="file" id="attach-other" accept=".pdf,.jpg,.jpeg,.png,.zip,.xlsx,.csv" onchange="handleFileChange(this, 'other-info')" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer transition" />
                     <div id="other-info" class="mt-2 text-xs text-emerald-600 font-bold hidden flex items-center justify-between">
                       <span class="file-name truncate max-w-[200px]"></span>
@@ -1134,7 +1151,7 @@
 
       let transactions = [];
       let activeTransactionId = null;
-      let tempFiles = { ktp: null, spajk: null, riplay: null, other: null };
+      let tempFiles = { ktp: null, spajk: null, riplay: null, gaji: null, other: null };
       let excelMasterData = [];
       let chartMonthlyInstance = null;
       let chartStatusInstance = null;
@@ -1593,8 +1610,8 @@
 
       function resetForm() {
         document.getElementById("uw-form").reset();
-        tempFiles = { ktp: null, spajk: null, riplay: null, other: null };
-        ["ktp-info", "spajk-info", "riplay-info", "other-info"].forEach((id) => {
+        tempFiles = { ktp: null, spajk: null, riplay: null, gaji: null, other: null };
+        ["ktp-info", "spajk-info", "riplay-info", "gaji-info", "other-info"].forEach((id) => {
           document.getElementById(id).classList.add("hidden");
         });
         document.getElementById("alert-already-submitted").classList.add("hidden");
@@ -1645,17 +1662,17 @@
 
         filtered.forEach((t) => {
           const tr = document.createElement("tr");
-          tr.className = "hover:bg-blue-900/25 hover:border-l-4 hover:border-l-blue-500 transition-all border-b border-slate-100 cursor-pointer";
+          tr.className = "hover:bg-blue-900/25 transition-all border-b border-slate-100 cursor-pointer";
           const attachedCount = Object.values(t.files).filter((f) => f !== null).length;
 
           let statusBadge = "";
           if (t.status === "APPROVED_FINAL") {
-            statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 shadow-sm">Approved Final</span>`;
+            statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 shadow-sm inline-block">Approved Final</span>`;
           } else if (t.status === "REJECTED") {
-            statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 shadow-sm">Ditolak</span>`;
+            statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 shadow-sm inline-block">Ditolak</span>`;
           } else if (t.status.startsWith("PENDING_LEVEL_")) {
             const reqLvl = parseInt(t.status.split("_")[2]);
-            statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 shadow-sm">Pending ${roleLevelNames[reqLvl]}</span>`;
+            statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 shadow-sm inline-block">Pending ${roleLevelNames[reqLvl]}</span>`;
           }
 
           let lastApprovalText = "-";
@@ -1686,14 +1703,14 @@
             <td class="p-3 text-slate-600">Rp ${formatNumberInput(t.totalPremi)}</td>
             <td class="p-3">
               <span class="inline-flex items-center gap-1 text-[11px] bg-slate-100 px-2 py-0.5 rounded-lg text-slate-600 font-semibold border border-slate-200">
-                <i class="fa-solid fa-paperclip text-blue-500"></i> ${attachedCount}/4 File
+                <i class="fa-solid fa-paperclip text-blue-500"></i> ${attachedCount}/5 File
               </span>
             </td>
             <td class="p-3 text-[11px] text-slate-700">${lastApprovalText}</td>
             <td class="p-3">${statusBadge}</td>
             <td class="p-3 text-xs font-semibold text-blue-600">${t.userInput || currentFullName}</td>
             <td class="p-3 text-center" onclick="event.stopPropagation()">
-              <button onclick="openModalDetail('${t.id}')" class="px-2.5 py-1 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg text-xs font-bold transition cursor-pointer shadow-sm">
+              <button onclick="openModalDetail('${t.id}')" class="px-2.5 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg text-xs font-bold transition cursor-pointer shadow-sm inline-flex items-center gap-1">
                 <i class="fa-solid fa-eye"></i> Detail
               </button>
             </td>
@@ -1816,7 +1833,7 @@
             "7. ID KTP": t.noKtp || "-",
             "8. UANG PERTANGGUNGAN": t.up,
             "9. PREMI": t.totalPremi,
-            "10. DOKUMEN": `${Object.values(t.files).filter((f) => f !== null).length}/4 File`,
+            "10. DOKUMEN": `${Object.values(t.files).filter((f) => f !== null).length}/5 File`,
             "11. APPROVAL TERAKHIR": lastApproval,
             "12. STATUS APPROVAL": t.status,
             "13. USER INPUT": t.userInput || currentFullName
@@ -1896,7 +1913,7 @@
         }
 
         const filesBox = document.getElementById("m-files-list");
-        const fileLabels = { ktp: "1. KTP", spajk: "2. SPAJK", riplay: "3. RIPLAY", other: "4. Dokumen Lain" };
+        const fileLabels = { ktp: "1. KTP", spajk: "2. SPAJK", riplay: "3. RIPLAY", gaji: "4. Slip Gaji / Finansial", other: "5. Lab / MCU / Lainnya" };
         filesBox.innerHTML = "";
 
         Object.keys(fileLabels).forEach((key) => {
