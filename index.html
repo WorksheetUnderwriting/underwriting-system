@@ -1428,22 +1428,29 @@
       }
 
       function generateNextID() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  
+  const prefix = `WS-${year}-${month}-${day}-`;
+
   if (!transactions || transactions.length === 0) {
-    document.getElementById("form-id-display").innerText = "UW-2026-0001";
+    document.getElementById("form-id-display").innerText = `${prefix}0001`;
     return;
   }
 
-  // Cari angka ID tertinggi yang ada di dalam array
+  // Cari angka urut tertinggi untuk hari/tanggal yang sama
   const maxID = transactions.reduce((max, item) => {
-    if (item.id && item.id.startsWith("UW-2026-")) {
-      const num = parseInt(item.id.replace("UW-2026-", ""), 10);
+    if (item.id && item.id.startsWith(prefix)) {
+      const num = parseInt(item.id.replace(prefix, ""), 10);
       return !isNaN(num) && num > max ? num : max;
     }
     return max;
   }, 0);
 
   const nextNum = maxID + 1;
-  document.getElementById("form-id-display").innerText = `UW-2026-${String(nextNum).padStart(4, "0")}`;
+  document.getElementById("form-id-display").innerText = `${prefix}${String(nextNum).padStart(4, "0")}`;
 }
 
       function handleSegmenChange() {
