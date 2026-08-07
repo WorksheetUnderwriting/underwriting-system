@@ -17,17 +17,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <!-- Supabase JS Library CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- SCRIPT PROTEKSI HAK AKSES -->
     <script>
-      // 1. Proteksi Sesi Login Utama
       if (localStorage.getItem("isLoggedIn") !== "true") {
         window.location.replace("login.html");
       }
     </script>
 
     <style>
-      /* Custom Scrollbar untuk tema Navy Glossy */
       ::-webkit-scrollbar {
         width: 6px;
         height: 6px;
@@ -43,7 +43,6 @@
         background: #3b82f6;
       }
 
-      /* Efek Kilau / Glossy Overlay */
       .glossy-card {
         background: linear-gradient(
           135deg,
@@ -57,21 +56,13 @@
           inset 0 1px 1px 0 rgba(255, 255, 255, 0.8);
       }
 
-      /* Glowing Neon Highlights */
       .glow-blue {
         box-shadow: 0 0 20px rgba(59, 130, 246, 0.35);
       }
       .glow-emerald {
         box-shadow: 0 0 20px rgba(16, 185, 129, 0.35);
       }
-      .glow-cyan {
-        box-shadow: 0 0 20px rgba(6, 182, 212, 0.35);
-      }
-      .glow-rose {
-        box-shadow: 0 0 20px rgba(244, 63, 94, 0.35);
-      }
 
-      /* Micro-Animation Fade In */
       .tab-anim {
         animation: fadeIn 0.35s cubic-bezier(0.4, 0, 0.2, 1);
       }
@@ -86,7 +77,6 @@
         }
       }
 
-      /* Sidebar Navigation Item Active State */
       .sidebar-item-active {
         background: linear-gradient(
           90deg,
@@ -100,7 +90,6 @@
           0 0 15px rgba(59, 130, 246, 0.3);
       }
 
-      /* Hover Effects & Micro-interactions */
       .card-hover {
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
@@ -111,7 +100,6 @@
           0 10px 15px -5px rgba(59, 130, 246, 0.3);
       }
 
-      /* PDF Print Styling (A4 Proportional) */
       .pdf-template {
         font-family: "Arial", sans-serif;
         color: #000;
@@ -123,13 +111,11 @@
         margin: 0 auto;
         box-sizing: border-box;
       }
-
       .pdf-template table {
         width: 100%;
         border-collapse: collapse;
         margin-bottom: 8px;
       }
-
       .pdf-template th,
       .pdf-template td {
         border: 1px solid #000;
@@ -137,7 +123,6 @@
         font-size: 9.5px;
         line-height: 1.3;
       }
-
       .pdf-template .section-header {
         background-color: #f3f4f6;
         font-weight: bold;
@@ -149,7 +134,6 @@
         margin-top: 10px;
         margin-bottom: 6px;
       }
-
       #m-pdf-catatan {
         min-height: 24px !important;
         padding: 6px !important;
@@ -176,17 +160,15 @@
       }
     </style>
   </head>
-  <!-- BACKGROUND UTAMA: BIRU DONGKER GLOSSY GRADIENT -->
   <body
     class="bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#0a1128] to-[#030712] font-sans antialiased text-slate-800 min-h-screen"
   >
     <div class="flex h-screen overflow-hidden">
-      <!-- SIDEBAR NAVIGATION - NAVY GLOSSY -->
+      <!-- SIDEBAR -->
       <aside
         class="w-64 bg-[#070d1e]/80 backdrop-blur-2xl text-slate-300 flex flex-col justify-between no-print z-20 border-r border-blue-500/20 shadow-[5px_0_25px_rgba(0,0,0,0.5)]"
       >
         <div>
-          <!-- Brand / Logo -->
           <div
             class="p-5 flex items-center gap-3.5 border-b border-blue-900/40 bg-gradient-to-r from-blue-900/20 to-transparent"
           >
@@ -196,27 +178,20 @@
               <i class="fa-solid fa-file-shield text-xl"></i>
             </div>
             <div>
-              <h1
-                class="font-bold text-white text-base leading-tight tracking-wide drop-shadow"
-              >
+              <h1 class="font-bold text-white text-base leading-tight tracking-wide drop-shadow">
                 Underwriting System
               </h1>
-              <span class="text-[11px] text-blue-300 font-medium tracking-wider"
-                >Worksheet & Evaluation</span
-              >
+              <span class="text-[11px] text-blue-300 font-medium tracking-wider">Worksheet & Evaluation</span>
             </div>
           </div>
 
-          <!-- Navigation Menu -->
           <nav class="mt-6 px-3 space-y-1.5">
             <button
               onclick="switchTab('dashboard')"
               id="nav-dashboard"
               class="sidebar-item-active w-full flex items-center gap-3.5 px-4 py-3 text-sm font-semibold rounded-xl hover:bg-blue-950/50 transition cursor-pointer"
             >
-              <i
-                class="fa-solid fa-chart-line w-5 text-center text-blue-400"
-              ></i>
+              <i class="fa-solid fa-chart-line w-5 text-center text-blue-400"></i>
               Dashboard
             </button>
             <button
@@ -224,9 +199,7 @@
               id="nav-form"
               class="w-full flex items-center gap-3.5 px-4 py-3 text-sm font-semibold rounded-xl hover:bg-blue-950/50 transition cursor-pointer text-slate-400 hover:text-white"
             >
-              <i
-                class="fa-solid fa-pen-to-square w-5 text-center text-emerald-400"
-              ></i>
+              <i class="fa-solid fa-pen-to-square w-5 text-center text-emerald-400"></i>
               Kertas Kerja UW
             </button>
             <button
@@ -234,20 +207,15 @@
               id="nav-repository"
               class="w-full flex items-center gap-3.5 px-4 py-3 text-sm font-semibold rounded-xl hover:bg-blue-950/50 transition cursor-pointer text-slate-400 hover:text-white"
             >
-              <i
-                class="fa-solid fa-database w-5 text-center text-amber-400"
-              ></i>
+              <i class="fa-solid fa-database w-5 text-center text-amber-400"></i>
               Repository Transaksi
             </button>
           </nav>
         </div>
 
-        <!-- User Role Switcher -->
         <div class="p-4 border-t border-blue-900/40 bg-[#030712]/80">
           <div class="flex items-center justify-between mb-2">
-            <span
-              class="text-[10px] font-bold text-blue-300/70 uppercase tracking-wider"
-            >
+            <span class="text-[10px] font-bold text-blue-300/70 uppercase tracking-wider">
               Mode Peran Active:
             </span>
             <button
@@ -261,29 +229,21 @@
             id="role-selector"
             onchange="changeRole(this.value)"
             class="w-full bg-[#0a1128] border border-blue-500/30 text-white text-xs rounded-xl p-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none cursor-pointer shadow-inner"
-          >
-            <!-- Populated via JS -->
-          </select>
+          ></select>
         </div>
       </aside>
 
-      <!-- MAIN CONTENT AREA -->
+      <!-- MAIN CONTENT -->
       <main class="flex-1 flex flex-col overflow-y-auto">
-        <!-- TOP HEADER - BIRU DONGKER GLOSSY GLASSMORPHISM -->
         <header
           class="bg-[#0b132b]/70 backdrop-blur-xl border-b border-blue-500/20 px-8 py-4 flex justify-between items-center no-print sticky top-0 z-10 shadow-[0_4px_20px_rgba(0,0,0,0.4)]"
         >
           <div class="flex items-center gap-3">
-            <div
-              class="p-2 bg-blue-500/10 border border-blue-400/20 text-blue-400 rounded-xl hidden sm:block shadow-inner"
-            >
+            <div class="p-2 bg-blue-500/10 border border-blue-400/20 text-blue-400 rounded-xl hidden sm:block shadow-inner">
               <i class="fa-solid fa-layer-group text-lg"></i>
             </div>
             <div>
-              <h2
-                id="page-title"
-                class="text-xl font-extrabold text-white tracking-tight drop-shadow-sm"
-              >
+              <h2 id="page-title" class="text-xl font-extrabold text-white tracking-tight drop-shadow-sm">
                 Dashboard Underwriting
               </h2>
               <p class="text-xs font-medium text-blue-200/70">
@@ -293,7 +253,6 @@
           </div>
 
           <div class="flex items-center gap-4">
-            <!-- QUICK SEARCH SHORTCUT -->
             <button
               onclick="focusQuickSearch()"
               title="Cepat Cari Transaksi (Ctrl + K)"
@@ -301,13 +260,9 @@
             >
               <i class="fa-solid fa-magnifying-glass text-blue-400"></i>
               <span>Cari...</span>
-              <kbd
-                class="px-1.5 py-0.5 text-[10px] bg-slate-800 text-slate-300 rounded font-mono border border-slate-700"
-                >Ctrl K</kbd
-              >
+              <kbd class="px-1.5 py-0.5 text-[10px] bg-slate-800 text-slate-300 rounded font-mono border border-slate-700">Ctrl K</kbd>
             </button>
 
-            <!-- NOTIFIKASI BELL BADGE -->
             <div class="relative">
               <button
                 onclick="switchTab('repository')"
@@ -315,47 +270,25 @@
                 class="p-2.5 bg-[#1e293b]/50 hover:bg-[#1e293b] text-blue-200 border border-blue-400/20 rounded-xl text-xs transition cursor-pointer relative"
               >
                 <i class="fa-solid fa-bell text-base text-blue-300"></i>
-                <span
-                  id="notif-badge"
-                  class="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 text-white rounded-full text-[9px] font-bold flex items-center justify-center animate-pulse border border-slate-900"
-                  >0</span
-                >
+                <span id="notif-badge" class="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 text-white rounded-full text-[9px] font-bold flex items-center justify-center animate-pulse border border-slate-900">0</span>
               </button>
             </div>
 
-            <span
-              class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 shadow-inner hidden md:inline-flex"
-            >
-              <span
-                class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"
-              ></span>
+            <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 shadow-inner hidden md:inline-flex">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
               System Online
             </span>
 
             <div class="h-8 w-px bg-blue-900/60 hidden md:block"></div>
 
-            <div
-              class="flex items-center gap-3 bg-[#1e293b]/50 p-1.5 pr-3 rounded-2xl border border-blue-400/20 shadow-md"
-            >
-              <div
-                class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-400 text-white font-bold flex items-center justify-center text-xs shadow-md shadow-blue-500/30 ring-2 ring-white/20 glow-blue"
-              >
+            <div class="flex items-center gap-3 bg-[#1e293b]/50 p-1.5 pr-3 rounded-2xl border border-blue-400/20 shadow-md">
+              <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-400 text-white font-bold flex items-center justify-center text-xs shadow-md shadow-blue-500/30 ring-2 ring-white/20 glow-blue">
                 <span id="user-avatar">--</span>
               </div>
               <div class="text-left hidden sm:block">
-                <h4
-                  id="user-display-name"
-                  class="text-xs font-extrabold text-white leading-tight"
-                >
-                  Pengguna
-                </h4>
-                <span
-                  id="user-badge"
-                  class="text-[10px] text-blue-400 font-bold block tracking-tight"
-                  >Role --</span
-                >
+                <h4 id="user-display-name" class="text-xs font-extrabold text-white leading-tight">Pengguna</h4>
+                <span id="user-badge" class="text-[10px] text-blue-400 font-bold block tracking-tight">Role --</span>
               </div>
-
               <button
                 onclick="handleLogout()"
                 title="Keluar / Logout"
@@ -368,453 +301,140 @@
           </div>
         </header>
 
-        <div class="p-8 flex-1">
-          <!-- 1. DASHBOARD VIEW -->
+        <div class="p-8 flex-1 space-y-6">
+          <!-- 1. DASHBOARD -->
           <div id="tab-dashboard" class="tab-anim space-y-6">
-            <!-- UTAMA STATS CARDS GLOSSY -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div
-                class="card-hover glossy-card p-5 rounded-2xl relative overflow-hidden"
-              >
-                <div
-                  class="absolute left-0 top-0 bottom-0 w-1.5 bg-blue-600"
-                ></div>
+              <div class="card-hover glossy-card p-5 rounded-2xl relative overflow-hidden flex items-center justify-between">
                 <div>
-                  <p
-                    class="text-xs text-slate-500 font-bold tracking-wider uppercase"
-                  >
-                    Total Transaksi
-                  </p>
-                  <h3
-                    id="stat-total"
-                    class="text-3xl font-black text-slate-900 mt-1"
-                  >
-                    0
-                  </h3>
+                  <p class="text-xs text-slate-500 font-bold tracking-wider uppercase">Total Transaksi</p>
+                  <h3 id="stat-total" class="text-3xl font-black text-slate-900 mt-1">0</h3>
                 </div>
-                <div
-                  class="p-3.5 bg-blue-600/10 text-blue-600 rounded-2xl ring-1 ring-blue-600/20"
-                >
+                <div class="p-3.5 bg-blue-600/10 text-blue-600 rounded-2xl ring-1 ring-blue-600/20">
                   <i class="fa-solid fa-folder-open text-xl"></i>
                 </div>
               </div>
 
-              <div
-                class="card-hover glossy-card p-5 rounded-2xl relative overflow-hidden"
-              >
-                <div
-                  class="absolute left-0 top-0 bottom-0 w-1.5 bg-amber-500"
-                ></div>
+              <div class="card-hover glossy-card p-5 rounded-2xl relative overflow-hidden flex items-center justify-between">
                 <div>
-                  <p
-                    class="text-xs text-slate-500 font-bold tracking-wider uppercase"
-                  >
-                    Pending Review
-                  </p>
-                  <h3
-                    id="stat-pending"
-                    class="text-3xl font-black text-amber-600 mt-1"
-                  >
-                    0
-                  </h3>
+                  <p class="text-xs text-slate-500 font-bold tracking-wider uppercase">Pending Review</p>
+                  <h3 id="stat-pending" class="text-3xl font-black text-amber-600 mt-1">0</h3>
                 </div>
-                <div
-                  class="p-3.5 bg-amber-500/10 text-amber-600 rounded-2xl ring-1 ring-amber-500/20"
-                >
+                <div class="p-3.5 bg-amber-500/10 text-amber-600 rounded-2xl ring-1 ring-amber-500/20">
                   <i class="fa-solid fa-clock text-xl"></i>
                 </div>
               </div>
 
-              <div
-                class="card-hover glossy-card p-5 rounded-2xl relative overflow-hidden"
-              >
-                <div
-                  class="absolute left-0 top-0 bottom-0 w-1.5 bg-emerald-500"
-                ></div>
+              <div class="card-hover glossy-card p-5 rounded-2xl relative overflow-hidden flex items-center justify-between">
                 <div>
-                  <p
-                    class="text-xs text-slate-500 font-bold tracking-wider uppercase"
-                  >
-                    Approved Final
-                  </p>
-                  <h3
-                    id="stat-approved"
-                    class="text-3xl font-black text-emerald-600 mt-1"
-                  >
-                    0
-                  </h3>
+                  <p class="text-xs text-slate-500 font-bold tracking-wider uppercase">Approved Final</p>
+                  <h3 id="stat-approved" class="text-3xl font-black text-emerald-600 mt-1">0</h3>
                 </div>
-                <div
-                  class="p-3.5 bg-emerald-500/10 text-emerald-600 rounded-2xl ring-1 ring-emerald-500/20"
-                >
+                <div class="p-3.5 bg-emerald-500/10 text-emerald-600 rounded-2xl ring-1 ring-emerald-500/20">
                   <i class="fa-solid fa-circle-check text-xl"></i>
                 </div>
               </div>
 
-              <div
-                class="card-hover glossy-card p-5 rounded-2xl relative overflow-hidden"
-              >
-                <div
-                  class="absolute left-0 top-0 bottom-0 w-1.5 bg-rose-500"
-                ></div>
+              <div class="card-hover glossy-card p-5 rounded-2xl relative overflow-hidden flex items-center justify-between">
                 <div>
-                  <p
-                    class="text-xs text-slate-500 font-bold tracking-wider uppercase"
-                  >
-                    Ditolak / Declined
-                  </p>
-                  <h3
-                    id="stat-rejected"
-                    class="text-3xl font-black text-rose-600 mt-1"
-                  >
-                    0
-                  </h3>
+                  <p class="text-xs text-slate-500 font-bold tracking-wider uppercase">Ditolak / Declined</p>
+                  <h3 id="stat-rejected" class="text-3xl font-black text-rose-600 mt-1">0</h3>
                 </div>
-                <div
-                  class="p-3.5 bg-rose-500/10 text-rose-600 rounded-2xl ring-1 ring-rose-500/20"
-                >
+                <div class="p-3.5 bg-rose-500/10 text-rose-600 rounded-2xl ring-1 ring-rose-500/20">
                   <i class="fa-solid fa-circle-xmark text-xl"></i>
                 </div>
               </div>
             </div>
 
-            <!-- PROGRESS BAR PERFORMANCE METRICS -->
+            <!-- GRAFIK ANALITIK MENGGUNAKAN CHART.JS -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div class="glossy-card p-6 rounded-2xl space-y-4">
+                <h4 class="text-xs font-extrabold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                  <i class="fa-solid fa-chart-column text-blue-600 text-sm"></i> Tren Transaksi Bulanan
+                </h4>
+                <div class="h-64 relative flex items-center justify-center">
+                  <canvas id="chartMonthly"></canvas>
+                </div>
+              </div>
+              <div class="glossy-card p-6 rounded-2xl space-y-4">
+                <h4 class="text-xs font-extrabold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                  <i class="fa-solid fa-chart-pie text-indigo-600 text-sm"></i> Komposisi Status Approval
+                </h4>
+                <div class="h-64 relative flex items-center justify-center">
+                  <canvas id="chartStatus"></canvas>
+                </div>
+              </div>
+            </div>
+
             <div class="glossy-card p-6 rounded-2xl space-y-4">
               <div class="flex items-center justify-between">
-                <h4
-                  class="text-xs font-extrabold text-slate-800 uppercase tracking-wider flex items-center gap-2"
-                >
-                  <i class="fa-solid fa-chart-pie text-blue-600 text-sm"></i>
-                  Tingkat Penyelesaian Approval
+                <h4 class="text-xs font-extrabold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                  <i class="fa-solid fa-chart-pie text-blue-600 text-sm"></i> Tingkat Penyelesaian Approval
                 </h4>
-                <span
-                  id="progress-percentage-text"
-                  class="text-xs font-extrabold text-blue-600"
-                  >0% Selesai</span
-                >
+                <span id="progress-percentage-text" class="text-xs font-extrabold text-blue-600">0% Selesai</span>
               </div>
-              <div
-                class="w-full bg-slate-200/80 rounded-full h-3 overflow-hidden p-0.5 border border-slate-300/50"
-              >
-                <div
-                  id="approval-progress-bar"
-                  class="bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-500 h-full rounded-full transition-all duration-700 ease-out glow-emerald"
-                  style="width: 0%"
-                ></div>
+              <div class="w-full bg-slate-200/80 rounded-full h-3 overflow-hidden p-0.5 border border-slate-300/50">
+                <div id="approval-progress-bar" class="bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-500 h-full rounded-full transition-all duration-700 ease-out glow-emerald" style="width: 0%"></div>
               </div>
-              <div
-                class="flex justify-between text-[11px] font-medium text-slate-500 pt-1"
-              >
-                <span
-                  >Pending Review:
-                  <strong id="progress-pending-count" class="text-slate-700"
-                    >0</strong
-                  ></span
-                >
-                <span
-                  >Keputusan Final:
-                  <strong id="progress-completed-count" class="text-slate-700"
-                    >0</strong
-                  ></span
-                >
+              <div class="flex justify-between text-[11px] font-medium text-slate-500 pt-1">
+                <span>Pending Review: <strong id="progress-pending-count" class="text-slate-700">0</strong></span>
+                <span>Keputusan Final: <strong id="progress-completed-count" class="text-slate-700">0</strong></span>
               </div>
             </div>
 
-            <!-- DISTRIBUSI CHANNEL METRICS -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div class="card-hover glossy-card p-4.5 rounded-2xl text-center">
-                <span
-                  class="text-[11px] font-bold text-slate-500 uppercase tracking-wider"
-                  >Proses Manual</span
-                >
-                <h4
-                  id="stat-manual"
-                  class="text-2xl font-black text-slate-800 mt-1"
-                >
-                  0
-                </h4>
+                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Proses Manual</span>
+                <h4 id="stat-manual" class="text-2xl font-black text-slate-800 mt-1">0</h4>
               </div>
               <div class="card-hover glossy-card p-4.5 rounded-2xl text-center">
-                <span
-                  class="text-[11px] font-bold text-slate-500 uppercase tracking-wider"
-                  >Host to Host (H2H)</span
-                >
-                <h4
-                  id="stat-h2h"
-                  class="text-2xl font-black text-indigo-600 mt-1"
-                >
-                  0
-                </h4>
+                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Host to Host (H2H)</span>
+                <h4 id="stat-h2h" class="text-2xl font-black text-indigo-600 mt-1">0</h4>
               </div>
               <div class="card-hover glossy-card p-4.5 rounded-2xl text-center">
-                <span
-                  class="text-[11px] font-bold text-slate-500 uppercase tracking-wider"
-                  >Web Portal</span
-                >
-                <h4 id="stat-web" class="text-2xl font-black text-sky-600 mt-1">
-                  0
-                </h4>
+                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Web Portal</span>
+                <h4 id="stat-web" class="text-2xl font-black text-sky-600 mt-1">0</h4>
               </div>
               <div class="card-hover glossy-card p-4.5 rounded-2xl text-center">
-                <span
-                  class="text-[11px] font-bold text-slate-500 uppercase tracking-wider"
-                  >Digital Journey</span
-                >
-                <h4
-                  id="stat-digital"
-                  class="text-2xl font-black text-emerald-600 mt-1"
-                >
-                  0
-                </h4>
-              </div>
-            </div>
-
-            <!-- MATRIKS WEWENANG APPROVAL INFO BOX (WORKFLOW TIMELINE UI) -->
-            <div class="glossy-card p-6 rounded-2xl space-y-5">
-              <div class="flex items-center justify-between">
-                <h4
-                  class="text-xs font-extrabold text-slate-800 uppercase tracking-wider flex items-center gap-2"
-                >
-                  <i class="fa-solid fa-diagram-next text-blue-600 text-sm"></i>
-                  Matriks Approval Sequential (Berdasarkan UP)
-                </h4>
-                <span class="text-[11px] text-slate-500 font-medium"
-                  >Alur Wewenang Pengambilan Keputusan</span
-                >
-              </div>
-
-              <div class="grid grid-cols-1 md:grid-cols-5 gap-3 relative">
-                <div
-                  class="p-4 bg-white/60 rounded-2xl border border-slate-200/80 flex flex-col justify-between relative group hover:border-blue-400 transition"
-                >
-                  <div>
-                    <span class="font-extrabold text-slate-800 block text-xs"
-                      >Underwriter / Checker</span
-                    >
-                    <p class="text-slate-500 text-[11px] mt-1 leading-snug">
-                      Garda awal verifikasi & input data
-                    </p>
-                  </div>
-                  <div
-                    class="mt-4 flex items-center justify-between border-t border-slate-200/60 pt-2"
-                  >
-                    <span
-                      class="text-[10px] font-bold text-slate-400 uppercase tracking-wider"
-                      >Tahap 1</span
-                    >
-                    <i
-                      class="fa-solid fa-arrow-right text-slate-300 text-xs hidden md:block"
-                    ></i>
-                  </div>
-                </div>
-
-                <div
-                  class="p-4 bg-blue-50/70 rounded-2xl border border-blue-200 flex flex-col justify-between relative group hover:border-blue-400 transition"
-                >
-                  <div>
-                    <span class="font-extrabold text-blue-900 block text-xs"
-                      >Supervisor</span
-                    >
-                    <p class="text-blue-700 font-bold mt-1 text-xs">
-                      UP &le; 150 Juta
-                    </p>
-                  </div>
-                  <div
-                    class="mt-4 flex items-center justify-between border-t border-blue-200/80 pt-2"
-                  >
-                    <span
-                      class="text-[10px] font-bold text-blue-500 uppercase tracking-wider"
-                      >Tahap 2</span
-                    >
-                    <i
-                      class="fa-solid fa-arrow-right text-blue-400 text-xs hidden md:block"
-                    ></i>
-                  </div>
-                </div>
-
-                <div
-                  class="p-4 bg-emerald-50/70 rounded-2xl border border-emerald-200 flex flex-col justify-between relative group hover:border-emerald-400 transition"
-                >
-                  <div>
-                    <span class="font-extrabold text-emerald-900 block text-xs"
-                      >Kepala Departemen</span
-                    >
-                    <p class="text-emerald-700 font-bold mt-1 text-xs">
-                      UP &gt; 150 Jt - 300 Jt
-                    </p>
-                  </div>
-                  <div
-                    class="mt-4 flex items-center justify-between border-t border-emerald-200/80 pt-2"
-                  >
-                    <span
-                      class="text-[10px] font-bold text-emerald-500 uppercase tracking-wider"
-                      >Tahap 3</span
-                    >
-                    <i
-                      class="fa-solid fa-arrow-right text-emerald-400 text-xs hidden md:block"
-                    ></i>
-                  </div>
-                </div>
-
-                <div
-                  class="p-4 bg-amber-50/70 rounded-2xl border border-amber-200 flex flex-col justify-between relative group hover:border-amber-400 transition"
-                >
-                  <div>
-                    <span class="font-extrabold text-amber-900 block text-xs"
-                      >Kepala Divisi</span
-                    >
-                    <p class="text-amber-700 font-bold mt-1 text-xs">
-                      UP &gt; 300 Jt - 600 Jt
-                    </p>
-                  </div>
-                  <div
-                    class="mt-4 flex items-center justify-between border-t border-amber-200/80 pt-2"
-                  >
-                    <span
-                      class="text-[10px] font-bold text-amber-500 uppercase tracking-wider"
-                      >Tahap 4</span
-                    >
-                    <i
-                      class="fa-solid fa-arrow-right text-amber-400 text-xs hidden md:block"
-                    ></i>
-                  </div>
-                </div>
-
-                <div
-                  class="p-4 bg-rose-50/70 rounded-2xl border border-rose-200 flex flex-col justify-between relative group hover:border-rose-400 transition"
-                >
-                  <div>
-                    <span class="font-extrabold text-rose-900 block text-xs"
-                      >Direktur Operasional</span
-                    >
-                    <p class="text-rose-700 font-bold mt-1 text-xs">
-                      UP &gt; 600 Juta
-                    </p>
-                  </div>
-                  <div
-                    class="mt-4 flex items-center justify-between border-t border-rose-200/80 pt-2"
-                  >
-                    <span
-                      class="text-[10px] font-bold text-rose-500 uppercase tracking-wider"
-                      >Tahap Akhir</span
-                    >
-                    <i
-                      class="fa-solid fa-flag-checkered text-rose-400 text-xs"
-                    ></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- HERO BANNER DONGKER GLOSSY -->
-            <div
-              class="bg-gradient-to-r from-blue-950 via-[#0a1128] to-slate-900 text-white rounded-3xl p-8 shadow-2xl relative overflow-hidden border border-blue-400/30 glow-blue"
-            >
-              <div
-                class="absolute -right-12 -bottom-12 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"
-              ></div>
-              <div class="relative z-10 max-w-2xl">
-                <span
-                  class="inline-block px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-xs font-bold mb-3 border border-blue-400/40 shadow-inner"
-                >
-                  Automation & Workflow Management
-                </span>
-                <h3
-                  class="text-2xl font-extrabold mb-2 tracking-tight drop-shadow"
-                >
-                  Sistem Evaluasi & Kertas Kerja Underwriting
-                </h3>
-                <p class="text-blue-100/80 text-sm mb-6 leading-relaxed">
-                  Kelola pengajuan polis Individu & Kumpulan secara terstruktur
-                  dari seluruh kanal bisnis (Proses Manual, H2H, Web Portal, dan
-                  Digital Journey).
-                </p>
-                <button
-                  onclick="switchTab('form')"
-                  class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-6 py-3 rounded-xl text-sm font-bold transition-all shadow-lg shadow-blue-600/40 border border-blue-400/30 flex items-center gap-2.5 cursor-pointer glow-blue"
-                >
-                  <i class="fa-solid fa-plus"></i> Buat Kertas Kerja Baru
-                </button>
+                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Digital Journey</span>
+                <h4 id="stat-digital" class="text-2xl font-black text-emerald-600 mt-1">0</h4>
               </div>
             </div>
           </div>
 
           <!-- 2. FORM KERTAS KERJA UW -->
           <div id="tab-form" class="tab-anim hidden space-y-6">
-            <form
-              id="uw-form"
-              onsubmit="handleFormSubmit(event)"
-              class="glossy-card rounded-2xl p-8 space-y-8"
-            >
-              <div
-                class="border-b border-slate-200/80 pb-4 flex justify-between items-center"
-              >
+            <form id="uw-form" onsubmit="handleFormSubmit(event)" class="glossy-card rounded-2xl p-8 space-y-8">
+              <div class="border-b border-slate-200/80 pb-4 flex justify-between items-center">
                 <div>
-                  <h3 class="text-lg font-bold text-slate-800">
-                    Form Kertas Kerja Underwriting (UW)
-                  </h3>
-                  <p class="text-xs text-slate-500">
-                    Isi data calon tertanggung, segmen bisnis, jalur pengajuan,
-                    dan pemeriksaan kepatuhan.
-                  </p>
+                  <h3 class="text-lg font-bold text-slate-800">Form Kertas Kerja Underwriting (UW)</h3>
+                  <p class="text-xs text-slate-500">Isi data calon tertanggung, segmen bisnis, kanal pengajuan, dan pemeriksaan kepatuhan.</p>
                 </div>
-                <span
-                  class="text-xs font-mono bg-white border border-slate-300/80 text-slate-700 px-3 py-1.5 rounded-xl font-bold shadow-sm"
-                >
-                  ID Transaksi:
-                  <strong id="form-id-display" class="text-blue-600"
-                    >UW-2026-XXXX</strong
-                  >
+                <span class="text-xs font-mono bg-white border border-slate-300/80 text-slate-700 px-3 py-1.5 rounded-xl font-bold shadow-sm">
+                  ID Transaksi: <strong id="form-id-display" class="text-blue-600">UW-2026-XXXX</strong>
                 </span>
               </div>
 
-              <!-- NOTIFIKASI PERINGATAN IDUpload -->
-              <div
-                id="alert-already-submitted"
-                class="hidden bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-2xl shadow-sm"
-              >
+              <div id="alert-already-submitted" class="hidden bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-2xl shadow-sm">
                 <div class="flex items-center gap-3">
-                  <i
-                    class="fa-solid fa-triangle-exclamation text-amber-600 text-xl"
-                  ></i>
+                  <i class="fa-solid fa-triangle-exclamation text-amber-600 text-xl"></i>
                   <div>
-                    <h5 class="text-xs font-bold text-amber-900 uppercase">
-                      Perhatian: IDUpload Sudah Ada Dalam Database Kertas Kerja
-                    </h5>
-                    <p
-                      class="text-xs text-amber-800 mt-0.5"
-                      id="alert-already-text"
-                    >
-                      IDUpload ini sudah pernah diinput Kertas Kerja sebelumnya.
-                    </p>
+                    <h5 class="text-xs font-bold text-amber-900 uppercase">Perhatian: IDUpload Sudah Ada Dalam Database Kertas Kerja</h5>
+                    <p class="text-xs text-amber-800 mt-0.5" id="alert-already-text">IDUpload ini sudah pernah diinput Kertas Kerja sebelumnya.</p>
                   </div>
                 </div>
               </div>
 
               <!-- MODUL AUTOFILL EXCEL MASTER DATA -->
-              <div
-                class="bg-emerald-50/80 border border-emerald-200/80 rounded-2xl p-5 space-y-3 shadow-sm"
-              >
+              <div class="bg-emerald-50/80 border border-emerald-200/80 rounded-2xl p-5 space-y-3 shadow-sm">
                 <div class="flex items-center justify-between">
-                  <h4
-                    class="text-xs font-bold text-emerald-800 uppercase tracking-wider flex items-center gap-2"
-                  >
-                    <i
-                      class="fa-solid fa-file-excel text-emerald-600 text-sm"
-                    ></i>
-                    Upload Data Master Excel (Autofill System)
+                  <h4 class="text-xs font-bold text-emerald-800 uppercase tracking-wider flex items-center gap-2">
+                    <i class="fa-solid fa-file-excel text-emerald-600 text-sm"></i> Upload Data Master Excel (Autofill System)
                   </h4>
-                  <span
-                    id="excel-status"
-                    class="text-[11px] font-semibold text-slate-500"
-                  >
-                    Belum ada file diunggah
-                  </span>
+                  <span id="excel-status" class="text-[11px] font-semibold text-slate-500">Belum ada file diunggah</span>
                 </div>
                 <p class="text-[11px] text-slate-600 leading-relaxed">
-                  Unggah file Excel master data. Cukup ketikkan nilai
-                  <strong>IDUpload</strong> pada kotak pencarian di bawah untuk
-                  mengisi seluruh data nasabah secara otomatis.
+                  Unggah file Excel master data. Cukup ketikkan nilai <strong>IDUpload</strong> pada kotak pencarian di bawah untuk mengisi seluruh data nasabah secara otomatis.
                 </p>
                 <div class="flex items-center gap-3 pt-1">
                   <input
@@ -824,110 +444,56 @@
                     onchange="handleExcelUpload(this)"
                     class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 cursor-pointer transition"
                   />
-                  <button
-                    type="button"
-                    onclick="resetExcelData()"
-                    class="px-3.5 py-2 bg-slate-200 text-slate-700 hover:bg-slate-300 rounded-xl text-xs font-bold cursor-pointer shrink-0 transition"
-                  >
+                  <button type="button" onclick="resetExcelData()" class="px-3.5 py-2 bg-slate-200 text-slate-700 hover:bg-slate-300 rounded-xl text-xs font-bold cursor-pointer shrink-0 transition">
                     Reset Excel
                   </button>
                 </div>
               </div>
 
-              <!-- Section 0: Konfigurasi Lini Produk -->
-              <div
-                class="bg-blue-50/60 p-5 rounded-2xl border border-blue-100 space-y-4 shadow-sm"
-              >
-                <h4
-                  class="text-xs font-bold text-blue-700 uppercase tracking-wider flex items-center gap-2"
-                >
-                  <i class="fa-solid fa-diagram-project"></i> Konfigurasi Proses
-                  Bisnis & Segmentasi
+              <!-- Konfigurasi Proses Bisnis -->
+              <div class="bg-blue-50/60 p-5 rounded-2xl border border-blue-100 space-y-4 shadow-sm">
+                <h4 class="text-xs font-bold text-blue-700 uppercase tracking-wider flex items-center gap-2">
+                  <i class="fa-solid fa-diagram-project"></i> Konfigurasi Proses Bisnis & Segmentasi
                 </h4>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5"
-                      >Jenis Segmen Kepesertaan *</label
-                    >
-                    <select
-                      id="input-segmen"
-                      required
-                      onchange="handleSegmenChange()"
-                      class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none cursor-pointer bg-white"
-                    >
-                      <option value="Individu">
-                        Individu (Personal Policy)
-                      </option>
-                      <option value="Kumpulan">
-                        Kumpulan / Group Insurance
-                      </option>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Jenis Segmen Kepesertaan *</label>
+                    <select id="input-segmen" required onchange="handleSegmenChange()" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none cursor-pointer bg-white">
+                      <option value="Individu">Individu (Personal Policy)</option>
+                      <option value="Kumpulan">Kumpulan / Group Insurance</option>
                     </select>
                   </div>
-
                   <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5"
-                      >Jalur Proses Bisnis (Channel) *</label
-                    >
-                    <select
-                      id="input-channel"
-                      required
-                      class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none cursor-pointer bg-white"
-                    >
-                      <option value="Proses Manual">
-                        Proses Manual (Branch/Agency Paper)
-                      </option>
-                      <option value="Host to Host (H2H)">
-                        Host to Host (H2H / Core System)
-                      </option>
-                      <option value="Web Portal">
-                        Web Portal (Partner & Corporate Portal)
-                      </option>
-                      <option value="Digital Journey">
-                        Digital Journey (Mobile App / E-Commerce)
-                      </option>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Jalur Proses Bisnis (Channel) *</label>
+                    <select id="input-channel" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none cursor-pointer bg-white">
+                      <option value="Proses Manual">Proses Manual (Branch/Agency Paper)</option>
+                      <option value="Host to Host (H2H)">Host to Host (H2H / Core System)</option>
+                      <option value="Web Portal">Web Portal (Partner & Corporate Portal)</option>
+                      <option value="Digital Journey">Digital Journey (Mobile App / E-Commerce)</option>
                     </select>
                   </div>
-
                   <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5"
-                      >Kategori Produk *</label
-                    >
-                    <select
-                      id="input-kategori-produk"
-                      required
-                      class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none cursor-pointer bg-white"
-                    >
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Kategori Produk *</label>
+                    <select id="input-kategori-produk" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none cursor-pointer bg-white">
                       <option value="Jiwa / Term Life">Jiwa / Term Life</option>
-                      <option value="Kesehatan / Health">
-                        Kesehatan / Medical Health
-                      </option>
-                      <option value="Kecelakaan Diri (PA)">
-                        Kecelakaan Diri (Personal Accident)
-                      </option>
-                      <option value="Kredit & Asuransi Jiwa Kredit">
-                        Asuransi Jiwa Kredit (AJK)
-                      </option>
+                      <option value="Kesehatan / Health">Kesehatan / Medical Health</option>
+                      <option value="Kecelakaan Diri (PA)">Kecelakaan Diri (Personal Accident)</option>
+                      <option value="Kredit & Asuransi Jiwa Kredit">Asuransi Jiwa Kredit (AJK)</option>
                       <option value="Unit Link">Unit Link / Endowment</option>
                     </select>
                   </div>
                 </div>
               </div>
 
-              <!-- Section 1: Data Nasabah & Polis -->
+              <!-- Data Nasabah & Polis -->
               <div>
-                <h4
-                  class="text-xs font-bold text-blue-600 uppercase tracking-wider mb-4 flex items-center gap-2"
-                >
+                <h4 class="text-xs font-bold text-blue-600 uppercase tracking-wider mb-4 flex items-center gap-2">
                   <i class="fa-solid fa-user"></i> 1. Data Produk & Tertanggung
                 </h4>
 
-                <!-- INPUT IDUpload -->
-                <div
-                  class="bg-white/80 p-4.5 rounded-2xl border border-slate-200/80 mb-6 shadow-sm"
-                >
+                <div class="bg-white/80 p-4.5 rounded-2xl border border-slate-200/80 mb-6 shadow-sm">
                   <label class="block text-xs font-bold text-blue-900 mb-1.5">
-                    <i class="fa-solid fa-magnifying-glass"></i> Cari
-                    Berdasarkan IDUpload Excel *
+                    <i class="fa-solid fa-magnifying-glass"></i> Cari Berdasarkan IDUpload Excel *
                   </label>
                   <div class="flex gap-2.5">
                     <input
@@ -938,432 +504,147 @@
                       class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white font-mono"
                       placeholder="Ketik nilai IDUpload dari file Excel..."
                     />
-                    <button
-                      type="button"
-                      onclick="
-                        lookupExcelData(
-                          document.getElementById('input-id-upload').value,
-                        )
-                      "
-                      class="px-5 py-2.5 bg-blue-600 text-white font-bold text-xs rounded-xl hover:bg-blue-700 cursor-pointer shrink-0 transition shadow-sm glow-blue"
-                    >
+                    <button type="button" onclick="lookupExcelData(document.getElementById('input-id-upload').value)" class="px-5 py-2.5 bg-blue-600 text-white font-bold text-xs rounded-xl hover:bg-blue-700 cursor-pointer shrink-0 transition shadow-sm glow-blue">
                       Cari Data
                     </button>
                   </div>
-                  <p class="text-[10px] text-slate-500 mt-1.5">
-                    *Ketikkan IDUpload. Sistem akan mengisi otomatis IDPeserta,
-                    No KTP, Pemegang Polis, NamaTtg, UP, MasaAs, TlhTtg, Premi,
-                    dan Akumulasi UP.
-                  </p>
                 </div>
 
-                <!-- FIELD PERUSAHAAN -->
                 <div id="field-perusahaan-box" class="hidden mb-6">
-                  <label class="block text-xs font-bold text-slate-700 mb-1.5"
-                    >Nama Perusahaan / Pemegang Polis Group *</label
-                  >
-                  <input
-                    type="text"
-                    id="input-perusahaan"
-                    class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                    placeholder="PT. Bank / Perusahaan Pemegang Polis Kumpulan"
-                  />
+                  <label class="block text-xs font-bold text-slate-700 mb-1.5">Nama Perusahaan / Pemegang Polis Group *</label>
+                  <input type="text" id="input-perusahaan" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="PT. Bank / Perusahaan Pemegang Polis Kumpulan" />
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5"
-                      >ID Peserta (IDPeserta) *</label
-                    >
-                    <input
-                      type="text"
-                      id="input-id-peserta"
-                      required
-                      class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono"
-                      placeholder="Masukkan ID Peserta"
-                    />
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">ID Peserta (IDPeserta) *</label>
+                    <input type="text" id="input-id-peserta" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono" placeholder="Masukkan ID Peserta" />
                   </div>
                   <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5"
-                      >Nomor KTP (No_Ktp) *</label
-                    >
-                    <input
-                      type="text"
-                      id="input-no-ktp"
-                      required
-                      class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono"
-                      placeholder="Masukkan 16 digit NIK/No KTP"
-                    />
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Nomor KTP (No_Ktp) *</label>
+                    <input type="text" id="input-no-ktp" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono" placeholder="Masukkan 16 digit NIK/No KTP" />
                   </div>
-
                   <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5"
-                      >Nama Produk Asuransi *</label
-                    >
-                    <select
-                      id="input-produk"
-                      required
-                      class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none cursor-pointer bg-white"
-                    >
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Nama Produk Asuransi *</label>
+                    <select id="input-produk" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none cursor-pointer bg-white">
                       <option value="">-- Pilih Produk Asuransi --</option>
-                      <option value="Asuransi HEKSA Jiwa Kredit">
-                        Asuransi HEKSA Jiwa Kredit
-                      </option>
-                      <option value="AJK Cicilan Bulanan">
-                        AJK Cicilan Bulanan
-                      </option>
-                      <option value="Asuransi HEKSA Ekawarsa Plus">
-                        Asuransi HEKSA Ekawarsa Plus
-                      </option>
-                      <option value="Asuransi Kecelakaan Diri Plus">
-                        Asuransi Kecelakaan Diri (Personal Accident)
-                      </option>
-                      <option value="Asuransi HEKSA Anuitas Prioritas">
-                        Asuransi HEKSA Anuitas Prioritas
-                      </option>
-                      <option value="Asuransi HEKSA Rencana">
-                        Asuransi HEKSA Rencana
-                      </option>
-                      <option value="Asuransi HEKSA Rencana Pasti">
-                        Asuransi HEKSA Rencana Pasti
-                      </option>
-                      <option value="Asuransi Jiwa HEKSA Rencana Aman">
-                        Asuransi Jiwa HEKSA Rencana Aman
-                      </option>
-                      <option value="Asuransi HEKSA Aktif Plus">
-                        Asuransi HEKSA Aktif Plus
-                      </option>
-                      <option value="Asuransi Mikro HEKSA Rencana Aman">
-                        Asuransi Mikro HEKSA Rencana Aman
-                      </option>
-                      <option value="Asuransi Mikro Perisai Diri Extra">
-                        Asuransi Mikro Perisai Diri Extra
-                      </option>
-                      <option value="Asuransi Jiwa Kredit Multiguna">
-                        Asuransi Jiwa Kredit Multiguna
-                      </option>
-                      <option value="Asuransi Jiwa Kredit Cicilan Bulanan">
-                        Asuransi Jiwa Kredit Cicilan Bulanan
-                      </option>
-                      <option value="Asuransi Kecelakaan Diri Plus Ekawarsa">
-                        Asuransi Kecelakaan Diri Plus Ekawarsa
-                      </option>
+                      <option value="Asuransi HEKSA Jiwa Kredit">Asuransi HEKSA Jiwa Kredit</option>
+                      <option value="AJK Cicilan Bulanan">AJK Cicilan Bulanan</option>
+                      <option value="Asuransi HEKSA Ekawarsa Plus">Asuransi HEKSA Ekawarsa Plus</option>
+                      <option value="Asuransi Kecelakaan Diri Plus">Asuransi Kecelakaan Diri (Personal Accident)</option>
                     </select>
                   </div>
                   <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5"
-                      >Tanggal Lahir (TlhTtg) *</label
-                    >
-                    <input
-                      type="date"
-                      id="input-tgllahir"
-                      required
-                      onchange="calculateAgeFromDOB()"
-                      class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5"
-                      >Nama Pemegang Polis (Unit Pemegang Polis) *</label
-                    >
-                    <input
-                      type="text"
-                      id="input-pemegang"
-                      required
-                      class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                      placeholder="Nama Pemegang Polis"
-                    />
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Tanggal Lahir (TlhTtg) *</label>
+                    <input type="date" id="input-tgllahir" required onchange="calculateAgeFromDOB()" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" />
                   </div>
                   <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5"
-                      >Pekerjaan / Profesi *</label
-                    >
-                    <select
-                      id="input-pekerjaan"
-                      required
-                      onchange="runAutoEvaluation()"
-                      class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none cursor-pointer bg-white"
-                    >
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Nama Pemegang Polis *</label>
+                    <input type="text" id="input-pemegang" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Nama Pemegang Polis" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Pekerjaan / Profesi *</label>
+                    <select id="input-pekerjaan" required onchange="runAutoEvaluation()" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none cursor-pointer bg-white">
                       <option value="">-- Pilih Pekerjaan --</option>
-                      <option value="PNS/Karyawan Swasta">
-                        PNS / Karyawan Swasta (Risiko Rendah)
-                      </option>
-                      <option value="Wiraswasta">
-                        Wiraswasta / Profesional (Risiko Sedang)
-                      </option>
-                      <option value="Pekerja Tambang/Offshore">
-                        Pekerja Tambang / Offshore (Risiko Tinggi)
-                      </option>
-                      <option value="TNI/Polri Aktif">
-                        TNI / Polri Aktif (Risiko Tinggi)
-                      </option>
+                      <option value="PNS/Karyawan Swasta">PNS / Karyawan Swasta (Risiko Rendah)</option>
+                      <option value="Wiraswasta">Wiraswasta / Profesional (Risiko Sedang)</option>
+                      <option value="Pekerja Tambang/Offshore">Pekerja Tambang / Offshore (Risiko Tinggi)</option>
+                      <option value="TNI/Polri Aktif">TNI / Polri Aktif (Risiko Tinggi)</option>
                     </select>
                   </div>
-
                   <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5"
-                      >Nama Tertanggung (NamaTtg) *</label
-                    >
-                    <input
-                      type="text"
-                      id="input-nama"
-                      required
-                      class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                      placeholder="Masukkan nama lengkap"
-                    />
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Nama Tertanggung (NamaTtg) *</label>
+                    <input type="text" id="input-nama" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Masukkan nama lengkap" />
                   </div>
                   <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5"
-                      >Jumlah Premi (Premi) *</label
-                    >
-                    <input
-                      type="text"
-                      id="input-premi"
-                      required
-                      oninput="
-                        this.value = formatNumberInput(this.value);
-                        calculateTotalPremi();
-                      "
-                      class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                      placeholder="Contoh: 1.500.000"
-                    />
-                  </div>
-
-                  <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5"
-                      >Usia (Tahun) *</label
-                    >
-                    <input
-                      type="number"
-                      id="input-usia"
-                      min="1"
-                      max="100"
-                      required
-                      oninput="runAutoEvaluation()"
-                      class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                      placeholder="Contoh: 35"
-                    />
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Jumlah Premi (Premi) *</label>
+                    <input type="text" id="input-premi" required oninput="this.value = formatNumberInput(this.value); calculateTotalPremi();" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Contoh: 1.500.000" />
                   </div>
                   <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5"
-                      >Ekstra Premi (IDR)</label
-                    >
-                    <input
-                      type="text"
-                      id="input-ekstra-premi"
-                      value="0"
-                      oninput="
-                        this.value = formatNumberInput(this.value);
-                        calculateTotalPremi();
-                      "
-                      class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                      placeholder="0"
-                    />
-                  </div>
-
-                  <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5"
-                      >Uang Pertanggungan (UP) *</label
-                    >
-                    <input
-                      type="text"
-                      id="input-up"
-                      required
-                      oninput="
-                        this.value = formatNumberInput(this.value);
-                        runAutoEvaluation();
-                      "
-                      class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                      placeholder="Contoh: 150.000.000"
-                    />
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Usia (Tahun) *</label>
+                    <input type="number" id="input-usia" min="1" max="100" required oninput="runAutoEvaluation()" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Contoh: 35" />
                   </div>
                   <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5"
-                      >Total Premi Yang Dibayarkan</label
-                    >
-                    <input
-                      type="text"
-                      id="input-total-premi"
-                      readonly
-                      class="w-full border border-slate-200 bg-slate-50 font-extrabold text-blue-600 rounded-xl px-3.5 py-2.5 text-sm"
-                      placeholder="0"
-                    />
-                  </div>
-
-                  <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5"
-                      >Uang Pertanggungan Total (Akumulasi No_Ktp Same) *</label
-                    >
-                    <input
-                      type="text"
-                      id="input-uptotal"
-                      required
-                      oninput="this.value = formatNumberInput(this.value)"
-                      class="w-full border border-blue-200 bg-blue-50/50 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-bold text-blue-900"
-                      placeholder="Total UP Keseluruhan"
-                    />
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Ekstra Premi (IDR)</label>
+                    <input type="text" id="input-ekstra-premi" value="0" oninput="this.value = formatNumberInput(this.value); calculateTotalPremi();" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="0" />
                   </div>
                   <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5"
-                      >Tinggi Badan (cm) *</label
-                    >
-                    <input
-                      type="number"
-                      id="input-tinggi"
-                      required
-                      oninput="calculateBMI()"
-                      class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                      placeholder="Contoh: 170"
-                    />
-                  </div>
-
-                  <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5"
-                      >Masa Asuransi (MasaAs - Bulan) *</label
-                    >
-                    <input
-                      type="number"
-                      id="input-masa"
-                      required
-                      class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                      placeholder="Contoh: 10"
-                    />
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Uang Pertanggungan (UP) *</label>
+                    <input type="text" id="input-up" required oninput="this.value = formatNumberInput(this.value); runAutoEvaluation();" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Contoh: 150.000.000" />
                   </div>
                   <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5"
-                      >Berat Badan (kg) *</label
-                    >
-                    <input
-                      type="number"
-                      id="input-berat"
-                      required
-                      oninput="calculateBMI()"
-                      class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                      placeholder="Contoh: 65"
-                    />
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Total Premi Yang Dibayarkan</label>
+                    <input type="text" id="input-total-premi" readonly class="w-full border border-slate-200 bg-slate-50 font-extrabold text-blue-600 rounded-xl px-3.5 py-2.5 text-sm" placeholder="0" />
                   </div>
-
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Uang Pertanggungan Total (Akumulasi No_Ktp Same) *</label>
+                    <input type="text" id="input-uptotal" required oninput="this.value = formatNumberInput(this.value)" class="w-full border border-blue-200 bg-blue-50/50 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-bold text-blue-900" placeholder="Total UP Keseluruhan" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Tinggi Badan (cm) *</label>
+                    <input type="number" id="input-tinggi" required oninput="calculateBMI()" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Contoh: 170" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Masa Asuransi (MasaAs - Bulan) *</label>
+                    <input type="number" id="input-masa" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Contoh: 10" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Berat Badan (kg) *</label>
+                    <input type="number" id="input-berat" required oninput="calculateBMI()" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Contoh: 65" />
+                  </div>
                   <div class="md:col-span-2">
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5"
-                      >Riwayat Medis / SPAJ *</label
-                    >
-                    <select
-                      id="input-medis"
-                      required
-                      onchange="runAutoEvaluation()"
-                      class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none cursor-pointer bg-white"
-                    >
-                      <option value="Tidak Ada">
-                        Tidak Ada Riwayat Penyakit (Clean)
-                      </option>
-                      <option value="Ringan">
-                        Riwayat Ringan (Maag, Flu Ringan, dsb)
-                      </option>
-                      <option value="Sedang">
-                        Riwayat Sedang (Hipertensi Terkontrol, dsb)
-                      </option>
-                      <option value="Berat">
-                        Riwayat Berat (Jantung, Diabetes, Stroke, dsb)
-                      </option>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Riwayat Medis / SPAJ *</label>
+                    <select id="input-medis" required onchange="runAutoEvaluation()" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none cursor-pointer bg-white">
+                      <option value="Tidak Ada">Tidak Ada Riwayat Penyakit (Clean)</option>
+                      <option value="Ringan">Riwayat Ringan (Maag, Flu Ringan, dsb)</option>
+                      <option value="Sedang">Riwayat Sedang (Hipertensi Terkontrol, dsb)</option>
+                      <option value="Berat">Riwayat Berat (Jantung, Diabetes, Stroke, dsb)</option>
                     </select>
                   </div>
                 </div>
               </div>
 
-              <!-- Section 2: Analisa Underwriting & BMI -->
-              <div
-                class="bg-white/80 p-6 rounded-2xl border border-slate-200/80 space-y-4 shadow-sm"
-              >
-                <h4
-                  class="text-xs font-bold text-blue-600 uppercase tracking-wider flex items-center gap-2"
-                >
-                  <i class="fa-solid fa-calculator"></i> 2. Analisa Underwriting
-                  & Finansial
+              <!-- Analisa Underwriting & BMI -->
+              <div class="bg-white/80 p-6 rounded-2xl border border-slate-200/80 space-y-4 shadow-sm">
+                <h4 class="text-xs font-bold text-blue-600 uppercase tracking-wider flex items-center gap-2">
+                  <i class="fa-solid fa-calculator"></i> 2. Analisa Underwriting & Finansial
                 </h4>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5"
-                      >Penghasilan / Income per Bulan (IDR) *</label
-                    >
-                    <input
-                      type="text"
-                      id="input-income"
-                      required
-                      oninput="this.value = formatNumberInput(this.value)"
-                      class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"
-                      placeholder="Contoh: 15.000.000"
-                    />
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Penghasilan / Income per Bulan (IDR) *</label>
+                    <input type="text" id="input-income" required oninput="this.value = formatNumberInput(this.value)" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white" placeholder="Contoh: 15.000.000" />
                   </div>
                   <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5"
-                      >Resiko Pekerjaan</label
-                    >
-                    <input
-                      type="text"
-                      id="input-resiko-pekerjaan"
-                      readonly
-                      class="w-full border border-slate-200 bg-slate-100 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-slate-700"
-                      placeholder="Otomatis dari Pilihan Pekerjaan"
-                    />
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Resiko Pekerjaan</label>
+                    <input type="text" id="input-resiko-pekerjaan" readonly class="w-full border border-slate-200 bg-slate-100 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-slate-700" placeholder="Otomatis dari Pilihan Pekerjaan" />
                   </div>
                 </div>
 
-                <div
-                  class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm"
-                >
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm">
                   <div>
-                    <span
-                      class="text-[11px] font-bold text-slate-400 block tracking-wider uppercase mb-1"
-                      >BMI TERTANGGUNG</span
-                    >
-                    <span
-                      id="display-bmi"
-                      class="text-xl font-extrabold text-slate-800"
-                      >--</span
-                    >
+                    <span class="text-[11px] font-bold text-slate-400 block tracking-wider uppercase mb-1">BMI TERTANGGUNG</span>
+                    <span id="display-bmi" class="text-xl font-extrabold text-slate-800">--</span>
                   </div>
                   <div>
-                    <span
-                      class="text-[11px] font-bold text-slate-400 block tracking-wider uppercase mb-1"
-                      >TOTAL PREMI</span
-                    >
-                    <span
-                      id="display-total-premi"
-                      class="text-xl font-extrabold text-blue-600"
-                      >Rp 0</span
-                    >
+                    <span class="text-[11px] font-bold text-slate-400 block tracking-wider uppercase mb-1">TOTAL PREMI</span>
+                    <span id="display-total-premi" class="text-xl font-extrabold text-blue-600">Rp 0</span>
                   </div>
                   <div>
-                    <span
-                      class="text-[11px] font-bold text-slate-400 block tracking-wider uppercase mb-1"
-                      >STATUS RESIKO</span
-                    >
-                    <span
-                      id="display-status-resiko"
-                      class="text-xl font-extrabold text-emerald-600"
-                      >--</span
-                    >
+                    <span class="text-[11px] font-bold text-slate-400 block tracking-wider uppercase mb-1">STATUS RESIKO</span>
+                    <span id="display-status-resiko" class="text-xl font-extrabold text-emerald-600">--</span>
                   </div>
                 </div>
               </div>
 
-              <!-- Section 3: Pemeriksaan Risiko & Kepatuhan -->
+              <!-- Pemeriksaan Risiko & Kepatuhan -->
               <div>
-                <h4
-                  class="text-xs font-bold text-blue-600 uppercase tracking-wider mb-4 flex items-center gap-2"
-                >
-                  <i class="fa-solid fa-shield-halved"></i> 3. Pemeriksaan
-                  Risiko & Kepatuhan
+                <h4 class="text-xs font-bold text-blue-600 uppercase tracking-wider mb-4 flex items-center gap-2">
+                  <i class="fa-solid fa-shield-halved"></i> 3. Pemeriksaan Risiko & Kepatuhan
                 </h4>
-                <div
-                  class="overflow-x-auto border border-slate-200/80 rounded-xl shadow-sm bg-white"
-                >
+                <div class="overflow-x-auto border border-slate-200/80 rounded-xl shadow-sm bg-white">
                   <table class="w-full text-left border-collapse text-xs">
                     <thead>
-                      <tr
-                        class="bg-slate-100/80 border-b border-slate-200 font-bold text-slate-700 uppercase tracking-wider text-[11px]"
-                      >
+                      <tr class="bg-slate-100/80 border-b border-slate-200 font-bold text-slate-700 uppercase tracking-wider text-[11px]">
                         <th class="p-3.5">Data Pemeriksaan</th>
                         <th class="p-3.5 text-center w-16">Ya</th>
                         <th class="p-3.5 text-center w-16">Tidak</th>
@@ -1372,391 +653,121 @@
                     </thead>
                     <tbody class="divide-y divide-slate-200/80 bg-white">
                       <tr>
-                        <td class="p-3.5 font-medium text-slate-700">
-                          Data termasuk Terduga (TPPU/Judi Online, DTTOT, TPPSPM
-                          dan/atau Tindak Pidana Lainnya)
-                        </td>
-                        <td class="p-3.5 text-center">
-                          <input
-                            type="radio"
-                            name="chk_1"
-                            value="Ya"
-                            class="cursor-pointer"
-                          />
-                        </td>
-                        <td class="p-3.5 text-center">
-                          <input
-                            type="radio"
-                            name="chk_1"
-                            value="Tidak"
-                            checked
-                            class="cursor-pointer"
-                          />
-                        </td>
-                        <td class="p-3.5">
-                          <input
-                            type="text"
-                            id="ket_1"
-                            class="w-full border border-slate-300 rounded-lg p-1.5 text-xs focus:ring-1 focus:ring-blue-500"
-                            placeholder="Keterangan..."
-                          />
-                        </td>
+                        <td class="p-3.5 font-medium text-slate-700">Data termasuk Terduga (TPPU/Judi Online, DTTOT, TPPSPM, dll)</td>
+                        <td class="p-3.5 text-center"><input type="radio" name="chk_1" value="Ya" class="cursor-pointer" /></td>
+                        <td class="p-3.5 text-center"><input type="radio" name="chk_1" value="Tidak" checked class="cursor-pointer" /></td>
+                        <td class="p-3.5"><input type="text" id="ket_1" class="w-full border border-slate-300 rounded-lg p-1.5 text-xs" placeholder="Keterangan..." /></td>
                       </tr>
                       <tr>
-                        <td class="p-3.5 font-medium text-slate-700">
-                          Nasabah atau transaksi terkait negara yang di
-                          kategorikan high risk
-                        </td>
-                        <td class="p-3.5 text-center">
-                          <input
-                            type="radio"
-                            name="chk_2"
-                            value="Ya"
-                            class="cursor-pointer"
-                          />
-                        </td>
-                        <td class="p-3.5 text-center">
-                          <input
-                            type="radio"
-                            name="chk_2"
-                            value="Tidak"
-                            checked
-                            class="cursor-pointer"
-                          />
-                        </td>
-                        <td class="p-3.5">
-                          <input
-                            type="text"
-                            id="ket_2"
-                            class="w-full border border-slate-300 rounded-lg p-1.5 text-xs focus:ring-1 focus:ring-blue-500"
-                            placeholder="Keterangan..."
-                          />
-                        </td>
+                        <td class="p-3.5 font-medium text-slate-700">Nasabah atau transaksi terkait negara yang di kategorikan high risk</td>
+                        <td class="p-3.5 text-center"><input type="radio" name="chk_2" value="Ya" class="cursor-pointer" /></td>
+                        <td class="p-3.5 text-center"><input type="radio" name="chk_2" value="Tidak" checked class="cursor-pointer" /></td>
+                        <td class="p-3.5"><input type="text" id="ket_2" class="w-full border border-slate-300 rounded-lg p-1.5 text-xs" placeholder="Keterangan..." /></td>
                       </tr>
                       <tr>
-                        <td class="p-3.5 font-medium text-slate-700">
-                          Profil nasabah termasuk PEP atau berisiko tinggi
-                        </td>
-                        <td class="p-3.5 text-center">
-                          <input
-                            type="radio"
-                            name="chk_3"
-                            value="Ya"
-                            class="cursor-pointer"
-                          />
-                        </td>
-                        <td class="p-3.5 text-center">
-                          <input
-                            type="radio"
-                            name="chk_3"
-                            value="Tidak"
-                            checked
-                            class="cursor-pointer"
-                          />
-                        </td>
-                        <td class="p-3.5">
-                          <input
-                            type="text"
-                            id="ket_3"
-                            class="w-full border border-slate-300 rounded-lg p-1.5 text-xs focus:ring-1 focus:ring-blue-500"
-                            placeholder="Keterangan..."
-                          />
-                        </td>
+                        <td class="p-3.5 font-medium text-slate-700">Profil nasabah termasuk PEP atau berisiko tinggi</td>
+                        <td class="p-3.5 text-center"><input type="radio" name="chk_3" value="Ya" class="cursor-pointer" /></td>
+                        <td class="p-3.5 text-center"><input type="radio" name="chk_3" value="Tidak" checked class="cursor-pointer" /></td>
+                        <td class="p-3.5"><input type="text" id="ket_3" class="w-full border border-slate-300 rounded-lg p-1.5 text-xs" placeholder="Keterangan..." /></td>
                       </tr>
                       <tr>
-                        <td class="p-3.5 font-medium text-slate-700">
-                          Produk asuransi yang diajukan termasuk produk berisiko
-                          tinggi
-                        </td>
-                        <td class="p-3.5 text-center">
-                          <input
-                            type="radio"
-                            name="chk_4"
-                            value="Ya"
-                            class="cursor-pointer"
-                          />
-                        </td>
-                        <td class="p-3.5 text-center">
-                          <input
-                            type="radio"
-                            name="chk_4"
-                            value="Tidak"
-                            checked
-                            class="cursor-pointer"
-                          />
-                        </td>
-                        <td class="p-3.5">
-                          <input
-                            type="text"
-                            id="ket_4"
-                            class="w-full border border-slate-300 rounded-lg p-1.5 text-xs focus:ring-1 focus:ring-blue-500"
-                            placeholder="Keterangan..."
-                          />
-                        </td>
+                        <td class="p-3.5 font-medium text-slate-700">Produk asuransi yang diajukan termasuk produk berisiko tinggi</td>
+                        <td class="p-3.5 text-center"><input type="radio" name="chk_4" value="Ya" class="cursor-pointer" /></td>
+                        <td class="p-3.5 text-center"><input type="radio" name="chk_4" value="Tidak" checked class="cursor-pointer" /></td>
+                        <td class="p-3.5"><input type="text" id="ket_4" class="w-full border border-slate-300 rounded-lg p-1.5 text-xs" placeholder="Keterangan..." /></td>
                       </tr>
                       <tr>
-                        <td class="p-3.5 font-medium text-slate-700">
-                          Transaksi tidak sesuai dengan profil, pekerjaan, atau
-                          kemampuan finansial nasabah
-                        </td>
-                        <td class="p-3.5 text-center">
-                          <input
-                            type="radio"
-                            name="chk_5"
-                            value="Ya"
-                            class="cursor-pointer"
-                          />
-                        </td>
-                        <td class="p-3.5 text-center">
-                          <input
-                            type="radio"
-                            name="chk_5"
-                            value="Tidak"
-                            checked
-                            class="cursor-pointer"
-                          />
-                        </td>
-                        <td class="p-3.5">
-                          <input
-                            type="text"
-                            id="ket_5"
-                            class="w-full border border-slate-300 rounded-lg p-1.5 text-xs focus:ring-1 focus:ring-blue-500"
-                            placeholder="Keterangan..."
-                          />
-                        </td>
+                        <td class="p-3.5 font-medium text-slate-700">Transaksi tidak sesuai dengan profil, pekerjaan, atau kemampuan finansial</td>
+                        <td class="p-3.5 text-center"><input type="radio" name="chk_5" value="Ya" class="cursor-pointer" /></td>
+                        <td class="p-3.5 text-center"><input type="radio" name="chk_5" value="Tidak" checked class="cursor-pointer" /></td>
+                        <td class="p-3.5"><input type="text" id="ket_5" class="w-full border border-slate-300 rounded-lg p-1.5 text-xs" placeholder="Keterangan..." /></td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
               </div>
 
-              <!-- Section 4: Lampiran Dokumen Persyaratan -->
+              <!-- Lampiran Dokumen Persyaratan -->
               <div>
-                <h4
-                  class="text-xs font-bold text-blue-600 uppercase tracking-wider mb-4 flex items-center gap-2"
-                >
-                  <i class="fa-solid fa-paperclip"></i> 4. Lampiran Dokumen
-                  Persyaratan
+                <h4 class="text-xs font-bold text-blue-600 uppercase tracking-wider mb-4 flex items-center gap-2">
+                  <i class="fa-solid fa-paperclip"></i> 4. Lampiran Dokumen Persyaratan
                 </h4>
-                <div
-                  class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white/80 p-6 rounded-2xl border border-slate-200/80 shadow-sm"
-                >
-                  <div
-                    class="bg-white p-4.5 rounded-xl border border-slate-200/80 shadow-sm"
-                  >
-                    <label class="block text-xs font-bold text-slate-800 mb-1">
-                      1. Kartu Tanda Penduduk (KTP)
-                      <span class="text-rose-500">*</span>
-                    </label>
-                    <p class="text-[11px] text-slate-500 mb-2.5">
-                      Format PDF / JPG / PNG (Maksimal 1.5MB)
-                    </p>
-                    <input
-                      type="file"
-                      id="attach-ktp"
-                      accept=".pdf,.jpg,.jpeg,.png"
-                      onchange="handleFileChange(this, 'ktp-info')"
-                      class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer transition"
-                    />
-                    <div
-                      id="ktp-info"
-                      class="mt-2 text-xs text-emerald-600 font-bold hidden flex items-center justify-between"
-                    >
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white/80 p-6 rounded-2xl border border-slate-200/80 shadow-sm">
+                  <div class="bg-white p-4.5 rounded-xl border border-slate-200/80 shadow-sm">
+                    <label class="block text-xs font-bold text-slate-800 mb-1">1. Kartu Tanda Penduduk (KTP) <span class="text-rose-500">*</span></label>
+                    <p class="text-[11px] text-slate-500 mb-2.5">Format PDF / JPG / PNG (Maksimal 1.5MB)</p>
+                    <input type="file" id="attach-ktp" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileChange(this, 'ktp-info')" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer transition" />
+                    <div id="ktp-info" class="mt-2 text-xs text-emerald-600 font-bold hidden flex items-center justify-between">
                       <span class="file-name truncate max-w-[200px]"></span>
-                      <button
-                        type="button"
-                        onclick="clearFile('attach-ktp', 'ktp-info')"
-                        class="text-rose-500 hover:underline text-[11px] font-bold cursor-pointer"
-                      >
-                        Hapus
-                      </button>
+                      <button type="button" onclick="clearFile('attach-ktp', 'ktp-info')" class="text-rose-500 hover:underline text-[11px] font-bold cursor-pointer">Hapus</button>
                     </div>
                   </div>
 
-                  <div
-                    class="bg-white p-4.5 rounded-xl border border-slate-200/80 shadow-sm"
-                  >
-                    <label class="block text-xs font-bold text-slate-800 mb-1">
-                      2. SPAJK / Deklarasi Kesehatan
-                      <span class="text-rose-500">*</span>
-                    </label>
-                    <p class="text-[11px] text-slate-500 mb-2.5">
-                      Tandatangan lengkap (Format PDF / JPG / PNG - Maksimal
-                      1.5MB)
-                    </p>
-                    <input
-                      type="file"
-                      id="attach-spajk"
-                      accept=".pdf,.jpg,.jpeg,.png"
-                      onchange="handleFileChange(this, 'spajk-info')"
-                      class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer transition"
-                    />
-                    <div
-                      id="spajk-info"
-                      class="mt-2 text-xs text-emerald-600 font-bold hidden flex items-center justify-between"
-                    >
+                  <div class="bg-white p-4.5 rounded-xl border border-slate-200/80 shadow-sm">
+                    <label class="block text-xs font-bold text-slate-800 mb-1">2. SPAJK / Deklarasi Kesehatan <span class="text-rose-500">*</span></label>
+                    <p class="text-[11px] text-slate-500 mb-2.5">Tandatangan lengkap (PDF / JPG / PNG - Max 1.5MB)</p>
+                    <input type="file" id="attach-spajk" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileChange(this, 'spajk-info')" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer transition" />
+                    <div id="spajk-info" class="mt-2 text-xs text-emerald-600 font-bold hidden flex items-center justify-between">
                       <span class="file-name truncate max-w-[200px]"></span>
-                      <button
-                        type="button"
-                        onclick="clearFile('attach-spajk', 'spajk-info')"
-                        class="text-rose-500 hover:underline text-[11px] font-bold cursor-pointer"
-                      >
-                        Hapus
-                      </button>
+                      <button type="button" onclick="clearFile('attach-spajk', 'spajk-info')" class="text-rose-500 hover:underline text-[11px] font-bold cursor-pointer">Hapus</button>
                     </div>
                   </div>
 
-                  <div
-                    class="bg-white p-4.5 rounded-xl border border-slate-200/80 shadow-sm"
-                  >
-                    <label class="block text-xs font-bold text-slate-800 mb-1">
-                      3. RIPLAY Personal / Ringkasan Sertifikat
-                      <span class="text-rose-500">*</span>
-                    </label>
-                    <p class="text-[11px] text-slate-500 mb-2.5">
-                      Ringkasan Informasi Produk (PDF / JPG / PNG - Maksimal
-                      1.5MB)
-                    </p>
-                    <input
-                      type="file"
-                      id="attach-riplay"
-                      accept=".pdf,.jpg,.jpeg,.png"
-                      onchange="handleFileChange(this, 'riplay-info')"
-                      class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer transition"
-                    />
-                    <div
-                      id="riplay-info"
-                      class="mt-2 text-xs text-emerald-600 font-bold hidden flex items-center justify-between"
-                    >
+                  <div class="bg-white p-4.5 rounded-xl border border-slate-200/80 shadow-sm">
+                    <label class="block text-xs font-bold text-slate-800 mb-1">3. RIPLAY Personal / Ringkasan Sertifikat <span class="text-rose-500">*</span></label>
+                    <p class="text-[11px] text-slate-500 mb-2.5">Ringkasan Informasi Produk (PDF / JPG / PNG - Max 1.5MB)</p>
+                    <input type="file" id="attach-riplay" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileChange(this, 'riplay-info')" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer transition" />
+                    <div id="riplay-info" class="mt-2 text-xs text-emerald-600 font-bold hidden flex items-center justify-between">
                       <span class="file-name truncate max-w-[200px]"></span>
-                      <button
-                        type="button"
-                        onclick="clearFile('attach-riplay', 'riplay-info')"
-                        class="text-rose-500 hover:underline text-[11px] font-bold cursor-pointer"
-                      >
-                        Hapus
-                      </button>
+                      <button type="button" onclick="clearFile('attach-riplay', 'riplay-info')" class="text-rose-500 hover:underline text-[11px] font-bold cursor-pointer">Hapus</button>
                     </div>
                   </div>
 
-                  <div
-                    class="bg-white p-4.5 rounded-xl border border-slate-200/80 shadow-sm"
-                  >
-                    <label class="block text-xs font-bold text-slate-800 mb-1">
-                      4. Dokumen Lainnya / Data Kumpulan
-                      <span class="text-slate-400 font-normal">(Opsional)</span>
-                    </label>
-                    <p class="text-[11px] text-slate-500 mb-2.5">
-                      Hasil Lab / MCU / Excel List (PDF / ZIP / XLSX - Maksimal
-                      1.5MB)
-                    </p>
-                    <input
-                      type="file"
-                      id="attach-other"
-                      accept=".pdf,.jpg,.jpeg,.png,.zip,.xlsx,.csv"
-                      onchange="handleFileChange(this, 'other-info')"
-                      class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer transition"
-                    />
-                    <div
-                      id="other-info"
-                      class="mt-2 text-xs text-emerald-600 font-bold hidden flex items-center justify-between"
-                    >
+                  <div class="bg-white p-4.5 rounded-xl border border-slate-200/80 shadow-sm">
+                    <label class="block text-xs font-bold text-slate-800 mb-1">4. Dokumen Lainnya / Data Kumpulan <span class="text-slate-400 font-normal">(Opsional)</span></label>
+                    <p class="text-[11px] text-slate-500 mb-2.5">Hasil Lab / MCU / Excel List (PDF / ZIP / XLSX - Max 1.5MB)</p>
+                    <input type="file" id="attach-other" accept=".pdf,.jpg,.jpeg,.png,.zip,.xlsx,.csv" onchange="handleFileChange(this, 'other-info')" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer transition" />
+                    <div id="other-info" class="mt-2 text-xs text-emerald-600 font-bold hidden flex items-center justify-between">
                       <span class="file-name truncate max-w-[200px]"></span>
-                      <button
-                        type="button"
-                        onclick="clearFile('attach-other', 'other-info')"
-                        class="text-rose-500 hover:underline text-[11px] font-bold cursor-pointer"
-                      >
-                        Hapus
-                      </button>
+                      <button type="button" onclick="clearFile('attach-other', 'other-info')" class="text-rose-500 hover:underline text-[11px] font-bold cursor-pointer">Hapus</button>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <!-- Section 5: Result Auto-Evaluation -->
-              <div
-                class="bg-white/80 border border-slate-200/80 rounded-2xl p-6 space-y-3 shadow-sm"
-              >
-                <h4
-                  class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2"
-                >
-                  <i class="fa-solid fa-microchip text-blue-600"></i> 5.
-                  Evaluasi Kriteria & Skor Risiko Otomatis
+              <!-- Evaluasi Risiko & Skor Otomatis -->
+              <div class="bg-white/80 border border-slate-200/80 rounded-2xl p-6 space-y-3 shadow-sm">
+                <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                  <i class="fa-solid fa-microchip text-blue-600"></i> 5. Evaluasi Kriteria & Skor Risiko Otomatis
                 </h4>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div
-                    class="bg-white p-4.5 rounded-xl border border-slate-200/80 shadow-sm"
-                  >
-                    <span
-                      class="text-[11px] text-slate-400 font-bold block uppercase tracking-wider mb-1"
-                      >Kategori Risiko</span
-                    >
-                    <span
-                      id="auto-risk-category"
-                      class="font-bold text-slate-800 text-sm"
-                      >-</span
-                    >
+                  <div class="bg-white p-4.5 rounded-xl border border-slate-200/80 shadow-sm">
+                    <span class="text-[11px] text-slate-400 font-bold block uppercase tracking-wider mb-1">Kategori Risiko</span>
+                    <span id="auto-risk-category" class="font-bold text-slate-800 text-sm">-</span>
                   </div>
-                  <div
-                    class="bg-white p-4.5 rounded-xl border border-slate-200/80 shadow-sm"
-                  >
-                    <span
-                      class="text-[11px] text-slate-400 font-bold block uppercase tracking-wider mb-1"
-                      >Rekomendasi System</span
-                    >
-                    <span
-                      id="auto-decision"
-                      class="font-bold text-slate-800 text-sm"
-                      >-</span
-                    >
+                  <div class="bg-white p-4.5 rounded-xl border border-slate-200/80 shadow-sm">
+                    <span class="text-[11px] text-slate-400 font-bold block uppercase tracking-wider mb-1">Rekomendasi System</span>
+                    <span id="auto-decision" class="font-bold text-slate-800 text-sm">-</span>
                   </div>
-                  <div
-                    class="bg-white p-4.5 rounded-xl border border-slate-200/80 shadow-sm"
-                  >
-                    <span
-                      class="text-[11px] text-slate-400 font-bold block uppercase tracking-wider mb-1"
-                      >Target Approval Akhir (UP Limit)</span
-                    >
-                    <span
-                      id="auto-authority"
-                      class="font-bold text-slate-800 text-sm"
-                      >-</span
-                    >
+                  <div class="bg-white p-4.5 rounded-xl border border-slate-200/80 shadow-sm">
+                    <span class="text-[11px] text-slate-400 font-bold block uppercase tracking-wider mb-1">Target Approval Akhir (UP Limit)</span>
+                    <span id="auto-authority" class="font-bold text-slate-800 text-sm">-</span>
                   </div>
                 </div>
               </div>
 
-              <!-- Section 6: Catatan Underwriter -->
+              <!-- Catatan Underwriter -->
               <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1.5"
-                  >Catatan / Justifikasi Underwriter</label
-                >
-                <textarea
-                  id="input-catatan"
-                  rows="3"
-                  class="w-full border border-slate-300 rounded-xl p-3.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"
-                  placeholder="Tambahkan catatan khusus analisis risiko atau kondisi medis pendukung..."
-                ></textarea>
+                <label class="block text-xs font-bold text-slate-700 mb-1.5">Catatan / Justifikasi Underwriter</label>
+                <textarea id="input-catatan" rows="3" class="w-full border border-slate-300 rounded-xl p-3.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white" placeholder="Tambahkan catatan khusus analisis risiko atau kondisi medis pendukung..."></textarea>
               </div>
 
-              <!-- Submit Buttons -->
-              <div
-                class="flex justify-end gap-3 pt-4 border-t border-slate-200"
-              >
-                <button
-                  type="button"
-                  onclick="resetForm()"
-                  class="px-5 py-2.5 text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition cursor-pointer"
-                >
+              <div class="flex justify-end gap-3 pt-4 border-t border-slate-200">
+                <button type="button" onclick="resetForm()" class="px-5 py-2.5 text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition cursor-pointer">
                   Reset Form
                 </button>
-                <button
-                  type="submit"
-                  class="px-6 py-2.5 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-lg shadow-blue-600/30 transition flex items-center gap-2 cursor-pointer glow-blue"
-                >
-                  <i class="fa-solid fa-paper-plane"></i> Simpan & Submit Kertas
-                  Kerja
+                <button type="submit" class="px-6 py-2.5 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-lg shadow-blue-600/30 transition flex items-center gap-2 cursor-pointer glow-blue">
+                  <i class="fa-solid fa-paper-plane"></i> Simpan & Submit Kertas Kerja
                 </button>
               </div>
             </form>
@@ -1765,30 +776,22 @@
           <!-- 3. REPOSITORY TRANSAKSI -->
           <div id="tab-repository" class="tab-anim hidden space-y-6">
             <div class="glossy-card rounded-2xl overflow-hidden">
-              <div
-                class="p-6 border-b border-slate-200/80 flex flex-col md:flex-row md:items-center justify-between gap-4"
-              >
+              <div class="p-6 border-b border-slate-200/80 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                  <h3 class="text-lg font-bold text-slate-800">
-                    Repository Kertas Kerja Underwriting
-                  </h3>
-                  <p class="text-xs text-slate-500">
-                    Daftar seluruh transaksi pengajuan, segmen bisnis, kanal
-                    proses, dan status approval bertingkat.
-                  </p>
+                  <h3 class="text-lg font-bold text-slate-800">Repository Kertas Kerja Underwriting</h3>
+                  <p class="text-xs text-slate-500">Daftar seluruh transaksi pengajuan, segmen bisnis, kanal proses, dan status approval bertingkat.</p>
                 </div>
-                <div class="flex items-center gap-3">
-                  <input
-                    type="text"
-                    id="search-repo"
-                    onkeyup="filterRepository()"
-                    placeholder="Cari ID / Nama / Channel / IDUpload... (Ctrl+K)"
-                    class="border border-slate-300 text-xs rounded-xl px-3.5 py-2.5 w-full md:w-64 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white font-medium"
-                  />
-                  <button
-                    onclick="exportRepositoryToExcel()"
-                    class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-md shadow-emerald-600/20 cursor-pointer shrink-0 glow-emerald"
-                  >
+                <div class="flex flex-wrap items-center gap-3">
+                  <!-- FILTER BERDASARKAN TANGGAL -->
+                  <div class="flex items-center gap-2 bg-white border border-slate-300 rounded-xl px-3 py-1.5 shadow-sm text-xs">
+                    <span class="text-slate-400 font-semibold"><i class="fa-solid fa-filter"></i> Periode:</span>
+                    <input type="date" id="filter-date-start" onchange="filterRepository()" class="focus:outline-none text-slate-700 font-medium" />
+                    <span class="text-slate-400">-</span>
+                    <input type="date" id="filter-date-end" onchange="filterRepository()" class="focus:outline-none text-slate-700 font-medium" />
+                    <button type="button" onclick="resetDateFilter()" class="text-rose-500 hover:underline font-bold ml-1">Reset</button>
+                  </div>
+                  <input type="text" id="search-repo" onkeyup="filterRepository()" placeholder="Cari ID / Nama / Channel... (Ctrl+K)" class="border border-slate-300 text-xs rounded-xl px-3.5 py-2.5 w-full md:w-56 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white font-medium" />
+                  <button onclick="exportRepositoryToExcel()" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-md shadow-emerald-600/20 cursor-pointer shrink-0 glow-emerald">
                     <i class="fa-solid fa-file-excel"></i> Export Excel
                   </button>
                 </div>
@@ -1796,18 +799,9 @@
               <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                   <thead>
-                    <tr
-                      class="bg-slate-100/80 text-slate-500 uppercase text-[11px] font-bold tracking-wider border-b border-slate-200"
-                    >
-                      <th class="p-4 w-10 text-center">
-                        <input
-                          type="checkbox"
-                          id="select-all-repo"
-                          onchange="toggleSelectAll(this)"
-                          class="rounded cursor-pointer"
-                        />
-                      </th>
-                      <th class="p-4">ID Transaksi & Upload</th>
+                    <tr class="bg-slate-100/80 text-slate-500 uppercase text-[11px] font-bold tracking-wider border-b border-slate-200">
+                      <th class="p-4 w-10 text-center"><input type="checkbox" id="select-all-repo" onchange="toggleSelectAll(this)" class="rounded cursor-pointer" /></th>
+                      <th class="p-4">ID Transaksi & Tanggal</th>
                       <th class="p-4">Channel / Segmen</th>
                       <th class="p-4">Nama Tertanggung & IDPeserta</th>
                       <th class="p-4">UP & Premi</th>
@@ -1817,12 +811,7 @@
                       <th class="p-4 text-center">Aksi</th>
                     </tr>
                   </thead>
-                  <tbody
-                    id="repo-table-body"
-                    class="divide-y divide-slate-200/80 text-sm bg-white/60"
-                  >
-                    <!-- Injected via JS -->
-                  </tbody>
+                  <tbody id="repo-table-body" class="divide-y divide-slate-200/80 text-sm bg-white/60"></tbody>
                 </table>
               </div>
             </div>
@@ -1832,93 +821,42 @@
     </div>
 
     <!-- FLOATING BULK ACTION BAR -->
-    <div
-      id="bulk-action-bar"
-      class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/90 backdrop-blur-md text-white px-6 py-3.5 rounded-2xl shadow-2xl border border-blue-500/30 flex items-center gap-6 hidden z-40"
-    >
+    <div id="bulk-action-bar" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/90 backdrop-blur-md text-white px-6 py-3.5 rounded-2xl shadow-2xl border border-blue-500/30 flex items-center gap-6 hidden z-40">
       <div class="text-xs font-semibold">
-        <span id="selected-count" class="font-bold text-blue-400">0</span>
-        Transaksi Dipilih
+        <span id="selected-count" class="font-bold text-blue-400">0</span> Transaksi Dipilih
       </div>
-
-      <input
-        type="text"
-        id="bulk-note-input"
-        placeholder="Catatan approval massal..."
-        class="bg-slate-800 border border-slate-700 text-xs px-3 py-1.5 rounded-xl text-white focus:outline-none focus:ring-1 focus:ring-blue-500 w-48"
-      />
-
+      <input type="text" id="bulk-note-input" placeholder="Catatan approval massal..." class="bg-slate-800 border border-slate-700 text-xs px-3 py-1.5 rounded-xl text-white focus:outline-none focus:ring-1 focus:ring-blue-500 w-48" />
       <div class="flex items-center gap-2">
-        <button
-          onclick="handleBulkApproval('REJECTED')"
-          class="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition cursor-pointer shadow"
-        >
-          <i class="fa-solid fa-xmark"></i> Tolak Semua
-        </button>
-        <button
-          onclick="handleBulkApproval('APPROVED')"
-          class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition cursor-pointer shadow glow-emerald"
-        >
-          <i class="fa-solid fa-check"></i> Setujui Semua
-        </button>
+        <button onclick="handleBulkApproval('REJECTED')" class="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition cursor-pointer shadow">Tolak Semua</button>
+        <button onclick="handleBulkApproval('APPROVED')" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition cursor-pointer shadow glow-emerald">Setujui Semua</button>
       </div>
     </div>
 
     <!-- MODAL DETAIL TRANSAKSI -->
-    <div
-      id="modal-detail"
-      class="fixed inset-0 bg-slate-900/80 backdrop-blur-md flex items-center justify-center hidden z-50 p-4"
-    >
-      <div
-        class="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden"
-      >
-        <div
-          class="p-5 bg-[#0a1128] text-white flex justify-between items-center no-print border-b border-blue-500/20"
-        >
+    <div id="modal-detail" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md flex items-center justify-center hidden z-50 p-4">
+      <div class="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+        <div class="p-5 bg-[#0a1128] text-white flex justify-between items-center no-print border-b border-blue-500/20">
           <div>
-            <h3 class="font-bold text-base" id="modal-title">
-              Detail Kertas Kerja - UW-XXXX
-            </h3>
-            <p class="text-xs text-blue-200/70">
-              Rincian Transaksi & Persetujuan Workflow
-            </p>
+            <h3 class="font-bold text-base" id="modal-title">Detail Kertas Kerja - UW-XXXX</h3>
+            <p class="text-xs text-blue-200/70">Rincian Transaksi & Persetujuan Workflow</p>
           </div>
-          <button
-            onclick="closeModal('modal-detail')"
-            class="text-slate-400 hover:text-white text-2xl cursor-pointer"
-          >
-            &times;
-          </button>
+          <button onclick="closeModal('modal-detail')" class="text-slate-400 hover:text-white text-2xl cursor-pointer">&times;</button>
         </div>
 
-        <div
-          class="p-6 overflow-y-auto space-y-6 flex-1"
-          id="modal-printable-content"
-        >
+        <div class="p-6 overflow-y-auto space-y-6 flex-1" id="modal-printable-content">
           <!-- FORMAT CETAK PDF -->
           <div class="pdf-template">
             <div class="text-center mb-2">
-              <h2
-                class="text-base font-bold uppercase tracking-wider"
-                style="margin: 0"
-              >
-                KERTAS KERJA UNDERWRITING
-              </h2>
-              <p class="text-[9px] italic" style="margin: 2px 0 0 0">
-                Form pemeriksaan, analisa risiko, dan keputusan underwriting
-              </p>
+              <h2 class="text-base font-bold uppercase tracking-wider" style="margin: 0">KERTAS KERJA UNDERWRITING</h2>
+              <p class="text-[9px] italic" style="margin: 2px 0 0 0">Form pemeriksaan, analisa risiko, dan keputusan underwriting</p>
             </div>
 
             <table>
               <tr class="bg-slate-100">
                 <td width="22%"><strong>Segmen Kepesertaan</strong></td>
-                <td width="28%">
-                  : <span id="m-segmen" class="font-bold"></span>
-                </td>
+                <td width="28%">: <span id="m-segmen" class="font-bold"></span></td>
                 <td width="22%"><strong>Jalur Processes</strong></td>
-                <td width="28%">
-                  : <span id="m-channel" class="font-bold text-blue-700"></span>
-                </td>
+                <td width="28%">: <span id="m-channel" class="font-bold text-blue-700"></span></td>
               </tr>
               <tr class="bg-slate-100">
                 <td><strong>Kategori Produk</strong></td>
@@ -1933,13 +871,9 @@
               </tr>
               <tr>
                 <td width="22%"><strong>ID Peserta</strong></td>
-                <td width="28%">
-                  : <span id="m-id-peserta" class="font-mono"></span>
-                </td>
+                <td width="28%">: <span id="m-id-peserta" class="font-mono"></span></td>
                 <td width="22%"><strong>Nomor KTP (No_Ktp)</strong></td>
-                <td width="28%">
-                  : <span id="m-no-ktp" class="font-mono"></span>
-                </td>
+                <td width="28%">: <span id="m-no-ktp" class="font-mono"></span></td>
               </tr>
               <tr>
                 <td><strong>Nama Produk Asuransi</strong></td>
@@ -2028,22 +962,13 @@
                   <th width="32%">Keterangan</th>
                 </tr>
               </thead>
-              <tbody id="m-kepatuhan-rows">
-                <!-- Injected via JS -->
-              </tbody>
+              <tbody id="m-kepatuhan-rows"></tbody>
             </table>
 
             <div class="section-header">CATATAN & JUSTIFIKASI UNDERWRITER</div>
-            <div
-              class="border border-black font-mono text-[8.5px] bg-gray-50"
-              id="m-pdf-catatan"
-            >
-              -
-            </div>
+            <div class="border border-black font-mono text-[8.5px] bg-gray-50" id="m-pdf-catatan">-</div>
 
-            <div class="section-header">
-              RIWAYAT APPROVAL & ESKALASI WORKFLOW
-            </div>
+            <div class="section-header">RIWAYAT APPROVAL & ESKALASI WORKFLOW</div>
             <table>
               <thead>
                 <tr class="bg-gray-100">
@@ -2053,125 +978,50 @@
                   <th width="28%">Catatan Pertimbangan</th>
                 </tr>
               </thead>
-              <tbody id="m-pdf-approval-rows">
-                <!-- Injected via JS -->
-              </tbody>
+              <tbody id="m-pdf-approval-rows"></tbody>
             </table>
           </div>
 
-          <!-- LIST DOKUMEN LAMPIRAN -->
           <div class="space-y-4 pt-4 border-t border-slate-200 no-print">
             <div>
-              <h4
-                class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2"
-              >
-                Pemeriksaan Lampiran Dokumen:
-              </h4>
-              <div
-                id="m-files-list"
-                class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs"
-              >
-                <!-- Injected via JS -->
-              </div>
+              <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Pemeriksaan Lampiran Dokumen:</h4>
+              <div id="m-files-list" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs"></div>
             </div>
           </div>
 
-          <!-- INPUT FORM KEPUTUSAN APPROVAL -->
-          <div
-            id="workflow-action-box"
-            class="bg-slate-100/80 p-4.5 rounded-2xl border border-slate-200 space-y-3 no-print"
-          >
-            <h4
-              class="text-xs font-bold text-slate-700 uppercase tracking-wider"
-            >
-              Keputusan Approval
-            </h4>
-            <textarea
-              id="input-approval-catatan"
-              rows="2"
-              class="w-full border border-slate-300 rounded-xl p-3 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              placeholder="Tuliskan alasan / rekomendasi persetujuan..."
-            ></textarea>
+          <div id="workflow-action-box" class="bg-slate-100/80 p-4.5 rounded-2xl border border-slate-200 space-y-3 no-print">
+            <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Keputusan Approval</h4>
+            <textarea id="input-approval-catatan" rows="2" class="w-full border border-slate-300 rounded-xl p-3 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Tuliskan alasan / rekomendasi persetujuan..."></textarea>
             <div class="flex gap-2 justify-end">
-              <button
-                onclick="submitApproval('REJECTED')"
-                class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold cursor-pointer transition shadow-md shadow-rose-600/20"
-              >
-                Tolak (Reject)
-              </button>
-              <button
-                onclick="submitApproval('APPROVED')"
-                class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold cursor-pointer transition shadow-md shadow-emerald-600/20 glow-emerald"
-              >
-                Setujui & Diteruskan
-              </button>
+              <button onclick="submitApproval('REJECTED')" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold cursor-pointer transition shadow-md shadow-rose-600/20">Tolak (Reject)</button>
+              <button onclick="submitApproval('APPROVED')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold cursor-pointer transition shadow-md shadow-emerald-600/20 glow-emerald">Setujui & Diteruskan</button>
             </div>
           </div>
         </div>
 
-        <div
-          class="p-4 border-t border-slate-200 bg-slate-50 flex justify-between items-center no-print"
-        >
-          <button
-            onclick="downloadPDF()"
-            class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl flex items-center gap-2 cursor-pointer shadow-md"
-          >
+        <div class="p-4 border-t border-slate-200 bg-slate-50 flex justify-between items-center no-print">
+          <button onclick="downloadPDF()" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl flex items-center gap-2 cursor-pointer shadow-md">
             <i class="fa-solid fa-file-pdf"></i> Download PDF Kertas Kerja
           </button>
-          <button
-            onclick="closeModal('modal-detail')"
-            class="px-4 py-2 bg-slate-200 text-slate-700 hover:bg-slate-300 text-xs font-bold rounded-xl cursor-pointer transition"
-          >
-            Tutup
-          </button>
+          <button onclick="closeModal('modal-detail')" class="px-4 py-2 bg-slate-200 text-slate-700 hover:bg-slate-300 text-xs font-bold rounded-xl cursor-pointer transition">Tutup</button>
         </div>
       </div>
     </div>
 
-    <!-- MODAL PREVIEW FILE LAMPIRAN -->
-    <div
-      id="modal-preview-file"
-      class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4"
-    >
-      <div
-        class="bg-white rounded-3xl max-w-4xl w-full h-[85vh] flex flex-col shadow-2xl overflow-hidden"
-      >
-        <div
-          class="p-4 bg-slate-900 text-white flex justify-between items-center"
-        >
+    <!-- MODAL PREVIEW FILE -->
+    <div id="modal-preview-file" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
+      <div class="bg-white rounded-3xl max-w-4xl w-full h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+        <div class="p-4 bg-slate-900 text-white flex justify-between items-center">
           <div>
-            <h3 class="font-bold text-sm" id="preview-file-title">
-              Preview Dokumen
-            </h3>
-            <span class="text-[11px] text-slate-400" id="preview-file-sub"
-              >--</span
-            >
+            <h3 class="font-bold text-sm" id="preview-file-title">Preview Dokumen</h3>
+            <span class="text-[11px] text-slate-400" id="preview-file-sub">--</span>
           </div>
-          <button
-            onclick="closeModal('modal-preview-file')"
-            class="text-slate-400 hover:text-white text-2xl cursor-pointer"
-          >
-            &times;
-          </button>
+          <button onclick="closeModal('modal-preview-file')" class="text-slate-400 hover:text-white text-2xl cursor-pointer">&times;</button>
         </div>
-        <div
-          class="flex-1 bg-slate-800 p-4 flex items-center justify-center overflow-auto"
-          id="preview-file-body"
-        >
-          <!-- Injected dynamically -->
-        </div>
-        <div
-          class="p-3 bg-slate-100 border-t border-slate-200 flex justify-between items-center text-xs"
-        >
-          <span class="text-slate-500 italic"
-            >Gunakan tombol unduh jika pratinjau browser dibatasi</span
-          >
-          <a
-            id="preview-download-btn"
-            href="#"
-            download
-            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow flex items-center gap-1.5 cursor-pointer"
-          >
+        <div class="flex-1 bg-slate-800 p-4 flex items-center justify-center overflow-auto" id="preview-file-body"></div>
+        <div class="p-3 bg-slate-100 border-t border-slate-200 flex justify-between items-center text-xs">
+          <span class="text-slate-500 italic">Gunakan tombol unduh jika pratinjau browser dibatasi</span>
+          <a id="preview-download-btn" href="#" download class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow flex items-center gap-1.5 cursor-pointer">
             <i class="fa-solid fa-download"></i> Unduh File Ini
           </a>
         </div>
@@ -2179,78 +1029,50 @@
     </div>
 
     <!-- MODAL UBAH PASSWORD -->
-    <div
-      id="modal-password"
-      class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4"
-    >
-      <div
-        class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4"
-      >
-        <div
-          class="flex justify-between items-center border-b border-slate-200 pb-3"
-        >
+    <div id="modal-password" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
+      <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
+        <div class="flex justify-between items-center border-b border-slate-200 pb-3">
           <h3 class="font-bold text-slate-800 text-sm">Ubah Password Akun</h3>
-          <button
-            onclick="closeModal('modal-password')"
-            class="text-slate-400 hover:text-slate-600 cursor-pointer"
-          >
-            &times;
-          </button>
+          <button onclick="closeModal('modal-password')" class="text-slate-400 hover:text-slate-600 cursor-pointer">&times;</button>
         </div>
         <form onsubmit="handleChangePassword(event)" class="space-y-3">
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1"
-              >Password Baru</label
-            >
-            <input
-              type="password"
-              id="new-password"
-              required
-              class="w-full border border-slate-300 rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            />
+            <label class="block text-xs font-bold text-slate-700 mb-1">Password Baru</label>
+            <input type="password" id="new-password" required class="w-full border border-slate-300 rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none" />
           </div>
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1"
-              >Konfirmasi Password Baru</label
-            >
-            <input
-              type="password"
-              id="confirm-password"
-              required
-              class="w-full border border-slate-300 rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            />
+            <label class="block text-xs font-bold text-slate-700 mb-1">Konfirmasi Password Baru</label>
+            <input type="password" id="confirm-password" required class="w-full border border-slate-300 rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none" />
           </div>
           <div class="flex justify-end gap-2 pt-2">
-            <button
-              type="button"
-              onclick="closeModal('modal-password')"
-              class="px-3.5 py-2 text-xs font-semibold bg-slate-100 text-slate-600 rounded-xl cursor-pointer"
-            >
-              Batal
-            </button>
-            <button
-              type="submit"
-              class="px-4 py-2 text-xs bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 cursor-pointer shadow-md"
-            >
-              Simpan Password
-            </button>
+            <button type="button" onclick="closeModal('modal-password')" class="px-3.5 py-2 text-xs font-semibold bg-slate-100 text-slate-600 rounded-xl cursor-pointer">Batal</button>
+            <button type="submit" class="px-4 py-2 text-xs bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 cursor-pointer shadow-md">Simpan Password</button>
           </div>
         </form>
       </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC ENGINE DENGAN SUPABASE -->
-    <script>
-      // --- KONFIGURASI SUPABASE ---
-      const SUPABASE_URL = "https://ubahduvkhlfzvghrapwn.supabase.co";
-      const SUPABASE_ANON_KEY =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InViYWhkdXZraGxmenZnaHJhcHduIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5MzIzMTIsImV4cCI6MjEwMTUwODMxMn0.cDy4TexuHVG6e81U8vYRxiWB0zIDXMTQnOmr7Uo3SBM";
+    <!-- TOAST NOTIFIKASI EMAIL SIMULATOR -->
+    <div id="email-toast" class="fixed top-6 right-6 bg-slate-900 text-white border border-blue-500/40 p-4 rounded-2xl shadow-2xl z-50 hidden transition-all duration-300 max-w-sm">
+      <div class="flex items-start gap-3">
+        <div class="p-2 bg-blue-600 text-white rounded-xl">
+          <i class="fa-solid fa-envelope-circle-check text-base"></i>
+        </div>
+        <div>
+          <h5 id="toast-title" class="text-xs font-bold text-blue-300 uppercase">Notifikasi Email Terkirim</h5>
+          <p id="toast-msg" class="text-[11px] text-slate-300 mt-1 leading-relaxed">Simulasi email terkirim ke approver terkait.</p>
+        </div>
+      </div>
+    </div>
 
-      // Inisialisasi Supabase Client
+    <!-- JAVASCRIPT LOGIC ENGINE -->
+    <script>
+      const SUPABASE_URL = "https://ubahduvkhlfzvghrapwn.supabase.co";
+      const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InViYWhkdXZraGxmenZnaHJhcHduIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5MzIzMTIsImV4cCI6MjEwMTUwODMxMn0.cDy4TexuHVG6e81U8vYRxiWB0zIDXMTQnOmr7Uo3SBM";
+
       const { createClient } = supabase;
       const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      // 1. AUTO LOGOUT SETELAH 5 MENIT IDLE
       const IDLE_TIMEOUT_MS = 5 * 60 * 1000;
       let idleTimer;
 
@@ -2260,9 +1082,7 @@
       }
 
       function autoLogout() {
-        alert(
-          "Sesi Anda telah berakhir karena tidak ada aktivitas selama 5 menit.",
-        );
+        alert("Sesi Anda telah berakhir karena tidak ada aktivitas selama 5 menit.");
         localStorage.removeItem("isLoggedIn");
         localStorage.removeItem("username");
         localStorage.removeItem("fullName");
@@ -2278,7 +1098,6 @@
       document.onscroll = resetIdleTimer;
       document.ontouchstart = resetIdleTimer;
 
-      // SHORTCUT KEYBOARD: CTRL + K (Quick Search)
       document.addEventListener("keydown", function (e) {
         if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
           e.preventDefault();
@@ -2294,26 +1113,25 @@
         }, 100);
       }
 
-      // 2. STATE & CONFIG
       const MAX_FILE_SIZE_MB = 1.5;
-
       const roleLevelNames = {
         1: "Underwriter / Checker",
         2: "Supervisor",
         3: "Kepala Departemen",
         4: "Kepala Divisi",
-        5: "Direktur Operasional",
+        5: "Direktur Operasional"
       };
 
       const currentFullName = localStorage.getItem("fullName") || "Pengguna UW";
       const maxUserLevel = parseInt(localStorage.getItem("userRoleLevel")) || 1;
-      let activeLevel =
-        parseInt(localStorage.getItem("activeRoleLevel")) || maxUserLevel;
+      let activeLevel = parseInt(localStorage.getItem("activeRoleLevel")) || maxUserLevel;
 
       let transactions = [];
       let activeTransactionId = null;
       let tempFiles = { ktp: null, spajk: null, riplay: null, other: null };
       let excelMasterData = [];
+      let chartMonthlyInstance = null;
+      let chartStatusInstance = null;
 
       document.addEventListener("DOMContentLoaded", async () => {
         initUserHeader();
@@ -2321,9 +1139,9 @@
         generateNextID();
         await loadTransactionsFromSupabase();
         setupSupabaseRealtime();
+        initCharts();
       });
 
-      // AMBIL DATA DARI SUPABASE
       async function loadTransactionsFromSupabase() {
         try {
           const { data, error } = await _supabase
@@ -2334,60 +1152,38 @@
           if (error) throw error;
           transactions = data ? data.map((item) => item.payload) : [];
         } catch (err) {
-          console.warn(
-            "Gagal memuat dari Supabase (tabel mungkin belum dibuat), menggunakan lokal:",
-            err.message,
-          );
-          transactions =
-            JSON.parse(localStorage.getItem("uw_transactions")) || [];
+          transactions = JSON.parse(localStorage.getItem("uw_transactions")) || [];
         }
         renderRepository();
         updateStats();
+        updateCharts();
       }
 
-      // REALTIME LISTENER SUPABASE
       function setupSupabaseRealtime() {
         try {
           _supabase
             .channel("public:uw_transactions")
-            .on(
-              "postgres_changes",
-              { event: "*", schema: "public", table: "uw_transactions" },
-              (payload) => {
-                console.log("Perubahan real-time terdeteksi:", payload);
-                loadTransactionsFromSupabase();
-              },
-            )
+            .on("postgres_changes", { event: "*", schema: "public", table: "uw_transactions" }, () => {
+              loadTransactionsFromSupabase();
+            })
             .subscribe();
-        } catch (e) {
-          console.log("Realtime tidak aktif atau tabel belum tersedia.");
-        }
+        } catch (e) {}
       }
 
       function initUserHeader() {
-        const initials = currentFullName
-          .split(" ")
-          .map((n) => n[0])
-          .join("")
-          .substring(0, 2)
-          .toUpperCase();
-
+        const initials = currentFullName.split(" ").map((n) => n[0]).join("").substring(0, 2).toUpperCase();
         const avatarElem = document.getElementById("user-avatar");
         const nameElem = document.getElementById("user-display-name");
         const badgeElem = document.getElementById("user-badge");
 
         if (avatarElem) avatarElem.innerText = initials;
         if (nameElem) nameElem.innerText = currentFullName;
-        if (badgeElem) {
-          badgeElem.innerText =
-            roleLevelNames[activeLevel] || `Role ${activeLevel}`;
-        }
+        if (badgeElem) badgeElem.innerText = roleLevelNames[activeLevel] || `Role ${activeLevel}`;
       }
 
       function populateRoleSelector() {
         const selector = document.getElementById("role-selector");
         if (!selector) return;
-
         selector.innerHTML = "";
         for (let lvl = 1; lvl <= maxUserLevel; lvl++) {
           const opt = document.createElement("option");
@@ -2402,8 +1198,23 @@
         activeLevel = parseInt(lvl);
         localStorage.setItem("activeRoleLevel", activeLevel);
         initUserHeader();
-        if (typeof renderRepository === "function") renderRepository();
-        if (typeof updateStats === "function") updateStats();
+        renderRepository();
+        updateStats();
+      }
+
+      // SIMULASI NOTIFIKASI EMAIL OTOMATIS
+      function triggerEmailNotification(recipientRole, txId, subject, message) {
+        const toast = document.getElementById("email-toast");
+        const titleElem = document.getElementById("toast-title");
+        const msgElem = document.getElementById("toast-msg");
+
+        titleElem.innerText = `Email Otomatis: ${recipientRole}`;
+        msgElem.innerHTML = `<strong>[${txId}]</strong> ${subject}<br>${message}`;
+        
+        toast.classList.remove("hidden");
+        setTimeout(() => {
+          toast.classList.add("hidden");
+        }, 5000);
       }
 
       function formatNumberInput(val) {
@@ -2422,21 +1233,14 @@
       function parseExcelNumber(val) {
         if (val === undefined || val === null || val === "") return 0;
         if (typeof val === "number") return val;
-
-        let cleanStr = String(val)
-          .replace(/^'+|'+$/g, "")
-          .replace(/[^0-9,-]/g, "")
-          .replace(",", ".");
-
+        let cleanStr = String(val).replace(/^'+|'+$/g, "").replace(/[^0-9,-]/g, "").replace(",", ".");
         let num = parseFloat(cleanStr);
         return isNaN(num) ? 0 : num;
       }
 
       function cleanStringValue(val) {
         if (val === undefined || val === null) return "";
-        return String(val)
-          .replace(/^'+|'+$/g, "")
-          .trim();
+        return String(val).replace(/^'+|'+$/g, "").trim();
       }
 
       function handleExcelUpload(input) {
@@ -2450,52 +1254,32 @@
             const workbook = XLSX.read(data, { type: "array" });
             const firstSheetName = workbook.SheetNames[0];
             const worksheet = workbook.Sheets[firstSheetName];
+            excelMasterData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
 
-            excelMasterData = XLSX.utils.sheet_to_json(worksheet, {
-              defval: "",
-            });
-
-            document.getElementById("excel-status").innerText =
-              `✓ Loaded (${excelMasterData.length} baris data)`;
-            document.getElementById("excel-status").className =
-              "text-[11px] font-bold text-emerald-600";
-            alert(
-              `File "${file.name}" berhasil diunggah! (${excelMasterData.length} data nasabah siap diautofill)`,
-            );
+            document.getElementById("excel-status").innerText = `✓ Loaded (${excelMasterData.length} baris data)`;
+            document.getElementById("excel-status").className = "text-[11px] font-bold text-emerald-600";
+            alert(`File "${file.name}" berhasil diunggah! (${excelMasterData.length} data nasabah siap diautofill)`);
           } catch (err) {
-            alert(
-              "Gagal membaca file Excel. Pastikan format file .xlsx/.xls valid!",
-            );
-            console.error(err);
+            alert("Gagal membaca file Excel. Pastikan format file .xlsx/.xls valid!");
           }
         };
-
         reader.readAsArrayBuffer(file);
       }
 
       function resetExcelData() {
         excelMasterData = [];
         document.getElementById("excel-file-input").value = "";
-        document.getElementById("excel-status").innerText =
-          "Belum ada file diunggah";
-        document.getElementById("excel-status").className =
-          "text-[11px] font-semibold text-slate-500";
+        document.getElementById("excel-status").innerText = "Belum ada file diunggah";
+        document.getElementById("excel-status").className = "text-[11px] font-semibold text-slate-500";
       }
 
       function lookupExcelData(searchId) {
-        document
-          .getElementById("alert-already-submitted")
-          .classList.add("hidden");
-
+        document.getElementById("alert-already-submitted").classList.add("hidden");
         if (!searchId || String(searchId).trim() === "") return;
         let query = String(searchId).trim().toLowerCase();
         if (query.endsWith(".0")) query = query.slice(0, -2);
 
-        const existingTx = transactions.find(
-          (t) =>
-            t.idUpload && String(t.idUpload).trim().toLowerCase() === query,
-        );
-
+        const existingTx = transactions.find((t) => t.idUpload && String(t.idUpload).trim().toLowerCase() === query);
         if (existingTx) {
           const alertBox = document.getElementById("alert-already-submitted");
           const alertText = document.getElementById("alert-already-text");
@@ -2506,42 +1290,18 @@
         if (excelMasterData.length === 0) return;
 
         const matches = excelMasterData.filter((row) => {
-          let idVal = cleanStringValue(
-            row["IDUpload"] !== undefined
-              ? row["IDUpload"]
-              : row["idupload"] || row["ID_UPLOAD"] || "",
-          ).toLowerCase();
+          let idVal = cleanStringValue(row["IDUpload"] !== undefined ? row["IDUpload"] : row["idupload"] || row["ID_UPLOAD"] || "").toLowerCase();
           if (idVal.endsWith(".0")) idVal = idVal.slice(0, -2);
           return idVal === query;
         });
 
         if (matches.length > 0) {
           const primary = matches[0];
-
-          document.getElementById("input-id-peserta").value = cleanStringValue(
-            primary["IDPeserta"] ||
-              primary["idpeserta"] ||
-              primary["ID_PESERTA"] ||
-              "",
-          );
-
-          const noKtpValue = cleanStringValue(
-            primary["No_Ktp"] || primary["NO_KTP"] || primary["NIK"] || "",
-          );
+          document.getElementById("input-id-peserta").value = cleanStringValue(primary["IDPeserta"] || primary["idpeserta"] || primary["ID_PESERTA"] || "");
+          const noKtpValue = cleanStringValue(primary["No_Ktp"] || primary["NO_KTP"] || primary["NIK"] || "");
           document.getElementById("input-no-ktp").value = noKtpValue;
-
-          document.getElementById("input-pemegang").value = cleanStringValue(
-            primary["Unit Pemegang Polis"] ||
-              primary["UNIT PEMEGANG POLIS"] ||
-              "",
-          );
-
-          document.getElementById("input-nama").value = cleanStringValue(
-            primary["NamaTtg"] ||
-              primary["NAMATTG"] ||
-              primary["Nama Tertanggung"] ||
-              "",
-          );
+          document.getElementById("input-pemegang").value = cleanStringValue(primary["Unit Pemegang Polis"] || primary["UNIT PEMEGANG POLIS"] || "");
+          document.getElementById("input-nama").value = cleanStringValue(primary["NamaTtg"] || primary["NAMATTG"] || primary["Nama Tertanggung"] || "");
 
           let rawDate = primary["TlhTtg"] || primary["TLHTTG"] || "";
           if (rawDate) {
@@ -2559,68 +1319,25 @@
             calculateAgeFromDOB();
           }
 
-          document.getElementById("input-masa").value = cleanStringValue(
-            primary["MasaAs"] || primary["MASAAS"] || "",
-          );
+          document.getElementById("input-masa").value = cleanStringValue(primary["MasaAs"] || primary["MASAAS"] || "");
+          const premiVal = parseExcelNumber(primary["Premi"] || primary["PREMI"] || 0);
+          document.getElementById("input-premi").value = formatNumberInput(premiVal);
 
-          const premiVal = parseExcelNumber(
-            primary["Premi"] || primary["PREMI"] || 0,
-          );
-          document.getElementById("input-premi").value =
-            formatNumberInput(premiVal);
-
-          const singleUP = parseExcelNumber(
-            primary["UP"] ||
-              primary["up"] ||
-              primary["Up"] ||
-              primary["Uang Pertanggungan"] ||
-              primary["UANG PERTANGGUNGAN"] ||
-              primary["Platfon"] ||
-              primary["Plafond"] ||
-              0,
-          );
-          document.getElementById("input-up").value =
-            formatNumberInput(singleUP);
+          const singleUP = parseExcelNumber(primary["UP"] || primary["up"] || primary["Up"] || primary["Uang Pertanggungan"] || primary["Platfon"] || primary["Plafond"] || 0);
+          document.getElementById("input-up").value = formatNumberInput(singleUP);
 
           let totalAccumulatedUP = singleUP;
-          let totalKtpCount = 1;
-
           if (noKtpValue) {
             const sameKtpRows = excelMasterData.filter((row) => {
-              const rowKtp = cleanStringValue(
-                row["No_Ktp"] || row["NO_KTP"] || row["NIK"] || "",
-              ).toLowerCase();
+              const rowKtp = cleanStringValue(row["No_Ktp"] || row["NO_KTP"] || row["NIK"] || "").toLowerCase();
               return rowKtp === noKtpValue.toLowerCase();
             });
-
-            totalKtpCount = sameKtpRows.length;
-            totalAccumulatedUP = sameKtpRows.reduce((sum, item) => {
-              return (
-                sum +
-                parseExcelNumber(
-                  item["UP"] ||
-                    item["up"] ||
-                    item["Up"] ||
-                    item["Uang Pertanggungan"] ||
-                    item["UANG PERTANGGUNGAN"] ||
-                    item["Platfon"] ||
-                    item["Plafond"],
-                )
-              );
-            }, 0);
+            totalAccumulatedUP = sameKtpRows.reduce((sum, item) => sum + parseExcelNumber(item["UP"] || item["up"] || item["Up"] || item["Uang Pertanggungan"] || item["Platfon"] || item["Plafond"]), 0);
           }
 
-          document.getElementById("input-uptotal").value =
-            formatNumberInput(totalAccumulatedUP);
-
+          document.getElementById("input-uptotal").value = formatNumberInput(totalAccumulatedUP);
           calculateTotalPremi();
           runAutoEvaluation();
-
-          if (totalKtpCount > 1) {
-            alert(
-              `No KTP (${noKtpValue}) ditemukan sebanyak ${totalKtpCount} kali.\nTotal UP diakumulasikan otomatis menjadi Rp ${formatNumberInput(totalAccumulatedUP)}`,
-            );
-          }
         }
       }
 
@@ -2639,11 +1356,7 @@
       }
 
       function handleLogout() {
-        if (
-          confirm(
-            `Apakah Anda yakin ingin keluar dari akun ${currentFullName}?`,
-          )
-        ) {
+        if (confirm(`Apakah Anda yakin ingin keluar dari akun ${currentFullName}?`)) {
           localStorage.removeItem("isLoggedIn");
           localStorage.removeItem("username");
           localStorage.removeItem("fullName");
@@ -2669,17 +1382,19 @@
         const titles = {
           dashboard: "Dashboard Underwriting",
           form: "Form Kertas Kerja Underwriting",
-          repository: "Repository Transaksi Kertas Kerja",
+          repository: "Repository Transaksi Kertas Kerja"
         };
         if (titles[tab]) {
           document.getElementById("page-title").innerText = titles[tab];
+        }
+        if (tab === "dashboard") {
+          updateCharts();
         }
       }
 
       function generateNextID() {
         const nextNum = transactions.length + 1;
-        document.getElementById("form-id-display").innerText =
-          `UW-2026-${String(nextNum).padStart(4, "0")}`;
+        document.getElementById("form-id-display").innerText = `UW-2026-${String(nextNum).padStart(4, "0")}`;
       }
 
       function handleSegmenChange() {
@@ -2698,25 +1413,17 @@
       }
 
       function calculateTotalPremi() {
-        const premi = getUnformattedNumber(
-          document.getElementById("input-premi").value,
-        );
-        const ekstra = getUnformattedNumber(
-          document.getElementById("input-ekstra-premi").value,
-        );
+        const premi = getUnformattedNumber(document.getElementById("input-premi").value);
+        const ekstra = getUnformattedNumber(document.getElementById("input-ekstra-premi").value);
         const total = premi + ekstra;
 
-        document.getElementById("input-total-premi").value =
-          formatNumberInput(total);
-        document.getElementById("display-total-premi").innerText =
-          `Rp ${formatNumberInput(total)}`;
+        document.getElementById("input-total-premi").value = formatNumberInput(total);
+        document.getElementById("display-total-premi").innerText = `Rp ${formatNumberInput(total)}`;
       }
 
       function calculateBMI() {
-        const tb =
-          parseFloat(document.getElementById("input-tinggi").value) || 0;
-        const bb =
-          parseFloat(document.getElementById("input-berat").value) || 0;
+        const tb = parseFloat(document.getElementById("input-tinggi").value) || 0;
+        const bb = parseFloat(document.getElementById("input-berat").value) || 0;
         if (tb > 0 && bb > 0) {
           const bmi = (bb / ((tb / 100) * (tb / 100))).toFixed(1);
           document.getElementById("display-bmi").innerText = `${bmi} kg/m²`;
@@ -2734,9 +1441,7 @@
           const fileSizeMB = file.size / (1024 * 1024);
 
           if (fileSizeMB > MAX_FILE_SIZE_MB) {
-            alert(
-              `File "${file.name}" (${fileSizeMB.toFixed(2)}MB) melebihi batas maksimum ${MAX_FILE_SIZE_MB}MB!`,
-            );
+            alert(`File "${file.name}" (${fileSizeMB.toFixed(2)}MB) melebihi batas maksimum ${MAX_FILE_SIZE_MB}MB!`);
             input.value = "";
             infoElem.classList.add("hidden");
             tempFiles[fileKey] = null;
@@ -2748,7 +1453,7 @@
             tempFiles[fileKey] = {
               name: file.name,
               size: fileSizeMB.toFixed(2) + " MB",
-              data: e.target.result,
+              data: e.target.result
             };
             infoElem.querySelector(".file-name").innerText = `✓ ${file.name}`;
             infoElem.classList.remove("hidden");
@@ -2770,14 +1475,11 @@
       }
 
       function runAutoEvaluation() {
-        const up = getUnformattedNumber(
-          document.getElementById("input-up").value,
-        );
+        const up = getUnformattedNumber(document.getElementById("input-up").value);
         const medis = document.getElementById("input-medis").value;
         const pekerjaan = document.getElementById("input-pekerjaan").value;
 
-        document.getElementById("input-resiko-pekerjaan").value =
-          pekerjaan || "Standard";
+        document.getElementById("input-resiko-pekerjaan").value = pekerjaan || "Standard";
 
         let riskCategory = "Standard Risk";
         let requiredLevel = 2;
@@ -2803,10 +1505,8 @@
 
         document.getElementById("auto-risk-category").innerText = riskCategory;
         document.getElementById("auto-decision").innerText = decision;
-        document.getElementById("auto-authority").innerText =
-          roleLevelNames[requiredLevel];
-        document.getElementById("display-status-resiko").innerText =
-          riskCategory;
+        document.getElementById("auto-authority").innerText = roleLevelNames[requiredLevel];
+        document.getElementById("display-status-resiko").innerText = riskCategory;
 
         return { riskCategory, decision, requiredLevel };
       }
@@ -2814,52 +1514,32 @@
       async function handleFormSubmit(e) {
         e.preventDefault();
         if (!tempFiles.ktp || !tempFiles.spajk || !tempFiles.riplay) {
-          alert(
-            "Mohon unggah 3 dokumen wajib: KTP, SPAJK, dan RIPLAY Personal!",
-          );
+          alert("Mohon unggah 3 dokumen wajib: KTP, SPAJK, dan RIPLAY Personal!");
           return;
         }
 
         const evalResult = runAutoEvaluation();
         const newId = document.getElementById("form-id-display").innerText;
+        const nowIsoString = new Date().toISOString();
 
         const kepatuhanList = [
-          {
-            text: "Data termasuk Terduga (TPPU/Judi Online, DTTOT, TPPSPM)",
-            val: document.querySelector('input[name="chk_1"]:checked').value,
-            ket: document.getElementById("ket_1").value,
-          },
-          {
-            text: "Nasabah atau transaksi terkait negara high risk",
-            val: document.querySelector('input[name="chk_2"]:checked').value,
-            ket: document.getElementById("ket_2").value,
-          },
-          {
-            text: "Profil nasabah termasuk PEP atau berisiko tinggi",
-            val: document.querySelector('input[name="chk_3"]:checked').value,
-            ket: document.getElementById("ket_3").value,
-          },
-          {
-            text: "Produk asuransi termasuk produk berisiko tinggi",
-            val: document.querySelector('input[name="chk_4"]:checked').value,
-            ket: document.getElementById("ket_4").value,
-          },
-          {
-            text: "Transaksi tidak sesuai profil/kemampuan finansial",
-            val: document.querySelector('input[name="chk_5"]:checked').value,
-            ket: document.getElementById("ket_5").value,
-          },
+          { text: "Data termasuk Terduga (TPPU/Judi Online, DTTOT, TPPSPM)", val: document.querySelector('input[name="chk_1"]:checked').value, ket: document.getElementById("ket_1").value },
+          { text: "Nasabah atau transaksi terkait negara high risk", val: document.querySelector('input[name="chk_2"]:checked').value, ket: document.getElementById("ket_2").value },
+          { text: "Profil nasabah termasuk PEP atau berisiko tinggi", val: document.querySelector('input[name="chk_3"]:checked').value, ket: document.getElementById("ket_3").value },
+          { text: "Produk asuransi termasuk produk berisiko tinggi", val: document.querySelector('input[name="chk_4"]:checked').value, ket: document.getElementById("ket_4").value },
+          { text: "Transaksi tidak sesuai profil/kemampuan finansial", val: document.querySelector('input[name="chk_5"]:checked').value, ket: document.getElementById("ket_5").value }
         ];
 
         const newTransaction = {
           id: newId,
+          createdAtRaw: nowIsoString,
+          dateFormatted: new Date().toLocaleDateString("id-ID"),
           idUpload: document.getElementById("input-id-upload").value,
           idPeserta: document.getElementById("input-id-peserta").value,
           noKtp: document.getElementById("input-no-ktp").value,
           segmen: document.getElementById("input-segmen").value,
           channel: document.getElementById("input-channel").value,
-          kategoriProduk: document.getElementById("input-kategori-produk")
-            .value,
+          kategoriProduk: document.getElementById("input-kategori-produk").value,
           produk: document.getElementById("input-produk").value,
           perusahaan: document.getElementById("input-perusahaan").value || "-",
           pemegang: document.getElementById("input-pemegang").value,
@@ -2868,24 +1548,14 @@
           usia: document.getElementById("input-usia").value,
           pekerjaan: document.getElementById("input-pekerjaan").value,
           up: getUnformattedNumber(document.getElementById("input-up").value),
-          uptotal: getUnformattedNumber(
-            document.getElementById("input-uptotal").value,
-          ),
+          uptotal: getUnformattedNumber(document.getElementById("input-uptotal").value),
           masa: document.getElementById("input-masa").value,
-          premi: getUnformattedNumber(
-            document.getElementById("input-premi").value,
-          ),
-          ekstraPremi: getUnformattedNumber(
-            document.getElementById("input-ekstra-premi").value,
-          ),
-          totalPremi: getUnformattedNumber(
-            document.getElementById("input-total-premi").value,
-          ),
+          premi: getUnformattedNumber(document.getElementById("input-premi").value),
+          ekstraPremi: getUnformattedNumber(document.getElementById("input-ekstra-premi").value),
+          totalPremi: getUnformattedNumber(document.getElementById("input-total-premi").value),
           tinggi: document.getElementById("input-tinggi").value,
           berat: document.getElementById("input-berat").value,
-          income: getUnformattedNumber(
-            document.getElementById("input-income").value,
-          ),
+          income: getUnformattedNumber(document.getElementById("input-income").value),
           medis: document.getElementById("input-medis").value,
           catatan: document.getElementById("input-catatan").value,
           kepatuhan: kepatuhanList,
@@ -2898,16 +1568,18 @@
               role: `${currentFullName} (${roleLevelNames[1]})`,
               action: `VERIFIED & SUBMITTED`,
               note: `Dokumen diverifikasi oleh Checker. Diajukan ke Supervisor.`,
-              date: new Date().toLocaleString("id-ID"),
-            },
-          ],
+              date: new Date().toLocaleString("id-ID")
+            }
+          ]
         };
 
         transactions.unshift(newTransaction);
         await saveData();
-        alert(
-          `Kertas Kerja ${newId} Berhasil Disimpan & Diteruskan ke Supervisor!`,
-        );
+
+        // Trigger Notifikasi Email Otomatis ke Supervisor (Level 2)
+        triggerEmailNotification(roleLevelNames[2], newId, "Pengajuan Kertas Kerja Baru Memerlukan Review", `Nasabah: ${newTransaction.nama} | UP: Rp ${formatNumberInput(newTransaction.up)}`);
+
+        alert(`Kertas Kerja ${newId} Berhasil Disimpan & Diteruskan ke Supervisor!`);
         resetForm();
         switchTab("repository");
       }
@@ -2915,14 +1587,10 @@
       function resetForm() {
         document.getElementById("uw-form").reset();
         tempFiles = { ktp: null, spajk: null, riplay: null, other: null };
-        ["ktp-info", "spajk-info", "riplay-info", "other-info"].forEach(
-          (id) => {
-            document.getElementById(id).classList.add("hidden");
-          },
-        );
-        document
-          .getElementById("alert-already-submitted")
-          .classList.add("hidden");
+        ["ktp-info", "spajk-info", "riplay-info", "other-info"].forEach((id) => {
+          document.getElementById(id).classList.add("hidden");
+        });
+        document.getElementById("alert-already-submitted").classList.add("hidden");
         document.getElementById("auto-risk-category").innerText = "-";
         document.getElementById("auto-decision").innerText = "-";
         document.getElementById("auto-authority").innerText = "-";
@@ -2933,38 +1601,24 @@
         generateNextID();
       }
 
-      // FUNGSI PENYIMPANAN DATA KE SUPABASE
       async function saveData() {
         try {
           localStorage.setItem("uw_transactions", JSON.stringify(transactions));
-        } catch (err) {
-          console.warn("Penyimpanan lokal penuh.");
-        }
+        } catch (err) {}
 
         try {
           const latestTx = transactions[0];
           if (latestTx) {
-            const { error } = await _supabase.from("uw_transactions").upsert(
-              {
-                id_transaksi: latestTx.id,
-                payload: latestTx,
-                status: latestTx.status,
-              },
-              { onConflict: "id_transaksi" },
+            await _supabase.from("uw_transactions").upsert(
+              { id_transaksi: latestTx.id, payload: latestTx, status: latestTx.status },
+              { onConflict: "id_transaksi" }
             );
-
-            if (error)
-              console.warn(
-                "Sinkronisasi Supabase tertunda (Pastikan tabel uw_transactions sudah dibuat di Supabase):",
-                error.message,
-              );
           }
-        } catch (err) {
-          console.error("Kesalahan jaringan Supabase:", err);
-        }
+        } catch (err) {}
 
         renderRepository();
         updateStats();
+        updateCharts();
       }
 
       function renderRepository() {
@@ -2975,18 +1629,17 @@
         if (selectAllChk) selectAllChk.checked = false;
         updateBulkActionBar();
 
-        if (transactions.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="9" class="p-8 text-center text-slate-400 font-medium">Belum ada transaksi kertas kerja tersimpan.</td></tr>`;
+        const filtered = getFilteredTransactions();
+
+        if (filtered.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="9" class="p-8 text-center text-slate-400 font-medium">Belum ada transaksi kertas kerja tersimpan sesuai filter.</td></tr>`;
           return;
         }
 
-        transactions.forEach((t) => {
+        filtered.forEach((t) => {
           const tr = document.createElement("tr");
-          tr.className =
-            "hover:bg-blue-900/20 hover:border-l-4 hover:border-l-blue-500 transition-all border-b border-slate-100 cursor-pointer";
-          const attachedCount = Object.values(t.files).filter(
-            (f) => f !== null,
-          ).length;
+          tr.className = "hover:bg-blue-900/25 hover:border-l-4 hover:border-l-blue-500 transition-all border-b border-slate-100 cursor-pointer";
+          const attachedCount = Object.values(t.files).filter((f) => f !== null).length;
 
           let statusBadge = "";
           if (t.status === "APPROVED_FINAL") {
@@ -2998,8 +1651,7 @@
             statusBadge = `<span class="px-3 py-1 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 shadow-sm">Pending ${roleLevelNames[reqLvl]}</span>`;
           }
 
-          const isTargetLevel =
-            t.status === `PENDING_LEVEL_${activeLevel}` && activeLevel > 1;
+          const isTargetLevel = t.status === `PENDING_LEVEL_${activeLevel}` && activeLevel > 1;
 
           tr.innerHTML = `
             <td class="p-4 text-center" onclick="event.stopPropagation()">
@@ -3007,7 +1659,7 @@
             </td>
             <td class="p-4">
                 <div class="font-mono text-xs font-bold text-slate-800">${t.id}</div>
-                <div class="text-[11px] font-mono text-blue-600 font-bold mt-0.5">IDUpload: ${t.idUpload || "-"}</div>
+                <div class="text-[11px] text-slate-400 mt-0.5">${t.dateFormatted || "-"}</div>
             </td>
             <td class="p-4">
                 <span class="inline-block px-2.5 py-0.5 text-[10px] font-bold bg-blue-100 text-blue-800 rounded-md mb-1">${t.channel || "Manual"}</span>
@@ -3038,18 +1690,42 @@
         });
       }
 
+      function getFilteredTransactions() {
+        const textVal = document.getElementById("search-repo").value.toLowerCase();
+        const dateStart = document.getElementById("filter-date-start").value;
+        const dateEnd = document.getElementById("filter-date-end").value;
+
+        return transactions.filter((t) => {
+          const matchText = JSON.stringify(t).toLowerCase().includes(textVal);
+          
+          let matchDate = true;
+          if (t.createdAtRaw) {
+            const tDateStr = t.createdAtRaw.split("T")[0];
+            if (dateStart && tDateStr < dateStart) matchDate = false;
+            if (dateEnd && tDateStr > dateEnd) matchDate = false;
+          }
+          return matchText && matchDate;
+        });
+      }
+
+      function filterRepository() {
+        renderRepository();
+      }
+
+      function resetDateFilter() {
+        document.getElementById("filter-date-start").value = "";
+        document.getElementById("filter-date-end").value = "";
+        filterRepository();
+      }
+
       function toggleSelectAll(master) {
-        const checkboxes = document.querySelectorAll(
-          ".repo-item-checkbox:not(:disabled)",
-        );
+        const checkboxes = document.querySelectorAll(".repo-item-checkbox:not(:disabled)");
         checkboxes.forEach((cb) => (cb.checked = master.checked));
         updateBulkActionBar();
       }
 
       function updateBulkActionBar() {
-        const selected = document.querySelectorAll(
-          ".repo-item-checkbox:checked",
-        );
+        const selected = document.querySelectorAll(".repo-item-checkbox:checked");
         const bar = document.getElementById("bulk-action-bar");
         const countElem = document.getElementById("selected-count");
 
@@ -3062,28 +1738,13 @@
       }
 
       async function handleBulkApproval(action) {
-        const selectedCheckboxes = document.querySelectorAll(
-          ".repo-item-checkbox:checked",
-        );
+        const selectedCheckboxes = document.querySelectorAll(".repo-item-checkbox:checked");
         if (selectedCheckboxes.length === 0) return;
 
-        const noteInput = document
-          .getElementById("bulk-note-input")
-          .value.trim();
-        const catatan =
-          noteInput ||
-          (action === "APPROVED"
-            ? "Approved via Bulk Process"
-            : "Rejected via Bulk Process");
+        const noteInput = document.getElementById("bulk-note-input").value.trim();
+        const catatan = noteInput || (action === "APPROVED" ? "Approved via Bulk Process" : "Rejected via Bulk Process");
 
-        const actionText = action === "APPROVED" ? "menyetujui" : "menolak";
-        if (
-          !confirm(
-            `Apakah Anda yakin ingin ${actionText} ${selectedCheckboxes.length} transaksi sekaligus?`,
-          )
-        ) {
-          return;
-        }
+        if (!confirm(`Apakah Anda yakin ingin memproses ${selectedCheckboxes.length} transaksi sekaligus?`)) return;
 
         for (const cb of selectedCheckboxes) {
           const id = cb.value;
@@ -3092,60 +1753,43 @@
           if (t && t.status === `PENDING_LEVEL_${activeLevel}`) {
             if (action === "REJECTED") {
               t.status = "REJECTED";
-              t.history.push({
-                role: `${currentFullName} (${roleLevelNames[activeLevel]})`,
-                action: "REJECTED (BULK)",
-                note: catatan,
-                date: new Date().toLocaleString("id-ID"),
-              });
+              t.history.push({ role: `${currentFullName} (${roleLevelNames[activeLevel]})`, action: "REJECTED (BULK)", note: catatan, date: new Date().toLocaleString("id-ID") });
+              triggerEmailNotification("Pemohon / Checker", t.id, "Pengajuan Kertas Kerja Ditolak (Bulk)", `Alasan: ${catatan}`);
             } else if (action === "APPROVED") {
               if (activeLevel >= t.targetLevel) {
                 t.status = "APPROVED_FINAL";
-                t.history.push({
-                  role: `${currentFullName} (${roleLevelNames[activeLevel]})`,
-                  action: "APPROVED FINAL (BULK)",
-                  note: catatan,
-                  date: new Date().toLocaleString("id-ID"),
-                });
+                t.history.push({ role: `${currentFullName} (${roleLevelNames[activeLevel]})`, action: "APPROVED FINAL (BULK)", note: catatan, date: new Date().toLocaleString("id-ID") });
+                triggerEmailNotification("Pemohon / Checker", t.id, "Kertas Kerja Telah Disetujui Final", `Status: Approved Final`);
               } else {
                 const nextLvl = activeLevel + 1;
                 t.status = `PENDING_LEVEL_${nextLvl}`;
-                t.history.push({
-                  role: `${currentFullName} (${roleLevelNames[activeLevel]})`,
-                  action: `APPROVED & PASSED TO ${roleLevelNames[nextLvl].toUpperCase()} (BULK)`,
-                  note: `${catatan} (Diteruskan ke ${roleLevelNames[nextLvl]})`,
-                  date: new Date().toLocaleString("id-ID"),
-                });
+                t.history.push({ role: `${currentFullName} (${roleLevelNames[activeLevel]})`, action: `APPROVED & PASSED TO ${roleLevelNames[nextLvl].toUpperCase()} (BULK)`, note: `${catatan} (Diteruskan ke ${roleLevelNames[nextLvl]})`, date: new Date().toLocaleString("id-ID") });
+                triggerEmailNotification(roleLevelNames[nextLvl], t.id, "Review Lanjutan Diperlukan", `Diteruskan oleh ${currentFullName}`);
               }
             }
 
             try {
-              await _supabase
-                .from("uw_transactions")
-                .upsert(
-                  { id_transaksi: t.id, payload: t, status: t.status },
-                  { onConflict: "id_transaksi" },
-                );
+              await _supabase.from("uw_transactions").upsert({ id_transaksi: t.id, payload: t, status: t.status }, { onConflict: "id_transaksi" });
             } catch (e) {}
           }
         }
 
         document.getElementById("bulk-note-input").value = "";
         await loadTransactionsFromSupabase();
-        alert(
-          `${selectedCheckboxes.length} transaksi berhasil diproses secara massal!`,
-        );
+        alert(`${selectedCheckboxes.length} transaksi berhasil diproses secara massal!`);
       }
 
       function exportRepositoryToExcel() {
-        if (transactions.length === 0) {
+        const filtered = getFilteredTransactions();
+        if (filtered.length === 0) {
           alert("Belum ada data transaksi untuk diexport!");
           return;
         }
 
-        const exportData = transactions.map((t, idx) => ({
+        const exportData = filtered.map((t, idx) => ({
           No: idx + 1,
           "ID Transaksi": t.id,
+          "Tanggal": t.dateFormatted || "-",
           "IDUpload Excel": t.idUpload || "-",
           "ID Peserta": t.idPeserta || "-",
           "No KTP": t.noKtp || "-",
@@ -3155,16 +1799,12 @@
           Produk: t.produk,
           UP: t.up,
           "Total Premi": t.totalPremi,
-          "Status Approval": t.status,
+          "Status Approval": t.status
         }));
 
         const worksheet = XLSX.utils.json_to_sheet(exportData);
         const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(
-          workbook,
-          worksheet,
-          "Data_Kertas_Kerja_UW",
-        );
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Data_Kertas_Kerja_UW");
 
         const todayStr = new Date().toISOString().split("T")[0];
         XLSX.writeFile(workbook, `Rekap_Repository_UW_${todayStr}.xlsx`);
@@ -3175,19 +1815,15 @@
         const t = transactions.find((item) => item.id === id);
         if (!t) return;
 
-        document.getElementById("modal-title").innerText =
-          `Detail Kertas Kerja - ${t.id}`;
+        document.getElementById("modal-title").innerText = `Detail Kertas Kerja - ${t.id}`;
         document.getElementById("m-segmen").innerText = t.segmen || "Individu";
-        document.getElementById("m-channel").innerText =
-          t.channel || "Proses Manual";
-        document.getElementById("m-kategori-produk").innerText =
-          t.kategoriProduk || "Jiwa / Term Life";
+        document.getElementById("m-channel").innerText = t.channel || "Proses Manual";
+        document.getElementById("m-kategori-produk").innerText = t.kategoriProduk || "Jiwa / Term Life";
 
         const perusahaanRow = document.getElementById("m-row-perusahaan");
         if (t.segmen === "Kumpulan") {
           perusahaanRow.classList.remove("hidden");
-          document.getElementById("m-perusahaan").innerText =
-            t.perusahaan || "-";
+          document.getElementById("m-perusahaan").innerText = t.perusahaan || "-";
         } else {
           perusahaanRow.classList.add("hidden");
         }
@@ -3200,42 +1836,28 @@
         document.getElementById("m-tgllahir").innerText = t.tgllahir || "-";
         document.getElementById("m-usia").innerText = t.usia;
         document.getElementById("m-pekerjaan").innerText = t.pekerjaan;
-        document.getElementById("m-up").innerText =
-          `Rp ${formatNumberInput(t.up)}`;
-        document.getElementById("m-uptotal").innerText =
-          `Rp ${formatNumberInput(t.uptotal || t.up)}`;
+        document.getElementById("m-up").innerText = `Rp ${formatNumberInput(t.up)}`;
+        document.getElementById("m-uptotal").innerText = `Rp ${formatNumberInput(t.uptotal || t.up)}`;
         document.getElementById("m-masa").innerText = t.masa || "-";
-        document.getElementById("m-premi").innerText =
-          `Rp ${formatNumberInput(t.premi)}`;
-        document.getElementById("m-ekstra-premi").innerText =
-          `Rp ${formatNumberInput(t.ekstraPremi || 0)}`;
-        document.getElementById("m-total-premi").innerText =
-          `Rp ${formatNumberInput(t.totalPremi || t.premi)}`;
+        document.getElementById("m-premi").innerText = `Rp ${formatNumberInput(t.premi)}`;
+        document.getElementById("m-ekstra-premi").innerText = `Rp ${formatNumberInput(t.ekstraPremi || 0)}`;
+        document.getElementById("m-total-premi").innerText = `Rp ${formatNumberInput(t.totalPremi || t.premi)}`;
         document.getElementById("m-tinggi").innerText = t.tinggi || "-";
         document.getElementById("m-berat").innerText = t.berat || "-";
 
-        document.getElementById("m-income").innerText = t.income
-          ? `Rp ${formatNumberInput(t.income)}`
-          : "-";
-        document.getElementById("m-resiko-pekerjaan").innerText =
-          t.pekerjaan || "-";
+        document.getElementById("m-income").innerText = t.income ? `Rp ${formatNumberInput(t.income)}` : "-";
+        document.getElementById("m-resiko-pekerjaan").innerText = t.pekerjaan || "-";
         document.getElementById("m-medis").innerText = t.medis;
-        document.getElementById("m-total-up").innerText =
-          `Rp ${formatNumberInput(t.uptotal || t.up)}`;
+        document.getElementById("m-total-up").innerText = `Rp ${formatNumberInput(t.uptotal || t.up)}`;
 
         if (t.tinggi && t.berat) {
-          const bmi = (
-            parseFloat(t.berat) /
-            ((parseFloat(t.tinggi) / 100) * (parseFloat(t.tinggi) / 100))
-          ).toFixed(1);
+          const bmi = (parseFloat(t.berat) / ((parseFloat(t.tinggi) / 100) * (parseFloat(t.tinggi) / 100))).toFixed(1);
           document.getElementById("m-bmi-calc").innerText = `${bmi} kg/m²`;
         } else {
           document.getElementById("m-bmi-calc").innerText = "-";
         }
-        document.getElementById("m-total-premi-calc").innerText =
-          `Rp ${formatNumberInput(t.totalPremi || t.premi)}`;
-        document.getElementById("m-status-resiko-calc").innerText =
-          t.eval.riskCategory;
+        document.getElementById("m-total-premi-calc").innerText = `Rp ${formatNumberInput(t.totalPremi || t.premi)}`;
+        document.getElementById("m-status-resiko-calc").innerText = t.eval.riskCategory;
 
         const kepatuhanBody = document.getElementById("m-kepatuhan-rows");
         kepatuhanBody.innerHTML = "";
@@ -3253,20 +1875,14 @@
         }
 
         const filesBox = document.getElementById("m-files-list");
-        const fileLabels = {
-          ktp: "1. KTP",
-          spajk: "2. SPAJK / Deklarasi Kesehatan",
-          riplay: "3. RIPLAY Personal",
-          other: "4. Dokumen Lainnya / MCU",
-        };
+        const fileLabels = { ktp: "1. KTP", spajk: "2. SPAJK", riplay: "3. RIPLAY", other: "4. Dokumen Lain" };
         filesBox.innerHTML = "";
 
         Object.keys(fileLabels).forEach((key) => {
           const f = t.files[key];
           const div = document.createElement("div");
           if (f && f.data) {
-            div.className =
-              "p-3 rounded-2xl border bg-slate-50 border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-sm";
+            div.className = "p-3 rounded-2xl border bg-slate-50 border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-sm";
             div.innerHTML = `
               <div class="truncate max-w-[200px]">
                   <strong class="text-slate-800 font-bold block">${fileLabels[key]}:</strong>
@@ -3282,15 +1898,13 @@
               </div>
             `;
           } else {
-            div.className =
-              "p-3 rounded-2xl border bg-slate-50 border-slate-200 text-slate-400";
+            div.className = "p-3 rounded-2xl border bg-slate-50 border-slate-200 text-slate-400";
             div.innerHTML = `<strong>${fileLabels[key]}:</strong> <span class="italic text-[11px]">Tidak diunggah</span>`;
           }
           filesBox.appendChild(div);
         });
 
-        document.getElementById("m-pdf-catatan").innerText =
-          t.catatan || "Tidak ada catatan tambahan.";
+        document.getElementById("m-pdf-catatan").innerText = t.catatan || "Tidak ada catatan tambahan.";
 
         const pdfApprovalRows = document.getElementById("m-pdf-approval-rows");
         pdfApprovalRows.innerHTML = "";
@@ -3320,17 +1934,12 @@
 
       function previewFile(key) {
         const t = transactions.find((item) => item.id === activeTransactionId);
-        if (!t || !t.files || !t.files[key] || !t.files[key].data) {
-          alert("File tidak tersedia untuk dipratinjau.");
-          return;
-        }
+        if (!t || !t.files || !t.files[key] || !t.files[key].data) return;
 
         const file = t.files[key];
         const bodyElem = document.getElementById("preview-file-body");
-        document.getElementById("preview-file-title").innerText =
-          `Preview: ${file.name}`;
-        document.getElementById("preview-file-sub").innerText =
-          `Ukuran: ${file.size || "1.5MB Max"}`;
+        document.getElementById("preview-file-title").innerText = `Preview: ${file.name}`;
+        document.getElementById("preview-file-sub").innerText = `Ukuran: ${file.size || "1.5MB Max"}`;
 
         const downloadBtn = document.getElementById("preview-download-btn");
         downloadBtn.href = file.data;
@@ -3342,12 +1951,10 @@
         } else if (file.data.startsWith("data:application/pdf")) {
           bodyElem.innerHTML = `<iframe src="${file.data}" class="w-full h-full min-h-[65vh] rounded-xl"></iframe>`;
         } else {
-          bodyElem.innerHTML = `<div class="text-center text-white p-8"><p class="text-sm">Pratinjau langsung tidak mendukung format ini.</p></div>`;
+          bodyElem.innerHTML = `<div class="text-center text-white p-8"><p class="text-sm">Format tidak mendukung pratinjau langsung.</p></div>`;
         }
 
-        document
-          .getElementById("modal-preview-file")
-          .classList.remove("hidden");
+        document.getElementById("modal-preview-file").classList.remove("hidden");
       }
 
       async function submitApproval(action) {
@@ -3361,50 +1968,32 @@
 
         if (action === "REJECTED") {
           t.status = "REJECTED";
-          t.history.push({
-            role: `${currentFullName} (${roleLevelNames[activeLevel]})`,
-            action: "REJECTED",
-            note: catatan,
-            date: new Date().toLocaleString("id-ID"),
-          });
+          t.history.push({ role: `${currentFullName} (${roleLevelNames[activeLevel]})`, action: "REJECTED", note: catatan, date: new Date().toLocaleString("id-ID") });
+          triggerEmailNotification("Pemohon / Checker", t.id, "Pengajuan Kertas Kerja Ditolak", `Catatan: ${catatan}`);
         } else if (action === "APPROVED") {
           if (activeLevel >= t.targetLevel) {
             t.status = "APPROVED_FINAL";
-            t.history.push({
-              role: `${currentFullName} (${roleLevelNames[activeLevel]})`,
-              action: "APPROVED FINAL",
-              note: catatan,
-              date: new Date().toLocaleString("id-ID"),
-            });
+            t.history.push({ role: `${currentFullName} (${roleLevelNames[activeLevel]})`, action: "APPROVED FINAL", note: catatan, date: new Date().toLocaleString("id-ID") });
+            triggerEmailNotification("Pemohon / Checker", t.id, "Kertas Kerja Disetujui Final", `Status: Approved Final oleh ${currentFullName}`);
           } else {
             const nextLvl = activeLevel + 1;
             t.status = `PENDING_LEVEL_${nextLvl}`;
-            t.history.push({
-              role: `${currentFullName} (${roleLevelNames[activeLevel]})`,
-              action: `APPROVED & PASSED TO ${roleLevelNames[nextLvl].toUpperCase()}`,
-              note: `${catatan} (Diteruskan ke ${roleLevelNames[nextLvl]})`,
-              date: new Date().toLocaleString("id-ID"),
-            });
+            t.history.push({ role: `${currentFullName} (${roleLevelNames[activeLevel]})`, action: `APPROVED & PASSED TO ${roleLevelNames[nextLvl].toUpperCase()}`, note: `${catatan} (Diteruskan ke ${roleLevelNames[nextLvl]})`, date: new Date().toLocaleString("id-ID") });
+            triggerEmailNotification(roleLevelNames[nextLvl], t.id, "Review Lanjutan Diperlukan", `Diteruskan oleh ${currentFullName}`);
           }
         }
 
         document.getElementById("input-approval-catatan").value = "";
         await saveData();
         closeModal("modal-detail");
-        alert("Keputusan persetujukan berhasil disimpan!");
+        alert("Keputusan persetujuan berhasil disimpan!");
       }
 
       function updateStats() {
         const total = transactions.length;
-        const pending = transactions.filter((t) =>
-          t.status.startsWith("PENDING"),
-        ).length;
-        const approved = transactions.filter(
-          (t) => t.status === "APPROVED_FINAL",
-        ).length;
-        const rejected = transactions.filter(
-          (t) => t.status === "REJECTED",
-        ).length;
+        const pending = transactions.filter((t) => t.status.startsWith("PENDING")).length;
+        const approved = transactions.filter((t) => t.status === "APPROVED_FINAL").length;
+        const rejected = transactions.filter((t) => t.status === "REJECTED").length;
         const completed = approved + rejected;
 
         document.getElementById("stat-total").innerText = total;
@@ -3412,42 +2001,89 @@
         document.getElementById("stat-approved").innerText = approved;
         document.getElementById("stat-rejected").innerText = rejected;
 
-        const pendingRoleCount = transactions.filter(
-          (t) => t.status === `PENDING_LEVEL_${activeLevel}`,
-        ).length;
+        const pendingRoleCount = transactions.filter((t) => t.status === `PENDING_LEVEL_${activeLevel}`).length;
         document.getElementById("notif-badge").innerText = pendingRoleCount;
 
-        const percentage =
-          total > 0 ? Math.round((completed / total) * 100) : 0;
-        document.getElementById("approval-progress-bar").style.width =
-          `${percentage}%`;
-        document.getElementById("progress-percentage-text").innerText =
-          `${percentage}% Selesai`;
+        const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+        document.getElementById("approval-progress-bar").style.width = `${percentage}%`;
+        document.getElementById("progress-percentage-text").innerText = `${percentage}% Selesai`;
         document.getElementById("progress-pending-count").innerText = pending;
-        document.getElementById("progress-completed-count").innerText =
-          completed;
+        document.getElementById("progress-completed-count").innerText = completed;
 
-        document.getElementById("stat-manual").innerText = transactions.filter(
-          (t) => t.channel === "Proses Manual",
-        ).length;
-        document.getElementById("stat-h2h").innerText = transactions.filter(
-          (t) => t.channel === "Host to Host (H2H)",
-        ).length;
-        document.getElementById("stat-web").innerText = transactions.filter(
-          (t) => t.channel === "Web Portal",
-        ).length;
-        document.getElementById("stat-digital").innerText = transactions.filter(
-          (t) => t.channel === "Digital Journey",
-        ).length;
+        document.getElementById("stat-manual").innerText = transactions.filter((t) => t.channel === "Proses Manual").length;
+        document.getElementById("stat-h2h").innerText = transactions.filter((t) => t.channel === "Host to Host (H2H)").length;
+        document.getElementById("stat-web").innerText = transactions.filter((t) => t.channel === "Web Portal").length;
+        document.getElementById("stat-digital").innerText = transactions.filter((t) => t.channel === "Digital Journey").length;
+      }
+
+      // CHART.JS INITIALIZATION & UPDATES
+      function initCharts() {
+        const ctxMonthly = document.getElementById("chartMonthly").getContext("2d");
+        chartMonthlyInstance = new Chart(ctxMonthly, {
+          type: "bar",
+          data: {
+            labels: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"],
+            datasets: [{
+              label: "Jumlah Transaksi",
+              data: new Array(12).fill(0),
+              backgroundColor: "rgba(59, 130, 246, 0.7)",
+              borderColor: "rgba(59, 130, 246, 1)",
+              borderWidth: 1,
+              borderRadius: 6
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+          }
+        });
+
+        const ctxStatus = document.getElementById("chartStatus").getContext("2d");
+        chartStatusInstance = new Chart(ctxStatus, {
+          type: "doughnut",
+          data: {
+            labels: ["Pending Review", "Approved Final", "Ditolak"],
+            datasets: [{
+              data: [0, 0, 0],
+              backgroundColor: ["#f59e0b", "#10b981", "#f43f5e"],
+              borderWidth: 2
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: "bottom", labels: { boxWidth: 12, font: { size: 11 } } } }
+          }
+        });
+      }
+
+      function updateCharts() {
+        if (!chartMonthlyInstance || !chartStatusInstance) return;
+
+        const monthlyCounts = new Array(12).fill(0);
+        transactions.forEach((t) => {
+          if (t.createdAtRaw) {
+            const d = new Date(t.createdAtRaw);
+            const m = d.getMonth(); // 0 - 11
+            monthlyCounts[m]++;
+          }
+        });
+
+        chartMonthlyInstance.data.datasets[0].data = monthlyCounts;
+        chartMonthlyInstance.update();
+
+        const pending = transactions.filter((t) => t.status.startsWith("PENDING")).length;
+        const approved = transactions.filter((t) => t.status === "APPROVED_FINAL").length;
+        const rejected = transactions.filter((t) => t.status === "REJECTED").length;
+
+        chartStatusInstance.data.datasets[0].data = [pending, approved, rejected];
+        chartStatusInstance.update();
       }
 
       function filterRepository() {
-        const val = document.getElementById("search-repo").value.toLowerCase();
-        document.querySelectorAll("#repo-table-body tr").forEach((row) => {
-          row.style.display = row.innerText.toLowerCase().includes(val)
-            ? ""
-            : "none";
-        });
+        renderRepository();
       }
 
       function closeModal(id) {
@@ -3483,7 +2119,7 @@
             filename: `Kertas_Kerja_${activeTransactionId}.pdf`,
             image: { type: "jpeg", quality: 0.98 },
             html2canvas: { scale: 2, useCORS: true, logging: false },
-            jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+            jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
           })
           .from(element)
           .save();
