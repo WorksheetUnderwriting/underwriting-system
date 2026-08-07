@@ -1434,16 +1434,15 @@
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, '0');
   const day = String(now.getDate()).padStart(2, '0');
-  
   const prefix = `WS-${year}-${month}-${day}-`;
 
   try {
-    // Ambil langsung 1 data teratas yang memiliki awalan tanggal hari ini dari Supabase (jauh lebih cepat)
+    // PANGGIL DATABASE: Hanya ambil ID terakhir hari ini, tidak menarik semua transaksi
     const { data, error } = await _supabase
       .from("uw_transactions")
       .select("id_transaksi")
       .ilike("id_transaksi", `${prefix}%`)
-      .order("created_at", { ascending: false })
+      .order("id_transaksi", { ascending: false })
       .limit(1);
 
     if (error) throw error;
@@ -1451,32 +1450,21 @@
     let nextNum = 1;
     if (data && data.length > 0) {
       const lastId = data[0].id_transaksi;
-      const lastNumStr = lastId.replace(prefix, "");
+      // Ambil 4 digit terakhir
+      const lastNumStr = lastId.split('-').pop();
       const parsedNum = parseInt(lastNumStr, 10);
       if (!isNaN(parsedNum)) {
         nextNum = parsedNum + 1;
       }
     }
 
+    // Update display ID
     document.getElementById("form-id-display").innerText = `${prefix}${String(nextNum).padStart(4, "0")}`;
-  } catch (err) {
-    console.error("Gagal generate ID cepat dari Supabase, fallback ke memori lokal:", err);
     
-    // Fallback cadangan jika koneksi/query server sedang lambat
-    if (!transactions || transactions.length === 0) {
-      document.getElementById("form-id-display").innerText = `${prefix}0001`;
-      return;
-    }
-
-    const maxID = transactions.reduce((max, item) => {
-      if (item.id && item.id.startsWith(prefix)) {
-        const num = parseInt(item.id.replace(prefix, ""), 10);
-        return !isNaN(num) && num > max ? num : max;
-      }
-      return max;
-    }, 0);
-
-    document.getElementById("form-id-display").innerText = `${prefix}${String(maxID + 1).padStart(4, "0")}`;
+  } catch (err) {
+    console.error("Gagal ambil ID dari server:", err);
+    // Fallback jika offline
+    document.getElementById("form-id-display").innerText = `${prefix}0001`;
   }
 }
 
