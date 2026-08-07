@@ -1165,34 +1165,29 @@
       });
 
       async function loadTransactionsFromSupabase() {
-  try {
-    const { data, error } = await _supabase
-      .from("uw_transactions") // Sesuaikan nama tabel di sini jika berbeda
-      .select("*")
-      .order("created_at", { ascending: false });
+        try {
+          const { data, error } = await _supabase
+            .from("uw_transactions")
+            .select("*")
+            .order("created_at", { ascending: false });
 
-    if (error) throw error;
-    
-    if (data && data.length > 0) {
-      transactions = data.map((item) => item.payload || item);
-      localStorage.setItem("uw_transactions", JSON.stringify(transactions));
-    } else {
-      transactions = JSON.parse(localStorage.getItem("uw_transactions")) || [];
-    }
-  } catch (err) {
-    console.warn("Gagal memuat dari Supabase, memuat dari cache lokal...");
-    transactions = JSON.parse(localStorage.getItem("uw_transactions")) || [];
-  }
-  
-  renderRepository();
-  updateStats();
-  updateCharts();
-}
+          if (error) throw error;
 
-  renderRepository();
-  updateStats();
-  updateCharts();
-}
+          if (data && data.length > 0) {
+            transactions = data.map((item) => item.payload || item);
+            localStorage.setItem("uw_transactions", JSON.stringify(transactions));
+          } else {
+            transactions = JSON.parse(localStorage.getItem("uw_transactions")) || [];
+          }
+        } catch (err) {
+          console.warn("Gagal memuat dari Supabase, menggunakan cache lokal:", err);
+          transactions = JSON.parse(localStorage.getItem("uw_transactions")) || [];
+        }
+
+        renderRepository();
+        updateStats();
+        updateCharts();
+      }
 
       function setupSupabaseRealtime() {
         try {
