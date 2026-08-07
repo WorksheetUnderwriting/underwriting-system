@@ -1174,7 +1174,9 @@
           if (error) throw error;
 
           if (data && data.length > 0) {
-            transactions = data.map((item) => item.payload || item);
+            transactions = data.map((item) => {
+              return item.payload ? (typeof item.payload === 'string' ? JSON.parse(item.payload) : item.payload) : item;
+            });
             localStorage.setItem("uw_transactions", JSON.stringify(transactions));
           } else {
             transactions = JSON.parse(localStorage.getItem("uw_transactions")) || [];
@@ -1187,6 +1189,9 @@
         renderRepository();
         updateStats();
         updateCharts();
+        
+        // TAMBAHKAN INI: Perbarui nomor ID otomatis setelah data selesai ditarik
+        generateNextID();
       }
 
       function setupSupabaseRealtime() {
