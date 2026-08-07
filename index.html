@@ -818,20 +818,20 @@
                   <thead>
                     <tr class="bg-slate-100/80 text-slate-500 uppercase text-[10px] font-bold tracking-wider border-b border-slate-200">
                       <th class="p-3 w-10 text-center"><input type="checkbox" id="select-all-repo" onchange="toggleSelectAll(this)" class="rounded cursor-pointer" /></th>
-                      <th class="p-3">1. ID TRANSAKSI</th>
-                      <th class="p-3">2. TANGGAL TRANSAKSI</th>
-                      <th class="p-3">3. CHANNEL / SEGMEN</th>
-                      <th class="p-3">4. NAMA PEMEGANG POLIS</th>
-                      <th class="p-3">5. NAMA TERTANGGUNG</th>
-                      <th class="p-3">6. ID PESERTA</th>
-                      <th class="p-3">7. ID KTP</th>
-                      <th class="p-3">8. UANG PERTANGGUNGAN</th>
-                      <th class="p-3">9. PREMI</th>
-                      <th class="p-3">10. DOKUMEN</th>
-                      <th class="p-3">11. APPROVAL TERAKHIR</th>
-                      <th class="p-3">12. STATUS APPROVAL</th>
-                      <th class="p-3">13. USER INPUT</th>
-                      <th class="p-3 text-center">14. AKSI</th>
+                      <th class="p-3">ID TRANSAKSI</th>
+                      <th class="p-3">TANGGAL TRANSAKSI</th>
+                      <th class="p-3">CHANNEL / SEGMEN</th>
+                      <th class="p-3">NAMA PEMEGANG POLIS</th>
+                      <th class="p-3">NAMA TERTANGGUNG</th>
+                      <th class="p-3">ID PESERTA</th>
+                      <th class="p-3">ID KTP</th>
+                      <th class="p-3">UANG PERTANGGUNGAN</th>
+                      <th class="p-3">PREMI</th>
+                      <th class="p-3">DOKUMEN</th>
+                      <th class="p-3">APPROVAL TERAKHIR</th>
+                      <th class="p-3">STATUS APPROVAL</th>
+                      <th class="p-3">USER INPUT</th>
+                      <th class="p-3 text-center">AKSI</th>
                     </tr>
                   </thead>
                   <tbody id="repo-table-body" class="divide-y divide-slate-200/80 text-xs bg-white/60"></tbody>
@@ -1323,7 +1323,13 @@
           document.getElementById("input-id-peserta").value = cleanStringValue(primary["IDPeserta"] || primary["idpeserta"] || primary["ID_PESERTA"] || "");
           const noKtpValue = cleanStringValue(primary["No_Ktp"] || primary["NO_KTP"] || primary["NIK"] || "");
           document.getElementById("input-no-ktp").value = noKtpValue;
-          document.getElementById("input-pemegang").value = cleanStringValue(primary["Unit Pemegang Polis"] || primary["UNIT PEMEGANG POLIS"] || "");
+          
+          // Mengambil nama pemegang polis dari Excel sesuai kolom pemegang polis / unit pemegang polis
+          const pemegangPolisExcel = cleanStringValue(
+            primary["Pemegang Polis"] || primary["PEMEGANG POLIS"] || primary["Nama Pemegang Polis"] || primary["Unit Pemegang Polis"] || primary["UNIT PEMEGANG POLIS"] || ""
+          );
+          document.getElementById("input-pemegang").value = pemegangPolisExcel;
+
           document.getElementById("input-nama").value = cleanStringValue(primary["NamaTtg"] || primary["NAMATTG"] || primary["Nama Tertanggung"] || "");
 
           let rawDate = primary["TlhTtg"] || primary["TLHTTG"] || "";
@@ -1824,19 +1830,19 @@
 
           return {
             "No": idx + 1,
-            "1. ID TRANSAKSI": t.id,
-            "2. TANGGAL TRANSAKSI": t.dateFormatted || "-",
-            "3. CHANNEL / SEGMEN": `${t.channel} / ${t.segmen}`,
-            "4. NAMA PEMEGANG POLIS": t.pemegang || "-",
-            "5. NAMA TERTANGGUNG": t.nama,
-            "6. ID PESERTA": t.idPeserta || "-",
-            "7. ID KTP": t.noKtp || "-",
-            "8. UANG PERTANGGUNGAN": t.up,
-            "9. PREMI": t.totalPremi,
-            "10. DOKUMEN": `${Object.values(t.files).filter((f) => f !== null).length}/5 File`,
-            "11. APPROVAL TERAKHIR": lastApproval,
-            "12. STATUS APPROVAL": t.status,
-            "13. USER INPUT": t.userInput || currentFullName
+            "ID TRANSAKSI": t.id,
+            "TANGGAL TRANSAKSI": t.dateFormatted || "-",
+            "CHANNEL / SEGMEN": `${t.channel} / ${t.segmen}`,
+            "NAMA PEMEGANG POLIS": t.pemegang || "-",
+            "NAMA TERTANGGUNG": t.nama,
+            "ID PESERTA": t.idPeserta || "-",
+            "ID KTP": t.noKtp || "-",
+            "UANG PERTANGGUNGAN": t.up,
+            "PREMI": t.totalPremi,
+            "DOKUMEN": `${Object.values(t.files).filter((f) => f !== null).length}/5 File`,
+            "APPROVAL TERAKHIR": lastApproval,
+            "STATUS APPROVAL": t.status,
+            "USER INPUT": t.userInput || currentFullName
           };
         });
 
