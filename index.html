@@ -1324,9 +1324,9 @@
           const noKtpValue = cleanStringValue(primary["No_Ktp"] || primary["NO_KTP"] || primary["NIK"] || "");
           document.getElementById("input-no-ktp").value = noKtpValue;
           
-          // Mengambil nama pemegang polis dari Excel sesuai kolom pemegang polis / unit pemegang polis
+          // Memastikan hanya mengambil kolom Pemegang Polis / Nama Pemegang Polis dari Excel (tidak tertukar dengan ID Peserta)
           const pemegangPolisExcel = cleanStringValue(
-            primary["Pemegang Polis"] || primary["PEMEGANG POLIS"] || primary["Nama Pemegang Polis"] || primary["Unit Pemegang Polis"] || primary["UNIT PEMEGANG POLIS"] || ""
+            primary["Pemegang Polis"] || primary["PEMEGANG POLIS"] || primary["Nama Pemegang Polis"] || primary["NAMA PEMEGANG POLIS"] || primary["Unit Pemegang Polis"] || primary["UNIT PEMEGANG POLIS"] || ""
           );
           document.getElementById("input-pemegang").value = pemegangPolisExcel;
 
