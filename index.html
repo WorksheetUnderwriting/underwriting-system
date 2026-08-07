@@ -1426,9 +1426,23 @@
       }
 
       function generateNextID() {
-        const nextNum = transactions.length + 1;
-        document.getElementById("form-id-display").innerText = `UW-2026-${String(nextNum).padStart(4, "0")}`;
-      }
+  if (!transactions || transactions.length === 0) {
+    document.getElementById("form-id-display").innerText = "UW-2026-0001";
+    return;
+  }
+
+  // Cari angka ID tertinggi yang ada di dalam array
+  const maxID = transactions.reduce((max, item) => {
+    if (item.id && item.id.startsWith("UW-2026-")) {
+      const num = parseInt(item.id.replace("UW-2026-", ""), 10);
+      return !isNaN(num) && num > max ? num : max;
+    }
+    return max;
+  }, 0);
+
+  const nextNum = maxID + 1;
+  document.getElementById("form-id-display").innerText = `UW-2026-${String(nextNum).padStart(4, "0")}`;
+}
 
       function handleSegmenChange() {
         const segmen = document.getElementById("input-segmen").value;
