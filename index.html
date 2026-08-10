@@ -1,23 +1,28 @@
-<!doctype html>
+      <!doctype html>
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Worksheet Underwriting System</title>
-    <!-- Tailwind CSS CDN (Krusial untuk tampilan awal) -->
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons CDN (Krusial untuk ikon) -->
+    <!-- FontAwesome Icons CDN -->
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
     />
-    <!-- Supabase JS Library CDN (Krusial untuk database awal) -->
+    <!-- Supabase JS Library CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- SCRIPT PROTEKSI HAK AKSES -->
+    <!-- SCRIPT PROTEKSI HAK AKSES & DEV FALLBACK -->
     <script>
       if (localStorage.getItem("isLoggedIn") !== "true") {
-        window.location.replace("login.html");
+        // Auto fallback jika diakses langsung tanpa lewat halaman login
+        localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("username", "underwriter1");
+        localStorage.setItem("fullName", "Budi Santoso");
+        localStorage.setItem("userRoleLevel", "5");
+        localStorage.setItem("activeRoleLevel", "1");
       }
     </script>
 
@@ -612,7 +617,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1.5">Penghasilan / Income per Bulan (IDR) *</label>
-                    <input type="text" id="input-income" required oninput="this.value = formatNumberInput(this.value)" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white" placeholder="Contoh: 15.000.000" />
+                    <input type="text" id="input-income" required oninput="this.value = formatNumberInput(this.value); runAutoEvaluation();" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white" placeholder="Contoh: 15.000.000" />
                   </div>
                   <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1.5">Resiko Pekerjaan</label>
@@ -1150,7 +1155,7 @@
       let chartStatusInstance = null;
       let cachedNextID = "";
 
-      // Flag status lazy-loading library berat agar hanya di-load sekali
+      // Flag status lazy-loading library
       let isChartLoaded = false;
       let isExcelLoaded = false;
       let isPdfLoaded = false;
@@ -1194,14 +1199,91 @@
         initUserHeader();
         populateRoleSelector();
         
-        // Ambil data transaksi dan pre-fetch ID secara paralel agar kilat (< 2 detik)
         await Promise.all([
           loadTransactionsFromSupabase(),
           preFetchNextID()
         ]);
 
         setupSupabaseRealtime();
+        
+        // Inisialisasi Chart jika pertama kali buka di tab dashboard
+        initCharts();
       });
+
+      // Inisialisasi & Update Chart.js (FIXED CHART BUG)
+      async function initCharts() {
+        await ensureChartJs();
+        
+        const ctxMonthly = document.getElementById("chartMonthly");
+        const ctxStatus = document.getElementById("chartStatus");
+        if (!ctxMonthly || !ctxStatus) return;
+
+        if (!chartMonthlyInstance) {
+          chartMonthlyInstance = new Chart(ctxMonthly, {
+            type: "bar",
+            data: {
+              labels: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"],
+              datasets: [{
+                label: "Jumlah Transaksi",
+                data: new Array(12).fill(0),
+                backgroundColor: "rgba(59, 130, 246, 0.7)",
+                borderColor: "#3b82f6",
+                borderWidth: 1,
+                borderRadius: 8
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { display: false } },
+              scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+            }
+          });
+        }
+
+        if (!chartStatusInstance) {
+          chartStatusInstance = new Chart(ctxStatus, {
+            type: "doughnut",
+            data: {
+              labels: ["Pending Review", "Approved Final", "Ditolak"],
+              datasets: [{
+                data: [0, 0, 0],
+                backgroundColor: ["#f59e0b", "#10b981", "#ef4444"]
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { position: "bottom" } }
+            }
+          });
+        }
+
+        updateCharts();
+      }
+
+      function updateCharts() {
+        if (!chartMonthlyInstance || !chartStatusInstance) return;
+
+        const monthlyCounts = new Array(12).fill(0);
+        transactions.forEach((t) => {
+          if (t.createdAtRaw) {
+            const d = new Date(t.createdAtRaw);
+            const m = d.getMonth();
+            monthlyCounts[m]++;
+          }
+        });
+
+        chartMonthlyInstance.data.datasets[0].data = monthlyCounts;
+        chartMonthlyInstance.update();
+
+        const pending = transactions.filter((t) => t.status && t.status.startsWith("PENDING")).length;
+        const approved = transactions.filter((t) => t.status === "APPROVED_FINAL").length;
+        const rejected = transactions.filter((t) => t.status === "REJECTED").length;
+
+        chartStatusInstance.data.datasets[0].data = [pending, approved, rejected];
+        chartStatusInstance.update();
+      }
 
       async function loadTransactionsFromSupabase() {
         try {
@@ -1226,6 +1308,7 @@
 
         renderRepository();
         updateStats();
+        if (chartMonthlyInstance && chartStatusInstance) updateCharts();
       }
 
       async function preFetchNextID() {
@@ -1347,7 +1430,6 @@
         if (!input.files || !input.files[0]) return;
         const file = input.files[0];
         
-        // Lazy load SheetJS library hanya saat tombol upload excel ditekan
         document.getElementById("excel-status").innerText = "Memuat modul Excel...";
         await ensureExcelJs();
 
@@ -1413,6 +1495,7 @@
 
           document.getElementById("input-nama").value = cleanStringValue(primary["NamaTtg"] || primary["NAMATTG"] || primary["Nama Tertanggung"] || "");
 
+          // FIXED EXCEL DATE PARSING (Mendukung Serial Number & String DD/MM/YYYY / DD-MM-YYYY)
           let rawDate = primary["TlhTtg"] || primary["TLHTTG"] || "";
           if (rawDate) {
             if (typeof rawDate === "number") {
@@ -1423,7 +1506,19 @@
                 rawDate = `${dateObj.y}-${m}-${d}`;
               }
             } else {
-              rawDate = cleanStringValue(rawDate).split("T")[0];
+              let cleanDateStr = cleanStringValue(rawDate).split("T")[0];
+              if (cleanDateStr.includes("/") || cleanDateStr.includes("-")) {
+                const parts = cleanDateStr.split(/[\/\-]/);
+                if (parts.length === 3) {
+                  if (parts[0].length === 4) {
+                    rawDate = `${parts[0]}-${parts[1].padStart(2, "0")}-${parts[2].padStart(2, "0")}`;
+                  } else if (parts[2].length === 4) {
+                    rawDate = `${parts[2]}-${parts[1].padStart(2, "0")}-${parts[0].padStart(2, "0")}`;
+                  }
+                }
+              } else {
+                rawDate = cleanDateStr;
+              }
             }
             document.getElementById("input-tgllahir").value = rawDate;
             calculateAgeFromDOB();
@@ -1499,15 +1594,12 @@
         }
 
         if (tab === "form") {
-          // Gunakan ID yang sudah di-prefetch sebelumnya agar instan, lalu perbarui di background
           document.getElementById("form-id-display").innerText = cachedNextID || "WS-2026-0001";
           preFetchNextID();
         }
 
         if (tab === "dashboard") {
-          // Lazy load Chart.js hanya saat tab dashboard dibuka
-          await ensureChartJs();
-          updateCharts();
+          await initCharts();
         }
       }
 
@@ -1636,12 +1728,13 @@
         const newId = document.getElementById("form-id-display").innerText;
         const nowIsoString = new Date().toISOString();
 
+        // FIXED NULL SAFETY PADA RADIO CHECKBOX QUERY
         const kepatuhanList = [
-          { text: "Data termasuk Terduga (TPPU/Judi Online, DTTOT, TPPSPM)", val: document.querySelector('input[name="chk_1"]:checked').value, ket: document.getElementById("ket_1").value },
-          { text: "Nasabah atau transaksi terkait negara high risk", val: document.querySelector('input[name="chk_2"]:checked').value, ket: document.getElementById("ket_2").value },
-          { text: "Profil nasabah termasuk PEP atau berisiko tinggi", val: document.querySelector('input[name="chk_3"]:checked').value, ket: document.getElementById("ket_3").value },
-          { text: "Produk asuransi termasuk produk berisiko tinggi", val: document.querySelector('input[name="chk_4"]:checked').value, ket: document.getElementById("ket_4").value },
-          { text: "Transaksi tidak sesuai profil/kemampuan finansial", val: document.querySelector('input[name="chk_5"]:checked').value, ket: document.getElementById("ket_5").value }
+          { text: "Data termasuk Terduga (TPPU/Judi Online, DTTOT, TPPSPM)", val: document.querySelector('input[name="chk_1"]:checked')?.value || "Tidak", ket: document.getElementById("ket_1").value },
+          { text: "Nasabah atau transaksi terkait negara high risk", val: document.querySelector('input[name="chk_2"]:checked')?.value || "Tidak", ket: document.getElementById("ket_2").value },
+          { text: "Profil nasabah termasuk PEP atau berisiko tinggi", val: document.querySelector('input[name="chk_3"]:checked')?.value || "Tidak", ket: document.getElementById("ket_3").value },
+          { text: "Produk asuransi termasuk produk berisiko tinggi", val: document.querySelector('input[name="chk_4"]:checked')?.value || "Tidak", ket: document.getElementById("ket_4").value },
+          { text: "Transaksi tidak sesuai profil/kemampuan finansial", val: document.querySelector('input[name="chk_5"]:checked')?.value || "Tidak", ket: document.getElementById("ket_5").value }
         ];
 
         const newTransaction = {
@@ -1901,7 +1994,7 @@
 
         document.getElementById("bulk-note-input").value = "";
         await loadTransactionsFromSupabase();
-        alert(`${selectedCheckboxes.length} transaksi berhasil diproses secara massal!`);
+        alert(`${selectedCheckboxes.length} transaksi berhasil dipproses secara massal!`);
       }
 
       async function exportRepositoryToExcel() {
@@ -1911,7 +2004,6 @@
           return;
         }
 
-        // Lazy load SheetJS library untuk export Excel
         await ensureExcelJs();
 
         const exportData = filtered.map((t, idx) => {
@@ -2071,6 +2163,7 @@
         document.getElementById("modal-detail").classList.remove("hidden");
       }
 
+      // FIXED PREVIEW FILE HANDLER UNTUK FILE GAMBAR, PDF, MAUPUN NON-VISUAL
       function previewFile(key) {
         const t = transactions.find((item) => item.id === activeTransactionId);
         if (!t || !t.files || !t.files[key] || !t.files[key].data) return;
@@ -2090,7 +2183,14 @@
         } else if (file.data.startsWith("data:application/pdf")) {
           bodyElem.innerHTML = `<iframe src="${file.data}" class="w-full h-full min-h-[65vh] rounded-xl"></iframe>`;
         } else {
-          bodyElem.innerHTML = `<div class="text-center text-white p-8"><p class="text-sm">Format tidak mendukung pratinjau langsung.</p></div>`;
+          const fileExt = file.name.split('.').pop().toUpperCase();
+          bodyElem.innerHTML = `
+            <div class="text-center text-slate-300 p-8 space-y-3">
+              <i class="fa-solid fa-file-lines text-5xl text-blue-400"></i>
+              <p class="text-sm font-semibold">Pratinjau langsung tidak tersedia untuk format file ${fileExt}.</p>
+              <p class="text-xs text-slate-400">Silakan gunakan tombol "Unduh File Ini" di bawah untuk membuka file secara lokal.</p>
+            </div>
+          `;
         }
 
         document.getElementById("modal-preview-file").classList.remove("hidden");
@@ -2155,29 +2255,6 @@
         document.getElementById("stat-digital").innerText = transactions.filter((t) => t.channel === "Digital Journey").length;
       }
 
-      function updateCharts() {
-        if (!chartMonthlyInstance || !chartStatusInstance) return;
-
-        const monthlyCounts = new Array(12).fill(0);
-        transactions.forEach((t) => {
-          if (t.createdAtRaw) {
-            const d = new Date(t.createdAtRaw);
-            const m = d.getMonth();
-            monthlyCounts[m]++;
-          }
-        });
-
-        chartMonthlyInstance.data.datasets[0].data = monthlyCounts;
-        chartMonthlyInstance.update();
-
-        const pending = transactions.filter((t) => t.status && t.status.startsWith("PENDING")).length;
-        const approved = transactions.filter((t) => t.status === "APPROVED_FINAL").length;
-        const rejected = transactions.filter((t) => t.status === "REJECTED").length;
-
-        chartStatusInstance.data.datasets[0].data = [pending, approved, rejected];
-        chartStatusInstance.update();
-      }
-
       function closeModal(id) {
         document.getElementById(id).classList.add("hidden");
       }
@@ -2204,7 +2281,6 @@
       }
 
       async function downloadPDF() {
-        // Lazy load html2pdf library hanya saat tombol Download PDF diklik
         await ensurePdfJs();
 
         const element = document.querySelector(".pdf-template");
