@@ -1,4 +1,4 @@
-      <!doctype html>
+<!doctype html>
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
@@ -14,15 +14,10 @@
     <!-- Supabase JS Library CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- SCRIPT PROTEKSI HAK AKSES & DEV FALLBACK -->
+    <!-- SCRIPT PROTEKSI HAK AKSES PRODUCTION -->
     <script>
       if (localStorage.getItem("isLoggedIn") !== "true") {
-        // Auto fallback jika diakses langsung tanpa lewat halaman login
-        localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("username", "underwriter1");
-        localStorage.setItem("fullName", "Budi Santoso");
-        localStorage.setItem("userRoleLevel", "5");
-        localStorage.setItem("activeRoleLevel", "1");
+        window.location.replace("login.html");
       }
     </script>
 
@@ -351,7 +346,7 @@
               </div>
             </div>
 
-            <!-- GRAFIK ANALITIK MENGGUNAKAN CHART.JS -->
+            <!-- GRAFIK ANALITIK -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div class="glossy-card p-6 rounded-2xl space-y-4">
                 <h4 class="text-xs font-extrabold text-slate-800 uppercase tracking-wider flex items-center gap-2">
@@ -412,7 +407,7 @@
             <form id="uw-form" onsubmit="handleFormSubmit(event)" class="glossy-card rounded-2xl p-8 space-y-8">
               <div class="border-b border-slate-200/80 pb-4 flex justify-between items-center">
                 <div>
-                  <h3 class="text-lg font-bold text-slate-800">Form Kertas Kerja Underwriting (UW)</h3>
+                  <h3 class="text-lg font-bold text-slate-800" id="form-header-title">Form Kertas Kerja Underwriting (UW)</h3>
                   <p class="text-xs text-slate-500">Isi data calon tertanggung, segmen bisnis, kanal pengajuan, dan pemeriksaan kepatuhan.</p>
                 </div>
                 <span class="text-xs font-mono bg-white border border-slate-300/80 text-slate-700 px-3 py-1.5 rounded-xl font-bold shadow-sm">
@@ -526,8 +521,8 @@
                     <input type="text" id="input-id-peserta" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono" placeholder="Masukkan ID Peserta" />
                   </div>
                   <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Nomor KTP (No_Ktp) *</label>
-                    <input type="text" id="input-no-ktp" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono" placeholder="Masukkan 16 digit NIK/No KTP" />
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Nomor KTP (No_Ktp) * [16 Digit]</label>
+                    <input type="text" id="input-no-ktp" maxlength="16" minlength="16" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono" placeholder="Masukkan 16 digit NIK/No KTP" />
                   </div>
                   <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1.5">Nama Produk Asuransi *</label>
@@ -781,8 +776,8 @@
                 <button type="button" onclick="resetForm()" class="px-5 py-2.5 text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition cursor-pointer">
                   Reset Form
                 </button>
-                <button type="submit" class="px-6 py-2.5 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-lg shadow-blue-600/30 transition flex items-center gap-2 cursor-pointer glow-blue">
-                  <i class="fa-solid fa-paper-plane"></i> Simpan & Submit Kertas Kerja
+                <button type="submit" id="btn-submit-form" class="px-6 py-2.5 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-lg shadow-blue-600/30 transition flex items-center gap-2 cursor-pointer glow-blue">
+                  <i class="fa-solid fa-paper-plane"></i> <span id="submit-btn-text">Simpan & Submit Kertas Kerja</span>
                 </button>
               </div>
             </form>
@@ -834,6 +829,20 @@
                   </thead>
                   <tbody id="repo-table-body" class="divide-y divide-slate-200/80 text-xs bg-white/60"></tbody>
                 </table>
+              </div>
+
+              <!-- NAVIGASI PAGINASI -->
+              <div class="p-4 bg-white/80 border-t border-slate-200/80 flex items-center justify-between text-xs text-slate-600">
+                <span id="pagination-info">Menampilkan 0 dari 0 data</span>
+                <div class="flex items-center gap-2">
+                  <button id="btn-prev-page" onclick="changePage(-1)" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-700 font-bold disabled:opacity-50 transition cursor-pointer">
+                    <i class="fa-solid fa-chevron-left"></i> Prev
+                  </button>
+                  <span id="page-num-display" class="font-extrabold text-blue-600 px-2">Hal 1 / 1</span>
+                  <button id="btn-next-page" onclick="changePage(1)" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-700 font-bold disabled:opacity-50 transition cursor-pointer">
+                    Next <i class="fa-solid fa-chevron-right"></i>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -1086,7 +1095,7 @@
       </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC ENGINE DENGAN LAZY LOADING CDN -->
+    <!-- JAVASCRIPT LOGIC ENGINE -->
     <script>
       const SUPABASE_URL = "https://ubahduvkhlfzvghrapwn.supabase.co";
       const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InViYWhkdXZraGxmenZnaHJhcHduIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5MzIzMTIsImV4cCI6MjEwMTUwODMxMn0.cDy4TexuHVG6e81U8vYRxiWB0zIDXMTQnOmr7Uo3SBM";
@@ -1149,13 +1158,18 @@
 
       let transactions = [];
       let activeTransactionId = null;
+      let editingTransactionId = null; // Flag untuk mode edit
       let tempFiles = { ktp: null, spajk: null, riplay: null, gaji: null, other: null };
       let excelMasterData = [];
       let chartMonthlyInstance = null;
       let chartStatusInstance = null;
       let cachedNextID = "";
 
-      // Flag status lazy-loading library
+      // PAGINASI STATE
+      let currentPage = 1;
+      const rowsPerPage = 10;
+
+      // Lazy Loading
       let isChartLoaded = false;
       let isExcelLoaded = false;
       let isPdfLoaded = false;
@@ -1205,12 +1219,9 @@
         ]);
 
         setupSupabaseRealtime();
-        
-        // Inisialisasi Chart jika pertama kali buka di tab dashboard
         initCharts();
       });
 
-      // Inisialisasi & Update Chart.js (FIXED CHART BUG)
       async function initCharts() {
         await ensureChartJs();
         
@@ -1495,7 +1506,6 @@
 
           document.getElementById("input-nama").value = cleanStringValue(primary["NamaTtg"] || primary["NAMATTG"] || primary["Nama Tertanggung"] || "");
 
-          // FIXED EXCEL DATE PARSING (Mendukung Serial Number & String DD/MM/YYYY / DD-MM-YYYY)
           let rawDate = primary["TlhTtg"] || primary["TLHTTG"] || "";
           if (rawDate) {
             if (typeof rawDate === "number") {
@@ -1593,7 +1603,7 @@
           document.getElementById("page-title").innerText = titles[tab];
         }
 
-        if (tab === "form") {
+        if (tab === "form" && !editingTransactionId) {
           document.getElementById("form-id-display").innerText = cachedNextID || "WS-2026-0001";
           preFetchNextID();
         }
@@ -1719,16 +1729,37 @@
 
       async function handleFormSubmit(e) {
         e.preventDefault();
+
+        // 1. VALIDASI NIK 16 DIGIT
+        const noKtpVal = document.getElementById("input-no-ktp").value.trim();
+        if (noKtpVal.length !== 16 || isNaN(noKtpVal)) {
+          alert("Nomor KTP (NIK) harus berjumlah 16 digit angka!");
+          return;
+        }
+
+        // 2. VALIDASI DOKUMEN WAJIB
         if (!tempFiles.ktp || !tempFiles.spajk || !tempFiles.riplay) {
           alert("Mohon unggah 3 dokumen wajib: KTP, SPAJK, dan RIPLAY Personal!");
           return;
         }
 
+        // 3. VALIDASI DUPLIKASI IDUPLOAD
+        const idUploadVal = document.getElementById("input-id-upload").value.trim();
+        if (idUploadVal && !editingTransactionId) {
+          const isDuplicate = transactions.some(
+            (t) => String(t.idUpload).trim().toLowerCase() === idUploadVal.toLowerCase()
+          );
+          if (isDuplicate) {
+            if (!confirm(`IDUpload "${idUploadVal}" sudah pernah diinput sebelumnya. Apakah Anda yakin ingin melanjutkan submit data ganda ini?`)) {
+              return;
+            }
+          }
+        }
+
         const evalResult = runAutoEvaluation();
-        const newId = document.getElementById("form-id-display").innerText;
+        const newId = editingTransactionId || document.getElementById("form-id-display").innerText;
         const nowIsoString = new Date().toISOString();
 
-        // FIXED NULL SAFETY PADA RADIO CHECKBOX QUERY
         const kepatuhanList = [
           { text: "Data termasuk Terduga (TPPU/Judi Online, DTTOT, TPPSPM)", val: document.querySelector('input[name="chk_1"]:checked')?.value || "Tidak", ket: document.getElementById("ket_1").value },
           { text: "Nasabah atau transaksi terkait negara high risk", val: document.querySelector('input[name="chk_2"]:checked')?.value || "Tidak", ket: document.getElementById("ket_2").value },
@@ -1737,54 +1768,94 @@
           { text: "Transaksi tidak sesuai profil/kemampuan finansial", val: document.querySelector('input[name="chk_5"]:checked')?.value || "Tidak", ket: document.getElementById("ket_5").value }
         ];
 
-        const newTransaction = {
-          id: newId,
-          createdAtRaw: nowIsoString,
-          dateFormatted: new Date().toLocaleDateString("id-ID"),
-          idUpload: document.getElementById("input-id-upload").value,
-          idPeserta: document.getElementById("input-id-peserta").value,
-          noKtp: document.getElementById("input-no-ktp").value,
-          segmen: document.getElementById("input-segmen").value,
-          channel: document.getElementById("input-channel").value,
-          kategoriProduk: document.getElementById("input-kategori-produk").value,
-          produk: document.getElementById("input-produk").value,
-          perusahaan: document.getElementById("input-perusahaan").value || "-",
-          pemegang: document.getElementById("input-pemegang").value,
-          nama: document.getElementById("input-nama").value,
-          tgllahir: document.getElementById("input-tgllahir").value,
-          usia: document.getElementById("input-usia").value,
-          pekerjaan: document.getElementById("input-pekerjaan").value,
-          up: getUnformattedNumber(document.getElementById("input-up").value),
-          uptotal: getUnformattedNumber(document.getElementById("input-uptotal").value),
-          masa: document.getElementById("input-masa").value,
-          premi: getUnformattedNumber(document.getElementById("input-premi").value),
-          ekstraPremi: getUnformattedNumber(document.getElementById("input-ekstra-premi").value),
-          totalPremi: getUnformattedNumber(document.getElementById("input-total-premi").value),
-          tinggi: document.getElementById("input-tinggi").value,
-          berat: document.getElementById("input-berat").value,
-          income: getUnformattedNumber(document.getElementById("input-income").value),
-          medis: document.getElementById("input-medis").value,
-          catatan: document.getElementById("input-catatan").value,
-          kepatuhan: kepatuhanList,
-          files: { ...tempFiles },
-          eval: evalResult,
-          targetLevel: evalResult.requiredLevel,
-          status: "PENDING_LEVEL_2",
-          userInput: currentFullName,
-          history: [
-            {
+        let updatedTx = null;
+
+        if (editingTransactionId) {
+          updatedTx = transactions.find((t) => t.id === editingTransactionId);
+          if (updatedTx) {
+            updatedTx.idUpload = idUploadVal;
+            updatedTx.idPeserta = document.getElementById("input-id-peserta").value;
+            updatedTx.noKtp = noKtpVal;
+            updatedTx.segmen = document.getElementById("input-segmen").value;
+            updatedTx.channel = document.getElementById("input-channel").value;
+            updatedTx.kategoriProduk = document.getElementById("input-kategori-produk").value;
+            updatedTx.produk = document.getElementById("input-produk").value;
+            updatedTx.perusahaan = document.getElementById("input-perusahaan").value || "-";
+            updatedTx.pemegang = document.getElementById("input-pemegang").value;
+            updatedTx.nama = document.getElementById("input-nama").value;
+            updatedTx.tgllahir = document.getElementById("input-tgllahir").value;
+            updatedTx.usia = document.getElementById("input-usia").value;
+            updatedTx.pekerjaan = document.getElementById("input-pekerjaan").value;
+            updatedTx.up = getUnformattedNumber(document.getElementById("input-up").value);
+            updatedTx.uptotal = getUnformattedNumber(document.getElementById("input-uptotal").value);
+            updatedTx.masa = document.getElementById("input-masa").value;
+            updatedTx.premi = getUnformattedNumber(document.getElementById("input-premi").value);
+            updatedTx.ekstraPremi = getUnformattedNumber(document.getElementById("input-ekstra-premi").value);
+            updatedTx.totalPremi = getUnformattedNumber(document.getElementById("input-total-premi").value);
+            updatedTx.tinggi = document.getElementById("input-tinggi").value;
+            updatedTx.berat = document.getElementById("input-berat").value;
+            updatedTx.income = getUnformattedNumber(document.getElementById("input-income").value);
+            updatedTx.medis = document.getElementById("input-medis").value;
+            updatedTx.catatan = document.getElementById("input-catatan").value;
+            updatedTx.kepatuhan = kepatuhanList;
+            updatedTx.files = { ...tempFiles };
+            updatedTx.eval = evalResult;
+            updatedTx.history.push({
               role: `${currentFullName} (${roleLevelNames[1]})`,
-              action: `VERIFIED & SUBMITTED`,
-              note: `Dokumen diverifikasi oleh Checker. Diajukan ke Supervisor.`,
+              action: `UPDATED`,
+              note: `Data kertas kerja diperbarui oleh Checker.`,
               date: new Date().toLocaleString("id-ID")
-            }
-          ]
-        };
+            });
+          }
+        } else {
+          updatedTx = {
+            id: newId,
+            createdAtRaw: nowIsoString,
+            dateFormatted: new Date().toLocaleDateString("id-ID"),
+            idUpload: idUploadVal,
+            idPeserta: document.getElementById("input-id-peserta").value,
+            noKtp: noKtpVal,
+            segmen: document.getElementById("input-segmen").value,
+            channel: document.getElementById("input-channel").value,
+            kategoriProduk: document.getElementById("input-kategori-produk").value,
+            produk: document.getElementById("input-produk").value,
+            perusahaan: document.getElementById("input-perusahaan").value || "-",
+            pemegang: document.getElementById("input-pemegang").value,
+            nama: document.getElementById("input-nama").value,
+            tgllahir: document.getElementById("input-tgllahir").value,
+            usia: document.getElementById("input-usia").value,
+            pekerjaan: document.getElementById("input-pekerjaan").value,
+            up: getUnformattedNumber(document.getElementById("input-up").value),
+            uptotal: getUnformattedNumber(document.getElementById("input-uptotal").value),
+            masa: document.getElementById("input-masa").value,
+            premi: getUnformattedNumber(document.getElementById("input-premi").value),
+            ekstraPremi: getUnformattedNumber(document.getElementById("input-ekstra-premi").value),
+            totalPremi: getUnformattedNumber(document.getElementById("input-total-premi").value),
+            tinggi: document.getElementById("input-tinggi").value,
+            berat: document.getElementById("input-berat").value,
+            income: getUnformattedNumber(document.getElementById("input-income").value),
+            medis: document.getElementById("input-medis").value,
+            catatan: document.getElementById("input-catatan").value,
+            kepatuhan: kepatuhanList,
+            files: { ...tempFiles },
+            eval: evalResult,
+            targetLevel: evalResult.requiredLevel,
+            status: "PENDING_LEVEL_2",
+            userInput: currentFullName,
+            history: [
+              {
+                role: `${currentFullName} (${roleLevelNames[1]})`,
+                action: `VERIFIED & SUBMITTED`,
+                note: `Dokumen diverifikasi oleh Checker. Diajukan ke Supervisor.`,
+                date: new Date().toLocaleString("id-ID")
+              }
+            ]
+          };
+          transactions.unshift(updatedTx);
+        }
 
-        transactions.unshift(newTransaction);
-        await saveData(newTransaction);
-
-        triggerEmailNotification(roleLevelNames[2], newId, "Pengajuan Kertas Kerja Baru Memerlukan Review", `Nasabah: ${newTransaction.nama} | UP: Rp ${formatNumberInput(newTransaction.up)}`);
+        await saveData(updatedTx);
+        triggerEmailNotification(roleLevelNames[2], newId, "Pengajuan Kertas Kerja Memerlukan Review", `Nasabah: ${updatedTx.nama} | UP: Rp ${formatNumberInput(updatedTx.up)}`);
 
         alert(`Kertas Kerja ${newId} Berhasil Disimpan & Diteruskan ke Supervisor!`);
         resetForm();
@@ -1793,6 +1864,10 @@
 
       function resetForm() {
         document.getElementById("uw-form").reset();
+        editingTransactionId = null;
+        document.getElementById("form-header-title").innerText = "Form Kertas Kerja Underwriting (UW)";
+        document.getElementById("submit-btn-text").innerText = "Simpan & Submit Kertas Kerja";
+
         tempFiles = { ktp: null, spajk: null, riplay: null, gaji: null, other: null };
         ["ktp-info", "spajk-info", "riplay-info", "gaji-info", "other-info"].forEach((id) => {
           document.getElementById(id).classList.add("hidden");
@@ -1844,12 +1919,27 @@
 
         const filtered = getFilteredTransactions();
 
-        if (filtered.length === 0) {
+        // LOGIKA PAGINASI
+        const totalItems = filtered.length;
+        const totalPages = Math.ceil(totalItems / rowsPerPage) || 1;
+        if (currentPage > totalPages) currentPage = totalPages;
+        if (currentPage < 1) currentPage = 1;
+
+        const startIndex = (currentPage - 1) * rowsPerPage;
+        const pageData = filtered.slice(startIndex, startIndex + rowsPerPage);
+
+        // UPDATE INFO PAGINASI UI
+        document.getElementById("pagination-info").innerText = `Menampilkan ${totalItems === 0 ? 0 : startIndex + 1} - ${Math.min(startIndex + rowsPerPage, totalItems)} dari ${totalItems} data`;
+        document.getElementById("page-num-display").innerText = `Hal ${currentPage} / ${totalPages}`;
+        document.getElementById("btn-prev-page").disabled = currentPage === 1;
+        document.getElementById("btn-next-page").disabled = currentPage === totalPages;
+
+        if (pageData.length === 0) {
           tbody.innerHTML = `<tr><td colspan="15" class="p-8 text-center text-slate-400 font-medium">Belum ada transaksi kertas kerja tersimpan sesuai filter.</td></tr>`;
           return;
         }
 
-        filtered.forEach((t) => {
+        pageData.forEach((t) => {
           const tr = document.createElement("tr");
           tr.className = "hover:bg-blue-900/25 transition-all border-b border-slate-100 cursor-pointer";
           const attachedCount = t.files ? Object.values(t.files).filter((f) => f !== null).length : 0;
@@ -1901,13 +1991,101 @@
             <td class="p-3">${statusBadge}</td>
             <td class="p-3 text-xs font-semibold text-blue-600">${t.userInput || currentFullName}</td>
             <td class="p-3 text-center" onclick="event.stopPropagation()">
-              <button onclick="openModalDetail('${t.id}')" class="px-2.5 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg text-xs font-bold transition cursor-pointer shadow-sm inline-flex items-center gap-1">
-                <i class="fa-solid fa-eye"></i> Detail
-              </button>
+              <div class="flex items-center justify-center gap-1.5">
+                <button onclick="openModalDetail('${t.id}')" class="px-2 py-1 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg text-xs font-bold transition cursor-pointer shadow-sm flex items-center gap-1" title="Detail">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
+                <button onclick="editTransaction('${t.id}')" class="px-2 py-1 bg-amber-50 text-amber-600 hover:bg-amber-100 rounded-lg text-xs font-bold transition cursor-pointer shadow-sm flex items-center gap-1" title="Edit">
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+                <button onclick="deleteTransaction('${t.id}')" class="px-2 py-1 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-lg text-xs font-bold transition cursor-pointer shadow-sm flex items-center gap-1" title="Hapus">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </div>
             </td>
           `;
           tbody.appendChild(tr);
         });
+      }
+
+      function changePage(direction) {
+        currentPage += direction;
+        renderRepository();
+      }
+
+      function editTransaction(id) {
+        const t = transactions.find((item) => item.id === id);
+        if (!t) return;
+
+        if (t.status !== "PENDING_LEVEL_2" && activeLevel !== 1) {
+          alert("Hanya transaksi dengan status Pending yang dapat diedit!");
+          return;
+        }
+
+        editingTransactionId = id;
+        document.getElementById("form-header-title").innerText = `Edit Kertas Kerja - ${id}`;
+        document.getElementById("submit-btn-text").innerText = "Simpan Perubahan Transaksi";
+        document.getElementById("form-id-display").innerText = id;
+
+        document.getElementById("input-segmen").value = t.segmen || "Individu";
+        handleSegmenChange();
+        document.getElementById("input-channel").value = t.channel || "Proses Manual";
+        document.getElementById("input-kategori-produk").value = t.kategoriProduk || "Jiwa / Term Life";
+        document.getElementById("input-id-upload").value = t.idUpload || "";
+        document.getElementById("input-perusahaan").value = t.perusahaan || "";
+        document.getElementById("input-id-peserta").value = t.idPeserta || "";
+        document.getElementById("input-no-ktp").value = t.noKtp || "";
+        document.getElementById("input-produk").value = t.produk || "";
+        document.getElementById("input-tgllahir").value = t.tgllahir || "";
+        document.getElementById("input-pemegang").value = t.pemegang || "";
+        document.getElementById("input-pekerjaan").value = t.pekerjaan || "";
+        document.getElementById("input-nama").value = t.nama || "";
+        document.getElementById("input-premi").value = formatNumberInput(t.premi);
+        document.getElementById("input-usia").value = t.usia || "";
+        document.getElementById("input-ekstra-premi").value = formatNumberInput(t.ekstraPremi || 0);
+        document.getElementById("input-up").value = formatNumberInput(t.up);
+        document.getElementById("input-uptotal").value = formatNumberInput(t.uptotal || t.up);
+        document.getElementById("input-tinggi").value = t.tinggi || "";
+        document.getElementById("input-masa").value = t.masa || "";
+        document.getElementById("input-berat").value = t.berat || "";
+        document.getElementById("input-medis").value = t.medis || "Tidak Ada";
+        document.getElementById("input-income").value = formatNumberInput(t.income);
+        document.getElementById("input-catatan").value = t.catatan || "";
+
+        calculateTotalPremi();
+        calculateBMI();
+
+        if (t.files) {
+          tempFiles = { ...t.files };
+          Object.keys(t.files).forEach((key) => {
+            const f = t.files[key];
+            if (f) {
+              const infoElem = document.getElementById(`${key}-info`);
+              if (infoElem) {
+                infoElem.querySelector(".file-name").innerText = `✓ ${f.name}`;
+                infoElem.classList.remove("hidden");
+              }
+            }
+          });
+        }
+
+        switchTab("form");
+      }
+
+      async function deleteTransaction(id) {
+        if (!confirm(`Apakah Anda yakin ingin menghapus transaksi ${id}? Data akan dihapus permanen.`)) return;
+
+        try {
+          const { error } = await _supabase.from("uw_transactions").delete().eq("id_transaksi", id);
+          if (error) throw error;
+
+          transactions = transactions.filter((t) => t.id !== id);
+          renderRepository();
+          updateStats();
+          alert(`Transaksi ${id} berhasil dihapus.`);
+        } catch (err) {
+          alert("Gagal menghapus transaksi dari Supabase: " + err.message);
+        }
       }
 
       function getFilteredTransactions() {
@@ -1930,6 +2108,7 @@
       }
 
       function filterRepository() {
+        currentPage = 1;
         renderRepository();
       }
 
@@ -1994,7 +2173,7 @@
 
         document.getElementById("bulk-note-input").value = "";
         await loadTransactionsFromSupabase();
-        alert(`${selectedCheckboxes.length} transaksi berhasil dipproses secara massal!`);
+        alert(`${selectedCheckboxes.length} transaksi berhasil diproses secara massal!`);
       }
 
       async function exportRepositoryToExcel() {
@@ -2163,7 +2342,6 @@
         document.getElementById("modal-detail").classList.remove("hidden");
       }
 
-      // FIXED PREVIEW FILE HANDLER UNTUK FILE GAMBAR, PDF, MAUPUN NON-VISUAL
       function previewFile(key) {
         const t = transactions.find((item) => item.id === activeTransactionId);
         if (!t || !t.files || !t.files[key] || !t.files[key].data) return;
