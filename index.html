@@ -460,12 +460,12 @@
                 </div>
               </div>
 
-              <!-- Konfigurasi Proses Bisnis -->
+              <!-- Konfigurasi Proses Bisnis (Kategori Produk Dihilangkan) -->
               <div class="bg-blue-50/60 p-5 rounded-2xl border border-blue-100 space-y-4 shadow-sm">
                 <h4 class="text-xs font-bold text-blue-700 uppercase tracking-wider flex items-center gap-2">
                   <i class="fa-solid fa-diagram-project"></i> Konfigurasi Proses Bisnis & Segmentasi
                 </h4>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1.5">Jenis Segmen Kepesertaan *</label>
                     <select id="input-segmen" required onchange="handleSegmenChange()" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none cursor-pointer bg-white">
@@ -480,16 +480,6 @@
                       <option value="Host to Host (H2H)">Host to Host (H2H / Core System)</option>
                       <option value="Web Portal">Web Portal (Partner & Corporate Portal)</option>
                       <option value="Digital Journey">Digital Journey (Mobile App / E-Commerce)</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Kategori Produk *</label>
-                    <select id="input-kategori-produk" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none cursor-pointer bg-white">
-                      <option value="Jiwa / Term Life">Jiwa / Term Life</option>
-                      <option value="Kesehatan / Health">Kesehatan / Medical Health</option>
-                      <option value="Kecelakaan Diri (PA)">Kecelakaan Diri (Personal Accident)</option>
-                      <option value="Kredit & Asuransi Jiwa Kredit">Asuransi Jiwa Kredit (AJK)</option>
-                      <option value="Unit Link">Unit Link / Endowment</option>
                     </select>
                   </div>
                 </div>
@@ -1137,10 +1127,6 @@
                 <td width="28%">: <span id="m-segmen" class="font-bold"></span></td>
                 <td width="22%"><strong>Jalur Processes</strong></td>
                 <td width="28%">: <span id="m-channel" class="font-bold text-blue-700"></span></td>
-              </tr>
-              <tr class="bg-slate-100">
-                <td><strong>Kategori Produk</strong></td>
-                <td colspan="3">: <span id="m-kategori-produk"></span></td>
               </tr>
             </table>
 
@@ -2040,7 +2026,6 @@
         document.getElementById("bp-doc-info").classList.add("hidden");
       }
 
-      // FUNGSI LOGIKA BARU UNTUK PILIHAN PEKERJAAN
       function handlePekerjaanChange() {
         const pekerjaanVal = document.getElementById("input-pekerjaan").value;
         const boxLainnya = document.getElementById("pekerjaan-lainnya-box");
@@ -2153,7 +2138,6 @@
             updatedTx.noKtp = noKtpVal;
             updatedTx.segmen = document.getElementById("input-segmen").value;
             updatedTx.channel = document.getElementById("input-channel").value;
-            updatedTx.kategoriProduk = document.getElementById("input-kategori-produk").value;
             updatedTx.produk = document.getElementById("input-produk").value;
             updatedTx.perusahaan = document.getElementById("input-perusahaan").value || "-";
             updatedTx.pemegang = document.getElementById("input-pemegang").value;
@@ -2192,7 +2176,6 @@
             noKtp: noKtpVal,
             segmen: document.getElementById("input-segmen").value,
             channel: document.getElementById("input-channel").value,
-            kategoriProduk: document.getElementById("input-kategori-produk").value,
             produk: document.getElementById("input-produk").value,
             perusahaan: document.getElementById("input-perusahaan").value || "-",
             pemegang: document.getElementById("input-pemegang").value,
@@ -2675,7 +2658,6 @@
         document.getElementById("input-segmen").value = t.segmen || "Individu";
         handleSegmenChange();
         document.getElementById("input-channel").value = t.channel || "Proses Manual";
-        document.getElementById("input-kategori-produk").value = t.kategoriProduk || "Jiwa / Term Life";
         document.getElementById("input-id-upload").value = t.idUpload || "";
         document.getElementById("input-perusahaan").value = t.perusahaan || "";
         document.getElementById("input-id-peserta").value = t.idPeserta || "";
@@ -2684,7 +2666,6 @@
         document.getElementById("input-tgllahir").value = t.tgllahir || "";
         document.getElementById("input-pemegang").value = t.pemegang || "";
         
-        // POPULATE PENYESUAIAN DROPDOWN PEKERJAAN
         const isPreset = Array.from(document.getElementById("input-pekerjaan").options).some(opt => opt.value === t.pekerjaan);
         if (isPreset) {
           document.getElementById("input-pekerjaan").value = t.pekerjaan;
@@ -2829,7 +2810,7 @@
 
         document.getElementById("bulk-note-input").value = "";
         await loadTransactionsFromSupabase();
-        alert(`${selectedCheckboxes.length} transaksi berhasil diproses secara massal!`);
+        alert(`${selectedCheckboxes.length} transaksi berhasil dipproses secara massal!`);
       }
 
       async function exportRepositoryToExcel() {
@@ -2882,7 +2863,6 @@
         document.getElementById("modal-title").innerText = `Detail Kertas Kerja - ${t.id}`;
         document.getElementById("m-segmen").innerText = t.segmen || "Individu";
         document.getElementById("m-channel").innerText = t.channel || "Proses Manual";
-        document.getElementById("m-kategori-produk").innerText = t.kategoriProduk || "Jiwa / Term Life";
 
         const perusahaanRow = document.getElementById("m-row-perusahaan");
         if (t.segmen === "Kumpulan") {
