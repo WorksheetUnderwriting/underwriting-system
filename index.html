@@ -460,7 +460,7 @@
                 </div>
               </div>
 
-              <!-- Konfigurasi Proses Bisnis (Kategori Produk Dihilangkan) -->
+              <!-- Konfigurasi Proses Bisnis -->
               <div class="bg-blue-50/60 p-5 rounded-2xl border border-blue-100 space-y-4 shadow-sm">
                 <h4 class="text-xs font-bold text-blue-700 uppercase tracking-wider flex items-center gap-2">
                   <i class="fa-solid fa-diagram-project"></i> Konfigurasi Proses Bisnis & Segmentasi
@@ -829,15 +829,15 @@
                   </div>
                   <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Tahun *</label>
-                    <input type="number" id="bp-tahun" required value="2026" class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none" />
+                    <input type="number" id="bp-tahun" required value="2026" oninput="generateAutoNoPolis()" class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none" />
                   </div>
                   <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Kode Produk *</label>
                     <input type="text" id="bp-kode-produk" required placeholder="Contoh: PRD-001" class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none" />
                   </div>
                   <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">No Polis *</label>
-                    <input type="text" id="bp-no-polis" required placeholder="Contoh: POL/2026/00123" class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none font-mono" />
+                    <label class="block text-xs font-bold text-slate-700 mb-1">No Polis (Otomatis) *</label>
+                    <input type="text" id="bp-no-polis" readonly placeholder="Otomatis terbuat..." class="w-full border border-slate-200 bg-slate-100 font-extrabold text-cyan-700 rounded-xl px-3.5 py-2 text-sm focus:outline-none font-mono" />
                   </div>
                   <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Pemegang Polis *</label>
@@ -1885,6 +1885,10 @@
           preFetchNextID();
         }
 
+        if (tab === "buku-polis") {
+          generateAutoNoPolis();
+        }
+
         if (tab === "dashboard") {
           await initCharts();
         }
@@ -2220,6 +2224,31 @@
         switchTab("repository");
       }
 
+      // FUNGSI KANONIK GENERATE NO POLIS OTOMATIS: K.Tahun.Bulan.0001
+      async function generateAutoNoPolis() {
+        const now = new Date();
+        const year = document.getElementById("bp-tahun").value || now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, "0");
+        const prefix = `K.${year}.${month}.`;
+
+        let nextNum = 1;
+
+        const currentMonthEntries = bukuPolisList.filter(
+          (bp) => bp.noPolis && bp.noPolis.startsWith(prefix)
+        );
+
+        if (currentMonthEntries.length > 0) {
+          const lastNumbers = currentMonthEntries.map((bp) => {
+            const parts = bp.noPolis.split(".");
+            return parseInt(parts[parts.length - 1], 10) || 0;
+          });
+          nextNum = Math.max(...lastNumbers) + 1;
+        }
+
+        const generatedNoPolis = `${prefix}${String(nextNum).padStart(4, "0")}`;
+        document.getElementById("bp-no-polis").value = generatedNoPolis;
+      }
+
       async function handleBukuPolisSubmit(e) {
         e.preventDefault();
 
@@ -2280,6 +2309,7 @@
         document.getElementById("bp-pic").value = currentFullName;
         document.getElementById("bp-progress").value = "0";
         clearBukuPolisFile();
+        generateAutoNoPolis();
       }
 
       function renderBukuPolisTable() {
@@ -2810,7 +2840,7 @@
 
         document.getElementById("bulk-note-input").value = "";
         await loadTransactionsFromSupabase();
-        alert(`${selectedCheckboxes.length} transaksi berhasil dipproses secara massal!`);
+        alert(`${selectedCheckboxes.length} transaksi berhasil diproses secara massal!`);
       }
 
       async function exportRepositoryToExcel() {
