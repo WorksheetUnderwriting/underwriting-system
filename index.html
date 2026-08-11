@@ -95,7 +95,9 @@
       }
 
       #repo-table-body td, 
-      #repo-table-body th {
+      #repo-table-body th,
+      #buku-polis-table-body td,
+      #buku-polis-table-body th {
         vertical-align: middle !important;
         white-space: nowrap;
       }
@@ -201,6 +203,14 @@
             >
               <i class="fa-solid fa-pen-to-square w-5 text-center text-emerald-400"></i>
               Kertas Kerja UW
+            </button>
+            <button
+              onclick="switchTab('buku-polis')"
+              id="nav-buku-polis"
+              class="w-full flex items-center gap-3.5 px-4 py-3 text-sm font-semibold rounded-xl hover:bg-blue-950/50 transition cursor-pointer text-slate-400 hover:text-white"
+            >
+              <i class="fa-solid fa-book-bookmark w-5 text-center text-cyan-400"></i>
+              Buku Polis
             </button>
             <button
               onclick="switchTab('repository')"
@@ -783,7 +793,126 @@
             </form>
           </div>
 
-          <!-- 3. REPOSITORY TRANSAKSI -->
+          <!-- 3. MENU BARU: BUKU POLIS -->
+          <div id="tab-buku-polis" class="tab-anim hidden space-y-6">
+            <div class="glossy-card rounded-2xl p-8 space-y-8">
+              <div class="border-b border-slate-200/80 pb-4 flex justify-between items-center">
+                <div>
+                  <h3 class="text-lg font-bold text-slate-800">Menu Buku Polis</h3>
+                  <p class="text-xs text-slate-500">Pencatatan data penerbitan buku polis dan dokumen legalitas pendukung.</p>
+                </div>
+                <span class="text-xs font-mono bg-white border border-slate-300/80 text-cyan-700 px-3 py-1.5 rounded-xl font-bold shadow-sm">
+                  Module Buku Polis Active
+                </span>
+              </div>
+
+              <!-- FORM INPUT BUKU POLIS -->
+              <form id="buku-polis-form" onsubmit="handleBukuPolisSubmit(event)" class="space-y-6 bg-white/80 p-6 rounded-2xl border border-slate-200/80 shadow-sm">
+                <h4 class="text-xs font-bold text-cyan-600 uppercase tracking-wider flex items-center gap-2">
+                  <i class="fa-solid fa-book-open"></i> Input Data Buku Polis Baru
+                </h4>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">1. No Polis *</label>
+                    <input
+                      type="text"
+                      id="bp-no-polis"
+                      required
+                      class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none font-mono"
+                      placeholder="Contoh: POL/2026/00123"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">2. Nama Pemegang Polis *</label>
+                    <input
+                      type="text"
+                      id="bp-pemegang-polis"
+                      required
+                      class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none"
+                      placeholder="Nama Lengkap Pemegang Polis"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">3. Tanggal Mulai Asuransi *</label>
+                    <input
+                      type="date"
+                      id="bp-tgl-mulai"
+                      required
+                      class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <!-- UPLOAD DOKUMEN BUKU POLIS -->
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1.5">4. Upload Dokumen Polis (Sertifikat / Polis / Lampiran) *</label>
+                  <p class="text-[11px] text-slate-500 mb-2">Format PDF / JPG / PNG / ZIP (Maksimal 1.5MB per file)</p>
+                  <input
+                    type="file"
+                    id="bp-doc-file"
+                    accept=".pdf,.jpg,.jpeg,.png,.zip"
+                    onchange="handleBukuPolisFileChange(this)"
+                    class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-cyan-600 file:text-white hover:file:bg-cyan-700 cursor-pointer transition"
+                  />
+                  <div id="bp-doc-info" class="mt-2 text-xs text-emerald-600 font-bold hidden flex items-center justify-between">
+                    <span class="file-name truncate max-w-[300px]"></span>
+                    <button type="button" onclick="clearBukuPolisFile()" class="text-rose-500 hover:underline text-[11px] font-bold cursor-pointer">Hapus File</button>
+                  </div>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-2">
+                  <button type="button" onclick="resetBukuPolisForm()" class="px-5 py-2.5 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition cursor-pointer">
+                    Reset Form
+                  </button>
+                  <button type="submit" class="px-6 py-2.5 text-xs font-bold text-white bg-cyan-600 hover:bg-cyan-700 rounded-xl shadow-lg shadow-cyan-600/30 transition flex items-center gap-2 cursor-pointer">
+                    <i class="fa-solid fa-floppy-disk"></i> Simpan Buku Polis
+                  </button>
+                </div>
+              </form>
+
+              <!-- REPOSITORY BUKU POLIS -->
+              <div class="space-y-4">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div>
+                    <h4 class="text-sm font-bold text-slate-800">Daftar Rekap Buku Polis Terdaftar</h4>
+                    <p class="text-xs text-slate-500">Tabel kumpulan data buku polis yang telah tersimpan di sistem.</p>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <input
+                      type="text"
+                      id="search-buku-polis"
+                      onkeyup="renderBukuPolisTable()"
+                      placeholder="Cari No Polis / Pemegang..."
+                      class="border border-slate-300 text-xs rounded-xl px-3.5 py-2 w-56 focus:ring-2 focus:ring-cyan-500 focus:outline-none bg-white font-medium"
+                    />
+                    <button onclick="exportBukuPolisToExcel()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-md cursor-pointer shrink-0">
+                      <i class="fa-solid fa-file-excel"></i> Export Excel
+                    </button>
+                  </div>
+                </div>
+
+                <div class="overflow-x-auto border border-slate-200/80 rounded-2xl bg-white shadow-sm">
+                  <table class="w-full text-left border-collapse">
+                    <thead>
+                      <tr class="bg-slate-100/80 text-slate-500 uppercase text-[10px] font-bold tracking-wider border-b border-slate-200">
+                        <th class="p-3">NO</th>
+                        <th class="p-3">NO POLIS</th>
+                        <th class="p-3">NAMA PEMEGANG POLIS</th>
+                        <th class="p-3">TGL MULAI ASURANSI</th>
+                        <th class="p-3">DOKUMEN ATTACHMENT</th>
+                        <th class="p-3">DIBUAT OLEH</th>
+                        <th class="p-3 text-center">AKSI</th>
+                      </tr>
+                    </thead>
+                    <tbody id="buku-polis-table-body" class="divide-y divide-slate-200/80 text-xs bg-white"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. REPOSITORY TRANSAKSI -->
           <div id="tab-repository" class="tab-anim hidden space-y-6">
             <div class="glossy-card rounded-2xl overflow-hidden">
               <div class="p-6 border-b border-slate-200/80 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -1157,6 +1286,9 @@
       let activeLevel = parseInt(localStorage.getItem("activeRoleLevel")) || maxUserLevel;
 
       let transactions = [];
+      let bukuPolisList = [];
+      let tempBukuPolisFile = null;
+
       let activeTransactionId = null;
       let editingTransactionId = null; // Flag untuk mode edit
       let tempFiles = { ktp: null, spajk: null, riplay: null, gaji: null, other: null };
@@ -1215,6 +1347,7 @@
         
         await Promise.all([
           loadTransactionsFromSupabase(),
+          loadBukuPolisFromSupabase(),
           preFetchNextID()
         ]);
 
@@ -1322,6 +1455,31 @@
         if (chartMonthlyInstance && chartStatusInstance) updateCharts();
       }
 
+      /* LOGIKA DATABASE UNTUK BUKU POLIS */
+      async function loadBukuPolisFromSupabase() {
+        try {
+          const { data, error } = await _supabase
+            .from("buku_polis")
+            .select("*")
+            .order("created_at", { ascending: false });
+
+          if (error) throw error;
+
+          if (data && data.length > 0) {
+            bukuPolisList = data.map((item) => {
+              return item.payload ? (typeof item.payload === 'string' ? JSON.parse(item.payload) : item.payload) : item;
+            });
+          } else {
+            bukuPolisList = [];
+          }
+        } catch (err) {
+          console.warn("Table 'buku_polis' belum siap di Supabase, menggunakan lokal array.", err.message);
+          bukuPolisList = JSON.parse(localStorage.getItem("buku_polis_local") || "[]");
+        }
+
+        renderBukuPolisTable();
+      }
+
       async function preFetchNextID() {
         const now = new Date();
         const year = now.getFullYear();
@@ -1360,6 +1518,13 @@
             .channel("public:uw_transactions")
             .on("postgres_changes", { event: "*", schema: "public", table: "uw_transactions" }, () => {
               loadTransactionsFromSupabase();
+            })
+            .subscribe();
+
+          _supabase
+            .channel("public:buku_polis")
+            .on("postgres_changes", { event: "*", schema: "public", table: "buku_polis" }, () => {
+              loadBukuPolisFromSupabase();
             })
             .subscribe();
         } catch (e) {}
@@ -1582,7 +1747,7 @@
       }
 
       async function switchTab(tab) {
-        ["dashboard", "form", "repository"].forEach((t) => {
+        ["dashboard", "form", "buku-polis", "repository"].forEach((t) => {
           const tabElem = document.getElementById(`tab-${t}`);
           const navElem = document.getElementById(`nav-${t}`);
           if (tabElem) tabElem.classList.add("hidden");
@@ -1597,6 +1762,7 @@
         const titles = {
           dashboard: "Dashboard Underwriting",
           form: "Form Kertas Kerja Underwriting",
+          "buku-polis": "Buku Polis & Legalitas Dokumen",
           repository: "Repository Transaksi Kertas Kerja"
         };
         if (titles[tab]) {
@@ -1688,6 +1854,44 @@
         tempFiles[inputId.replace("attach-", "")] = null;
         document.getElementById(infoId).classList.add("hidden");
         runAutoEvaluation();
+      }
+
+      /* LOGIKA KHUSUS UPLOAD DOKUMEN BUKU POLIS */
+      function handleBukuPolisFileChange(input) {
+        const infoElem = document.getElementById("bp-doc-info");
+        if (input.files && input.files[0]) {
+          const file = input.files[0];
+          const fileSizeMB = file.size / (1024 * 1024);
+
+          if (fileSizeMB > MAX_FILE_SIZE_MB) {
+            alert(`File "${file.name}" (${fileSizeMB.toFixed(2)}MB) melebihi batas maksimum ${MAX_FILE_SIZE_MB}MB!`);
+            input.value = "";
+            infoElem.classList.add("hidden");
+            tempBukuPolisFile = null;
+            return;
+          }
+
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            tempBukuPolisFile = {
+              name: file.name,
+              size: fileSizeMB.toFixed(2) + " MB",
+              data: e.target.result
+            };
+            infoElem.querySelector(".file-name").innerText = `✓ ${file.name}`;
+            infoElem.classList.remove("hidden");
+          };
+          reader.readAsDataURL(file);
+        } else {
+          infoElem.classList.add("hidden");
+          tempBukuPolisFile = null;
+        }
+      }
+
+      function clearBukuPolisFile() {
+        document.getElementById("bp-doc-file").value = "";
+        tempBukuPolisFile = null;
+        document.getElementById("bp-doc-info").classList.add("hidden");
       }
 
       function runAutoEvaluation() {
@@ -1860,6 +2064,137 @@
         alert(`Kertas Kerja ${newId} Berhasil Disimpan & Diteruskan ke Supervisor!`);
         resetForm();
         switchTab("repository");
+      }
+
+      /* HANDLER SUBMIT BUKU POLIS */
+      async function handleBukuPolisSubmit(e) {
+        e.preventDefault();
+
+        if (!tempBukuPolisFile) {
+          alert("Mohon unggah file dokumen polis terlebih dahulu!");
+          return;
+        }
+
+        const noPolis = document.getElementById("bp-no-polis").value.trim();
+        const pemegang = document.getElementById("bp-pemegang-polis").value.trim();
+        const tglMulai = document.getElementById("bp-tgl-mulai").value;
+
+        const newBP = {
+          id: "BP-" + Date.now(),
+          noPolis: noPolis,
+          pemegangPolis: pemegang,
+          tglMulai: tglMulai,
+          file: { ...tempBukuPolisFile },
+          createdBy: currentFullName,
+          createdAt: new Date().toLocaleString("id-ID")
+        };
+
+        try {
+          const { error } = await _supabase.from("buku_polis").upsert(
+            { id_polis: newBP.id, payload: newBP, no_polis: noPolis },
+            { onConflict: "id_polis" }
+          );
+          if (error) console.warn("Simpan ke Supabase error:", error.message);
+        } catch (err) {
+          console.warn("Jaringan Supabase tidak merespons, simpan lokal.");
+        }
+
+        bukuPolisList.unshift(newBP);
+        localStorage.setItem("buku_polis_local", JSON.stringify(bukuPolisList));
+
+        alert(`Buku Polis "${noPolis}" berhasil tersimpan!`);
+        resetBukuPolisForm();
+        renderBukuPolisTable();
+      }
+
+      function resetBukuPolisForm() {
+        document.getElementById("buku-polis-form").reset();
+        clearBukuPolisFile();
+      }
+
+      function renderBukuPolisTable() {
+        const tbody = document.getElementById("buku-polis-table-body");
+        if (!tbody) return;
+        tbody.innerHTML = "";
+
+        const query = (document.getElementById("search-buku-polis")?.value || "").toLowerCase();
+        const filtered = bukuPolisList.filter(
+          (bp) =>
+            bp.noPolis.toLowerCase().includes(query) ||
+            bp.pemegangPolis.toLowerCase().includes(query)
+        );
+
+        if (filtered.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400 font-medium">Belum ada data Buku Polis tersimpan.</td></tr>`;
+          return;
+        }
+
+        filtered.forEach((bp, idx) => {
+          const tr = document.createElement("tr");
+          tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+          tr.innerHTML = `
+            <td class="p-3 font-semibold text-slate-500">${idx + 1}</td>
+            <td class="p-3 font-mono font-bold text-cyan-700">${bp.noPolis}</td>
+            <td class="p-3 font-bold text-slate-800">${bp.pemegangPolis}</td>
+            <td class="p-3 text-slate-600">${bp.tglMulai}</td>
+            <td class="p-3">
+              <span class="inline-flex items-center gap-1.5 text-[11px] bg-cyan-50 text-cyan-700 border border-cyan-200 px-2.5 py-1 rounded-xl font-bold">
+                <i class="fa-solid fa-file-contract"></i> ${bp.file ? bp.file.name : 'Dokumen'}
+              </span>
+            </td>
+            <td class="p-3 text-slate-500 text-[11px]">${bp.createdBy || currentFullName}</td>
+            <td class="p-3 text-center">
+              <div class="flex items-center justify-center gap-2">
+                <a href="${bp.file ? bp.file.data : '#'}" download="${bp.file ? bp.file.name : 'Polis'}" class="px-2.5 py-1 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg text-xs font-bold transition flex items-center gap-1" title="Unduh File">
+                  <i class="fa-solid fa-download"></i> Unduh
+                </a>
+                <button onclick="deleteBukuPolis('${bp.id}')" class="px-2.5 py-1 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-lg text-xs font-bold transition cursor-pointer" title="Hapus">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      async function deleteBukuPolis(id) {
+        if (!confirm("Apakah Anda yakin ingin menghapus data buku polis ini?")) return;
+
+        try {
+          await _supabase.from("buku_polis").delete().eq("id_polis", id);
+        } catch (e) {}
+
+        bukuPolisList = bukuPolisList.filter((bp) => bp.id !== id);
+        localStorage.setItem("buku_polis_local", JSON.stringify(bukuPolisList));
+        renderBukuPolisTable();
+        alert("Buku polis berhasil dihapus.");
+      }
+
+      async function exportBukuPolisToExcel() {
+        if (bukuPolisList.length === 0) {
+          alert("Belum ada data buku polis untuk diexport!");
+          return;
+        }
+
+        await ensureExcelJs();
+
+        const data = bukuPolisList.map((bp, idx) => ({
+          "No": idx + 1,
+          "NO POLIS": bp.noPolis,
+          "NAMA PEMEGANG POLIS": bp.pemegangPolis,
+          "TANGGAL MULAI ASURANSI": bp.tglMulai,
+          "NAMA FILE DOKUMEN": bp.file ? bp.file.name : "-",
+          "DIBUAT OLEH": bp.createdBy,
+          "TANGGAL INPUT": bp.createdAt
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(data);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Buku_Polis");
+
+        const todayStr = new Date().toISOString().split("T")[0];
+        XLSX.writeFile(workbook, `Rekap_Buku_Polis_${todayStr}.xlsx`);
       }
 
       function resetForm() {
@@ -2173,7 +2508,7 @@
 
         document.getElementById("bulk-note-input").value = "";
         await loadTransactionsFromSupabase();
-        alert(`${selectedCheckboxes.length} transaksi berhasil diproses secara massal!`);
+        alert(`${selectedCheckboxes.length} transaksi berhasil dipproses secara massal!`);
       }
 
       async function exportRepositoryToExcel() {
