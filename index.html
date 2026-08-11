@@ -552,16 +552,33 @@
                     <label class="block text-xs font-bold text-slate-700 mb-1.5">Nama Pemegang Polis *</label>
                     <input type="text" id="input-pemegang" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Nama Pemegang Polis" />
                   </div>
+
+                  <!-- DROPDOWN PEKERJAAN / PROFESI TERBARU & LENGKAP -->
                   <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1.5">Pekerjaan / Profesi *</label>
-                    <select id="input-pekerjaan" required onchange="runAutoEvaluation()" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none cursor-pointer bg-white">
+                    <select id="input-pekerjaan" required onchange="handlePekerjaanChange()" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none cursor-pointer bg-white">
                       <option value="">-- Pilih Pekerjaan --</option>
-                      <option value="PNS/Karyawan Swasta">PNS / Karyawan Swasta (Risiko Rendah)</option>
-                      <option value="Wiraswasta">Wiraswasta / Profesional (Risiko Sedang)</option>
-                      <option value="Pekerja Tambang/Offshore">Pekerja Tambang / Offshore (Risiko Tinggi)</option>
-                      <option value="TNI/Polri Aktif">TNI / Polri Aktif (Risiko Tinggi)</option>
+                      <option value="WIRASWASTA">WIRASWASTA</option>
+                      <option value="PEG SWASTA">PEG SWASTA</option>
+                      <option value="PEG BUMN">PEG BUMN</option>
+                      <option value="BUMD">BUMD</option>
+                      <option value="PNS">PNS</option>
+                      <option value="TNI / POLRI">TNI / POLRI</option>
+                      <option value="PROFESIONAL (DOKTER, PENGACARA, AKUNTAN, DLL)">PROFESIONAL (DOKTER, PENGACARA, AKUNTAN, DLL)</option>
+                      <option value="IBU RUMAH TANGGA">IBU RUMAH TANGGA</option>
+                      <option value="MAHASISWA / PELAJAR">MAHASISWA / PELAJAR</option>
+                      <option value="TIDAK BEKERJA">TIDAK BEKERJA</option>
+                      <option value="PEG BUMN / BUMD">PEG BUMN / BUMD</option>
+                      <option value="BANK PERKREDITAN RAKYAT">BANK PERKREDITAN RAKYAT</option>
+                      <option value="PENSIUNAN">PENSIUNAN</option>
+                      <option value="LAINNYA">LAINNYA (BISA DI ISI)</option>
                     </select>
+
+                    <div id="pekerjaan-lainnya-box" class="hidden mt-2">
+                      <input type="text" id="input-pekerjaan-lainnya" oninput="runAutoEvaluation()" class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white font-medium" placeholder="Ketik pekerjaan/profesi lainnya..." />
+                    </div>
                   </div>
+
                   <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1.5">Nama Tertanggung (NamaTtg) *</label>
                     <input type="text" id="input-nama" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Masukkan nama lengkap" />
@@ -793,7 +810,7 @@
             </form>
           </div>
 
-          <!-- 3. BUKU POLIS (DENGAN PROTEKSI KETAT PIC) -->
+          <!-- 3. BUKU POLIS -->
           <div id="tab-buku-polis" class="tab-anim hidden space-y-6">
             <div class="glossy-card rounded-2xl p-8 space-y-8">
               <div class="border-b border-slate-200/80 pb-4 flex justify-between items-center">
@@ -806,13 +823,11 @@
                 </span>
               </div>
 
-              <!-- FORM INPUT BUKU POLIS LENGKAP -->
               <form id="buku-polis-form" onsubmit="handleBukuPolisSubmit(event)" class="space-y-6 bg-white/80 p-6 rounded-2xl border border-slate-200/80 shadow-sm">
                 <h4 class="text-xs font-bold text-cyan-600 uppercase tracking-wider flex items-center gap-2">
                   <i class="fa-solid fa-book-open"></i> Input Data Buku Polis Baru
                 </h4>
 
-                <!-- Section 1: Informasi Utama -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Jenis Asuransi *</label>
@@ -844,7 +859,6 @@
                   </div>
                 </div>
 
-                <!-- Section 2: Ceklis Dokumen Terpisah -->
                 <div>
                   <label class="block text-xs font-bold text-slate-800 mb-2">Ceklis Kelengkapan Dokumen Awal (Terpisah)</label>
                   <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
@@ -871,7 +885,6 @@
                   </div>
                 </div>
 
-                <!-- Section 3: Status, Progres & Keterangan -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Persentase Progress (%)</label>
@@ -888,7 +901,6 @@
                   </div>
                 </div>
 
-                <!-- Upload Dokumen Lampiran Buku Polis -->
                 <div class="pt-2 border-t border-slate-100">
                   <label class="block text-xs font-bold text-slate-700 mb-1.5">Upload Lampiran Dokumen Polis (Opsional / ZIP / PDF)</label>
                   <p class="text-[11px] text-slate-500 mb-2">Format PDF / JPG / PNG / ZIP (Maksimal 1.5MB per file)</p>
@@ -936,7 +948,6 @@
                   </div>
                 </div>
 
-                <!-- TABEL BUKU POLIS TERBARU -->
                 <div class="overflow-x-auto border border-slate-200/80 rounded-2xl bg-white shadow-sm">
                   <table class="w-full text-left border-collapse">
                     <thead>
@@ -2029,17 +2040,45 @@
         document.getElementById("bp-doc-info").classList.add("hidden");
       }
 
+      // FUNGSI LOGIKA BARU UNTUK PILIHAN PEKERJAAN
+      function handlePekerjaanChange() {
+        const pekerjaanVal = document.getElementById("input-pekerjaan").value;
+        const boxLainnya = document.getElementById("pekerjaan-lainnya-box");
+        const inputLainnya = document.getElementById("input-pekerjaan-lainnya");
+
+        if (pekerjaanVal === "LAINNYA") {
+          boxLainnya.classList.remove("hidden");
+          inputLainnya.required = true;
+        } else {
+          boxLainnya.classList.add("hidden");
+          inputLainnya.required = false;
+          inputLainnya.value = "";
+        }
+
+        runAutoEvaluation();
+      }
+
+      function getSelectedPekerjaan() {
+        const selectVal = document.getElementById("input-pekerjaan").value;
+        if (selectVal === "LAINNYA") {
+          return document.getElementById("input-pekerjaan-lainnya").value.trim() || "LAINNYA";
+        }
+        return selectVal;
+      }
+
       function runAutoEvaluation() {
         const up = getUnformattedNumber(document.getElementById("input-up").value);
         const medis = document.getElementById("input-medis").value;
-        const pekerjaan = document.getElementById("input-pekerjaan").value;
+        const pekerjaan = getSelectedPekerjaan();
 
         document.getElementById("input-resiko-pekerjaan").value = pekerjaan || "Standard";
 
         let riskCategory = "Standard Risk";
         let requiredLevel = 2;
 
-        if (up > 600000000 || medis === "Berat") {
+        const highRiskJobs = ["TNI / POLRI", "WIRASWASTA"];
+
+        if (up > 600000000 || medis === "Berat" || highRiskJobs.includes(pekerjaan)) {
           riskCategory = "High Risk (Sangat Tinggi)";
           requiredLevel = 5;
         } else if (up > 300000000) {
@@ -2121,7 +2160,7 @@
             updatedTx.nama = document.getElementById("input-nama").value;
             updatedTx.tgllahir = document.getElementById("input-tgllahir").value;
             updatedTx.usia = document.getElementById("input-usia").value;
-            updatedTx.pekerjaan = document.getElementById("input-pekerjaan").value;
+            updatedTx.pekerjaan = getSelectedPekerjaan();
             updatedTx.up = getUnformattedNumber(document.getElementById("input-up").value);
             updatedTx.uptotal = getUnformattedNumber(document.getElementById("input-uptotal").value);
             updatedTx.masa = document.getElementById("input-masa").value;
@@ -2160,7 +2199,7 @@
             nama: document.getElementById("input-nama").value,
             tgllahir: document.getElementById("input-tgllahir").value,
             usia: document.getElementById("input-usia").value,
-            pekerjaan: document.getElementById("input-pekerjaan").value,
+            pekerjaan: getSelectedPekerjaan(),
             up: getUnformattedNumber(document.getElementById("input-up").value),
             uptotal: getUnformattedNumber(document.getElementById("input-uptotal").value),
             masa: document.getElementById("input-masa").value,
@@ -2336,7 +2375,6 @@
         });
       }
 
-      /* PERBAIKAN FUNGSIONAL PROTEKSI PIC DI BROWSER */
       function openModalUpdateChecklist(id) {
         const bp = bukuPolisList.find((item) => item.id === id);
         if (!bp) return;
@@ -2473,6 +2511,9 @@
         editingTransactionId = null;
         document.getElementById("form-header-title").innerText = "Form Kertas Kerja Underwriting (UW)";
         document.getElementById("submit-btn-text").innerText = "Simpan & Submit Kertas Kerja";
+
+        document.getElementById("pekerjaan-lainnya-box").classList.add("hidden");
+        document.getElementById("input-pekerjaan-lainnya").value = "";
 
         tempFiles = { ktp: null, spajk: null, riplay: null, gaji: null, other: null };
         ["ktp-info", "spajk-info", "riplay-info", "gaji-info", "other-info"].forEach((id) => {
@@ -2642,7 +2683,18 @@
         document.getElementById("input-produk").value = t.produk || "";
         document.getElementById("input-tgllahir").value = t.tgllahir || "";
         document.getElementById("input-pemegang").value = t.pemegang || "";
-        document.getElementById("input-pekerjaan").value = t.pekerjaan || "";
+        
+        // POPULATE PENYESUAIAN DROPDOWN PEKERJAAN
+        const isPreset = Array.from(document.getElementById("input-pekerjaan").options).some(opt => opt.value === t.pekerjaan);
+        if (isPreset) {
+          document.getElementById("input-pekerjaan").value = t.pekerjaan;
+          handlePekerjaanChange();
+        } else if (t.pekerjaan) {
+          document.getElementById("input-pekerjaan").value = "LAINNYA";
+          handlePekerjaanChange();
+          document.getElementById("input-pekerjaan-lainnya").value = t.pekerjaan;
+        }
+
         document.getElementById("input-nama").value = t.nama || "";
         document.getElementById("input-premi").value = formatNumberInput(t.premi);
         document.getElementById("input-usia").value = t.usia || "";
@@ -2777,7 +2829,7 @@
 
         document.getElementById("bulk-note-input").value = "";
         await loadTransactionsFromSupabase();
-        alert(`${selectedCheckboxes.length} transaksi berhasil dipproses secara massal!`);
+        alert(`${selectedCheckboxes.length} transaksi berhasil diproses secara massal!`);
       }
 
       async function exportRepositoryToExcel() {
