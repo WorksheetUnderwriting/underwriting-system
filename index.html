@@ -793,7 +793,7 @@
             </form>
           </div>
 
-          <!-- 3. BUKU POLIS (PROTEKSI PIC UNTUK UPDATE CEKLIS) -->
+          <!-- 3. BUKU POLIS (DENGAN PROTEKSI KETAT PIC) -->
           <div id="tab-buku-polis" class="tab-anim hidden space-y-6">
             <div class="glossy-card rounded-2xl p-8 space-y-8">
               <div class="border-b border-slate-200/80 pb-4 flex justify-between items-center">
@@ -815,7 +815,7 @@
                 <!-- Section 1: Informasi Utama -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">2. Jenis Asuransi *</label>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Jenis Asuransi *</label>
                     <select id="bp-jenis-asuransi" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none bg-white cursor-pointer">
                       <option value="">-- Pilih Jenis Asuransi --</option>
                       <option value="AJK">AJK (Asuransi Jiwa Kredit)</option>
@@ -823,23 +823,23 @@
                     </select>
                   </div>
                   <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">3. Tahun *</label>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Tahun *</label>
                     <input type="number" id="bp-tahun" required value="2026" class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none" />
                   </div>
                   <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">4. Kode Produk *</label>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Kode Produk *</label>
                     <input type="text" id="bp-kode-produk" required placeholder="Contoh: PRD-001" class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none" />
                   </div>
                   <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">5. No Polis *</label>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">No Polis *</label>
                     <input type="text" id="bp-no-polis" required placeholder="Contoh: POL/2026/00123" class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none font-mono" />
                   </div>
                   <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">6. Pemegang Polis *</label>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Pemegang Polis *</label>
                     <input type="text" id="bp-pemegang-polis" required placeholder="Nama Lengkap Pemegang Polis" class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none" />
                   </div>
                   <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">7. PIC (Otomatis User Login) *</label>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">PIC (Otomatis User Login) *</label>
                     <input type="text" id="bp-pic" readonly class="w-full border border-slate-200 bg-slate-100 font-semibold text-slate-700 rounded-xl px-3.5 py-2 text-sm focus:outline-none" />
                   </div>
                 </div>
@@ -850,23 +850,23 @@
                   <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
                     <label class="flex items-center gap-2 cursor-pointer select-none">
                       <input type="checkbox" id="bp-chk-spaj" onchange="calculateBPProgress()" class="bp-checklist-item w-4 h-4 text-cyan-600 rounded border-slate-300 focus:ring-cyan-500 cursor-pointer" />
-                      <span class="text-xs font-semibold text-slate-700">8. SPAJ</span>
+                      <span class="text-xs font-semibold text-slate-700">SPAJ</span>
                     </label>
                     <label class="flex items-center gap-2 cursor-pointer select-none">
                       <input type="checkbox" id="bp-chk-spek" onchange="calculateBPProgress()" class="bp-checklist-item w-4 h-4 text-cyan-600 rounded border-slate-300 focus:ring-cyan-500 cursor-pointer" />
-                      <span class="text-xs font-semibold text-slate-700">9. Spek Produk</span>
+                      <span class="text-xs font-semibold text-slate-700">Spek Produk</span>
                     </label>
                     <label class="flex items-center gap-2 cursor-pointer select-none">
                       <input type="checkbox" id="bp-chk-npwp" onchange="calculateBPProgress()" class="bp-checklist-item w-4 h-4 text-cyan-600 rounded border-slate-300 focus:ring-cyan-500 cursor-pointer" />
-                      <span class="text-xs font-semibold text-slate-700">10. NPWP</span>
+                      <span class="text-xs font-semibold text-slate-700">NPWP</span>
                     </label>
                     <label class="flex items-center gap-2 cursor-pointer select-none">
                       <input type="checkbox" id="bp-chk-legal" onchange="calculateBPProgress()" class="bp-checklist-item w-4 h-4 text-cyan-600 rounded border-slate-300 focus:ring-cyan-500 cursor-pointer" />
-                      <span class="text-xs font-semibold text-slate-700">11. Dokumen Legal DLL</span>
+                      <span class="text-xs font-semibold text-slate-700">Dokumen Legal DLL</span>
                     </label>
                     <label class="flex items-center gap-2 cursor-pointer select-none">
                       <input type="checkbox" id="bp-chk-sertifikat" onchange="calculateBPProgress()" class="bp-checklist-item w-4 h-4 text-cyan-600 rounded border-slate-300 focus:ring-cyan-500 cursor-pointer" />
-                      <span class="text-xs font-semibold text-slate-700">12. Sertifikat</span>
+                      <span class="text-xs font-semibold text-slate-700">Sertifikat</span>
                     </label>
                   </div>
                 </div>
@@ -874,16 +874,16 @@
                 <!-- Section 3: Status, Progres & Keterangan -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">13. Persentase Progress (%)</label>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Persentase Progress (%)</label>
                     <div class="relative">
                       <input type="number" id="bp-progress" min="0" max="100" value="0" class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none pr-8 font-extrabold text-cyan-700" />
                       <span class="absolute right-3 top-2 text-xs font-bold text-slate-400">%</span>
                     </div>
-                    <p class="text-[10px] text-slate-400 mt-1">*Otomatis terhitung dari total ceklis dokumen (bisa disesuaikan manual)</p>
+                    <p class="text-[10px] text-slate-400 mt-1">*Otomatis terhitung dari total ceklis dokumen</p>
                   </div>
 
                   <div class="md:col-span-2">
-                    <label class="block text-xs font-bold text-slate-700 mb-1">14. Keterangan</label>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Keterangan</label>
                     <textarea id="bp-keterangan" rows="2" placeholder="Catatan atau keterangan kelengkapan berkas..." class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none resize-none"></textarea>
                   </div>
                 </div>
@@ -970,7 +970,6 @@
                   <p class="text-xs text-slate-500">Daftar seluruh transaksi pengajuan, segmen bisnis, kanal proses, dan status approval bertingkat.</p>
                 </div>
                 <div class="flex flex-wrap items-center gap-3">
-                  <!-- FILTER BERDASARKAN TANGGAL -->
                   <div class="flex items-center gap-2 bg-white border border-slate-300 rounded-xl px-3 py-1.5 shadow-sm text-xs">
                     <span class="text-slate-400 font-semibold"><i class="fa-solid fa-filter"></i> Periode:</span>
                     <input type="date" id="filter-date-start" onchange="filterRepository()" class="focus:outline-none text-slate-700 font-medium" />
@@ -1028,7 +1027,7 @@
       </main>
     </div>
 
-    <!-- MODAL KHUSUS UPDATE CEKLIS DOKUMEN BARU -->
+    <!-- MODAL KHUSUS UPDATE CEKLIS DOKUMEN BUKU POLIS -->
     <div id="modal-update-checklist" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
       <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-5">
         <div class="flex justify-between items-center border-b border-slate-200 pb-3">
@@ -1045,23 +1044,23 @@
           <div class="space-y-2.5 bg-slate-50 p-4 rounded-2xl border border-slate-200">
             <label class="flex items-center gap-3 cursor-pointer p-1.5 hover:bg-white rounded-xl transition">
               <input type="checkbox" id="modal-chk-spaj" onchange="calculateModalProgress()" class="w-4 h-4 text-cyan-600 rounded border-slate-300 focus:ring-cyan-500 cursor-pointer" />
-              <span class="text-xs font-bold text-slate-700">8. SPAJ (Surat Permohonan Asuransi Jiwa)</span>
+              <span class="text-xs font-bold text-slate-700">SPAJ (Surat Permohonan Asuransi Jiwa)</span>
             </label>
             <label class="flex items-center gap-3 cursor-pointer p-1.5 hover:bg-white rounded-xl transition">
               <input type="checkbox" id="modal-chk-spek" onchange="calculateModalProgress()" class="w-4 h-4 text-cyan-600 rounded border-slate-300 focus:ring-cyan-500 cursor-pointer" />
-              <span class="text-xs font-bold text-slate-700">9. Spek Produk (Spesifikasi Produk)</span>
+              <span class="text-xs font-bold text-slate-700">Spek Produk (Spesifikasi Produk)</span>
             </label>
             <label class="flex items-center gap-3 cursor-pointer p-1.5 hover:bg-white rounded-xl transition">
               <input type="checkbox" id="modal-chk-npwp" onchange="calculateModalProgress()" class="w-4 h-4 text-cyan-600 rounded border-slate-300 focus:ring-cyan-500 cursor-pointer" />
-              <span class="text-xs font-bold text-slate-700">10. NPWP / Dokumen Perpajakan</span>
+              <span class="text-xs font-bold text-slate-700">NPWP / Dokumen Perpajakan</span>
             </label>
             <label class="flex items-center gap-3 cursor-pointer p-1.5 hover:bg-white rounded-xl transition">
               <input type="checkbox" id="modal-chk-legal" onchange="calculateModalProgress()" class="w-4 h-4 text-cyan-600 rounded border-slate-300 focus:ring-cyan-500 cursor-pointer" />
-              <span class="text-xs font-bold text-slate-700">11. Dokumen Legal DLL</span>
+              <span class="text-xs font-bold text-slate-700">Dokumen Legal DLL</span>
             </label>
             <label class="flex items-center gap-3 cursor-pointer p-1.5 hover:bg-white rounded-xl transition">
               <input type="checkbox" id="modal-chk-sertifikat" onchange="calculateModalProgress()" class="w-4 h-4 text-cyan-600 rounded border-slate-300 focus:ring-cyan-500 cursor-pointer" />
-              <span class="text-xs font-bold text-slate-700">12. Sertifikat / Polis Legalitas</span>
+              <span class="text-xs font-bold text-slate-700">Sertifikat / Polis Legalitas</span>
             </label>
           </div>
 
@@ -1115,7 +1114,6 @@
         </div>
 
         <div class="p-6 overflow-y-auto space-y-6 flex-1" id="modal-printable-content">
-          <!-- FORMAT CETAK PDF -->
           <div class="pdf-template">
             <div class="text-center mb-2">
               <h2 class="text-base font-bold uppercase tracking-wider" style="margin: 0">KERTAS KERJA UNDERWRITING</h2>
@@ -1410,11 +1408,9 @@
       let chartStatusInstance = null;
       let cachedNextID = "";
 
-      // PAGINASI STATE
       let currentPage = 1;
       const rowsPerPage = 10;
 
-      // Lazy Loading
       let isChartLoaded = false;
       let isExcelLoaded = false;
       let isPdfLoaded = false;
@@ -1458,7 +1454,6 @@
         initUserHeader();
         populateRoleSelector();
         
-        // AUTOPOPULATE NAMA PIC USER LOGIN KE BUKU POLIS
         const bpPicInput = document.getElementById("bp-pic");
         if (bpPicInput) bpPicInput.value = currentFullName;
 
@@ -1586,7 +1581,6 @@
         if (chartMonthlyInstance && chartStatusInstance) updateCharts();
       }
 
-      /* LOGIKA DATABASE UNTUK BUKU POLIS */
       async function loadBukuPolisFromSupabase() {
         try {
           const { data, error } = await _supabase
@@ -1604,7 +1598,7 @@
             bukuPolisList = [];
           }
         } catch (err) {
-          console.warn("Table 'buku_polis' belum siap di Supabase, menggunakan lokal array.", err.message);
+          console.warn("Membaca dari localStorage fallback.", err.message);
           bukuPolisList = JSON.parse(localStorage.getItem("buku_polis_local") || "[]");
         }
 
@@ -1976,7 +1970,6 @@
         runAutoEvaluation();
       }
 
-      /* LOGIKA KHUSUS UPLOAD DOKUMEN BUKU POLIS & HITUNG PROGRES OTOMATIS */
       function calculateBPProgress() {
         const items = document.querySelectorAll('.bp-checklist-item');
         let checkedCount = 0;
@@ -2076,20 +2069,17 @@
       async function handleFormSubmit(e) {
         e.preventDefault();
 
-        // 1. VALIDASI NIK 16 DIGIT
         const noKtpVal = document.getElementById("input-no-ktp").value.trim();
         if (noKtpVal.length !== 16 || isNaN(noKtpVal)) {
           alert("Nomor KTP (NIK) harus berjumlah 16 digit angka!");
           return;
         }
 
-        // 2. VALIDASI DOKUMEN WAJIB
         if (!tempFiles.ktp || !tempFiles.spajk || !tempFiles.riplay) {
           alert("Mohon unggah 3 dokumen wajib: KTP, SPAJK, dan RIPLAY Personal!");
           return;
         }
 
-        // 3. VALIDASI DUPLIKASI IDUPLOAD
         const idUploadVal = document.getElementById("input-id-upload").value.trim();
         if (idUploadVal && !editingTransactionId) {
           const isDuplicate = transactions.some(
@@ -2208,7 +2198,6 @@
         switchTab("repository");
       }
 
-      /* HANDLER SUBMIT BUKU POLIS (PIC AUTO USER LOGIN & JENIS ASURANSI DROPDOWN) */
       async function handleBukuPolisSubmit(e) {
         e.preventDefault();
 
@@ -2217,7 +2206,7 @@
         const kodeProduk = document.getElementById("bp-kode-produk").value.trim();
         const noPolis = document.getElementById("bp-no-polis").value.trim();
         const pemegang = document.getElementById("bp-pemegang-polis").value.trim();
-        const pic = currentFullName; // OTOMATIS USER LOGIN
+        const pic = currentFullName;
 
         const checklists = {
           spaj: document.getElementById("bp-chk-spaj").checked,
@@ -2271,7 +2260,6 @@
         clearBukuPolisFile();
       }
 
-      /* MENAMPILKAN TABEL BUKU POLIS DENGAN CEKLIS DOKUMEN TERPISAH & PROTEKSI HAK AKSES UPDATE */
       function renderBukuPolisTable() {
         const tbody = document.getElementById("buku-polis-table-body");
         if (!tbody) return;
@@ -2297,14 +2285,12 @@
           
           const chk = bp.checklists || {};
 
-          // BADGE CEKLIS DOKUMEN TERPISAH
           const badgeSpaj = chk.spaj ? `<span class="inline-block px-2 py-0.5 text-[10px] bg-emerald-100 text-emerald-800 border border-emerald-300 rounded font-bold">SPAJ ✓</span>` : `<span class="inline-block px-2 py-0.5 text-[10px] bg-slate-100 text-slate-400 border border-slate-200 rounded">SPAJ ✗</span>`;
           const badgeSpek = chk.spek ? `<span class="inline-block px-2 py-0.5 text-[10px] bg-emerald-100 text-emerald-800 border border-emerald-300 rounded font-bold">Spek ✓</span>` : `<span class="inline-block px-2 py-0.5 text-[10px] bg-slate-100 text-slate-400 border border-slate-200 rounded">Spek ✗</span>`;
           const badgeNpwp = chk.npwp ? `<span class="inline-block px-2 py-0.5 text-[10px] bg-emerald-100 text-emerald-800 border border-emerald-300 rounded font-bold">NPWP ✓</span>` : `<span class="inline-block px-2 py-0.5 text-[10px] bg-slate-100 text-slate-400 border border-slate-200 rounded">NPWP ✗</span>`;
           const badgeLegal = chk.legal ? `<span class="inline-block px-2 py-0.5 text-[10px] bg-emerald-100 text-emerald-800 border border-emerald-300 rounded font-bold">Legal ✓</span>` : `<span class="inline-block px-2 py-0.5 text-[10px] bg-slate-100 text-slate-400 border border-slate-200 rounded">Legal ✗</span>`;
           const badgeSertifikat = chk.sertifikat ? `<span class="inline-block px-2 py-0.5 text-[10px] bg-emerald-100 text-emerald-800 border border-emerald-300 rounded font-bold">Sertifikat ✓</span>` : `<span class="inline-block px-2 py-0.5 text-[10px] bg-slate-100 text-slate-400 border border-slate-200 rounded">Sertifikat ✗</span>`;
 
-          // HAK AKSES UPDATE: Hanya user yang namanya sama dengan PIC
           const isPicOwner = bp.pic && bp.pic.trim().toLowerCase() === currentFullName.trim().toLowerCase();
 
           tr.innerHTML = `
@@ -2350,20 +2336,26 @@
         });
       }
 
-      /* BUKA MODAL KHUSUS UPDATE CEKLIS UNTUK BUKU POLIS TERPILIH (DENGAN PROTEKSI PIC) */
+      /* PERBAIKAN FUNGSIONAL PROTEKSI PIC DI BROWSER */
       function openModalUpdateChecklist(id) {
         const bp = bukuPolisList.find((item) => item.id === id);
         if (!bp) return;
 
-        // VERIFIKASI PROTEKSI PIC
-        const isPicOwner = bp.pic && bp.pic.trim().toLowerCase() === currentFullName.trim().toLowerCase();
-        if (!isPicOwner) {
-          alert(`Akses Ditolak!\n\nAnda login sebagai "${currentFullName}". Hanya PIC Pembuat (${bp.pic}) yang memiliki hak akses untuk meng-update status kelengkapan dokumen pada nomor polis ini.`);
+        const userLogin = (localStorage.getItem("fullName") || "").trim().toLowerCase();
+        const picOwner = (bp.pic || "").trim().toLowerCase();
+
+        if (!userLogin || userLogin !== picOwner) {
+          alert(
+            `AKSES DITOLAK!\n\n` +
+            `Dokumen ini dibuat oleh PIC: "${bp.pic}"\n` +
+            `Anda saat ini login sebagai: "${localStorage.getItem("fullName")}"\n\n` +
+            `Hanya PIC pembuat yang diizinkan memperbarui kelengkapan dokumen ini.`
+          );
           return;
         }
 
         activeBukuPolisIdForUpdate = id;
-        document.getElementById("update-checklist-sub").innerText = `No Polis: ${bp.noPolis} - Pemegang: ${bp.pemegangPolis} (PIC: ${bp.pic})`;
+        document.getElementById("update-checklist-sub").innerText = `No Polis: ${bp.noPolis} - Pemegang: ${bp.pemegangPolis}`;
 
         const chk = bp.checklists || {};
         document.getElementById("modal-chk-spaj").checked = !!chk.spaj;
@@ -2378,7 +2370,6 @@
         document.getElementById("modal-update-checklist").classList.remove("hidden");
       }
 
-      /* SIMPAN UPDATE CEKLIS DOKUMEN */
       async function handleSaveChecklistUpdate(e) {
         e.preventDefault();
         if (!activeBukuPolisIdForUpdate) return;
@@ -2386,9 +2377,9 @@
         const bp = bukuPolisList.find((item) => item.id === activeBukuPolisIdForUpdate);
         if (!bp) return;
 
-        // PROTEKSI VALIDASI ULANG SEBELUM SAVING
-        const isPicOwner = bp.pic && bp.pic.trim().toLowerCase() === currentFullName.trim().toLowerCase();
-        if (!isPicOwner) {
+        const userLogin = (localStorage.getItem("fullName") || "").trim().toLowerCase();
+        const picOwner = (bp.pic || "").trim().toLowerCase();
+        if (!userLogin || userLogin !== picOwner) {
           alert("Gagal memperbarui: Anda bukan PIC yang terdaftar untuk transaksi ini!");
           return;
         }
@@ -2422,8 +2413,9 @@
       async function deleteBukuPolis(id) {
         const bp = bukuPolisList.find((item) => item.id === id);
         if (bp) {
-          const isPicOwner = bp.pic && bp.pic.trim().toLowerCase() === currentFullName.trim().toLowerCase();
-          if (!isPicOwner) {
+          const userLogin = (localStorage.getItem("fullName") || "").trim().toLowerCase();
+          const picOwner = (bp.pic || "").trim().toLowerCase();
+          if (userLogin !== picOwner) {
             alert(`Akses Ditolak!\n\nHanya PIC (${bp.pic}) yang dapat menghapus data buku polis ini.`);
             return;
           }
@@ -2533,7 +2525,6 @@
 
         const filtered = getFilteredTransactions();
 
-        // LOGIKA PAGINASI
         const totalItems = filtered.length;
         const totalPages = Math.ceil(totalItems / rowsPerPage) || 1;
         if (currentPage > totalPages) currentPage = totalPages;
@@ -2542,7 +2533,6 @@
         const startIndex = (currentPage - 1) * rowsPerPage;
         const pageData = filtered.slice(startIndex, startIndex + rowsPerPage);
 
-        // UPDATE INFO PAGINASI UI
         document.getElementById("pagination-info").innerText = `Menampilkan ${totalItems === 0 ? 0 : startIndex + 1} - ${Math.min(startIndex + rowsPerPage, totalItems)} dari ${totalItems} data`;
         document.getElementById("page-num-display").innerText = `Hal ${currentPage} / ${totalPages}`;
         document.getElementById("btn-prev-page").disabled = currentPage === 1;
