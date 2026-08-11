@@ -793,7 +793,7 @@
             </form>
           </div>
 
-          <!-- 3. BUKU POLIS (DENGAN CEKLIS DOKUMEN TERPISAH & UPDATE RECEPT) -->
+          <!-- 3. BUKU POLIS (PROTEKSI PIC UNTUK UPDATE CEKLIS) -->
           <div id="tab-buku-polis" class="tab-anim hidden space-y-6">
             <div class="glossy-card rounded-2xl p-8 space-y-8">
               <div class="border-b border-slate-200/80 pb-4 flex justify-between items-center">
@@ -936,7 +936,7 @@
                   </div>
                 </div>
 
-                <!-- TABEL BUKU POLIS TERBARU (CEKLIS DOKUMEN TERPISAH) -->
+                <!-- TABEL BUKU POLIS TERBARU -->
                 <div class="overflow-x-auto border border-slate-200/80 rounded-2xl bg-white shadow-sm">
                   <table class="w-full text-left border-collapse">
                     <thead>
@@ -948,7 +948,6 @@
                         <th class="p-3">NO POLIS</th>
                         <th class="p-3">PEMEGANG POLIS</th>
                         <th class="p-3">PIC</th>
-                        <!-- CEKLIS DOKUMEN DISAJIKAN DENGAN BADGE TERPISAH -->
                         <th class="p-3 text-center">CEKLIS DOKUMEN TERPISAH</th>
                         <th class="p-3 text-center">PROGRESS</th>
                         <th class="p-3">KETERANGAN</th>
@@ -2272,7 +2271,7 @@
         clearBukuPolisFile();
       }
 
-      /* MENAMPILKAN TABEL BUKU POLIS DENGAN CEKLIS DOKUMEN TERPISAH (BADGE INDIVIDUAL) */
+      /* MENAMPILKAN TABEL BUKU POLIS DENGAN CEKLIS DOKUMEN TERPISAH & PROTEKSI HAK AKSES UPDATE */
       function renderBukuPolisTable() {
         const tbody = document.getElementById("buku-polis-table-body");
         if (!tbody) return;
@@ -2298,12 +2297,15 @@
           
           const chk = bp.checklists || {};
 
-          // FORMAT CEKLIS DOKUMEN DISAJIKAN DENGAN BADGE BADGE TERPISAH SANGAT SCANNER-FRIENDLY
+          // BADGE CEKLIS DOKUMEN TERPISAH
           const badgeSpaj = chk.spaj ? `<span class="inline-block px-2 py-0.5 text-[10px] bg-emerald-100 text-emerald-800 border border-emerald-300 rounded font-bold">SPAJ ✓</span>` : `<span class="inline-block px-2 py-0.5 text-[10px] bg-slate-100 text-slate-400 border border-slate-200 rounded">SPAJ ✗</span>`;
           const badgeSpek = chk.spek ? `<span class="inline-block px-2 py-0.5 text-[10px] bg-emerald-100 text-emerald-800 border border-emerald-300 rounded font-bold">Spek ✓</span>` : `<span class="inline-block px-2 py-0.5 text-[10px] bg-slate-100 text-slate-400 border border-slate-200 rounded">Spek ✗</span>`;
           const badgeNpwp = chk.npwp ? `<span class="inline-block px-2 py-0.5 text-[10px] bg-emerald-100 text-emerald-800 border border-emerald-300 rounded font-bold">NPWP ✓</span>` : `<span class="inline-block px-2 py-0.5 text-[10px] bg-slate-100 text-slate-400 border border-slate-200 rounded">NPWP ✗</span>`;
           const badgeLegal = chk.legal ? `<span class="inline-block px-2 py-0.5 text-[10px] bg-emerald-100 text-emerald-800 border border-emerald-300 rounded font-bold">Legal ✓</span>` : `<span class="inline-block px-2 py-0.5 text-[10px] bg-slate-100 text-slate-400 border border-slate-200 rounded">Legal ✗</span>`;
           const badgeSertifikat = chk.sertifikat ? `<span class="inline-block px-2 py-0.5 text-[10px] bg-emerald-100 text-emerald-800 border border-emerald-300 rounded font-bold">Sertifikat ✓</span>` : `<span class="inline-block px-2 py-0.5 text-[10px] bg-slate-100 text-slate-400 border border-slate-200 rounded">Sertifikat ✗</span>`;
+
+          // HAK AKSES UPDATE: Hanya user yang namanya sama dengan PIC
+          const isPicOwner = bp.pic && bp.pic.trim().toLowerCase() === currentFullName.trim().toLowerCase();
 
           tr.innerHTML = `
             <td class="p-3 font-semibold text-slate-500">${idx + 1}</td>
@@ -2328,7 +2330,13 @@
             <td class="p-3 text-slate-500 text-xs truncate max-w-[150px]">${bp.keterangan || "-"}</td>
             <td class="p-3 text-center">
               <div class="flex items-center justify-center gap-1.5">
-                <button onclick="openModalUpdateChecklist('${bp.id}')" class="px-2.5 py-1 bg-cyan-50 text-cyan-700 hover:bg-cyan-100 rounded-lg text-xs font-bold transition flex items-center gap-1 cursor-pointer" title="Update Dokumen Diterima">
+                <button onclick="openModalUpdateChecklist('${bp.id}')" 
+                        class="px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 cursor-pointer ${
+                          isPicOwner 
+                            ? 'bg-cyan-50 text-cyan-700 hover:bg-cyan-100' 
+                            : 'bg-slate-100 text-slate-400 opacity-60 cursor-not-allowed'
+                        }" 
+                        title="${isPicOwner ? 'Update Dokumen Diterima' : 'Hanya PIC (' + bp.pic + ') yang berhak memperbarui'}">
                   <i class="fa-solid fa-list-check"></i> Update Dokumen
                 </button>
                 ${bp.file ? `<a href="${bp.file.data}" download="${bp.file.name}" class="px-2 py-1 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg text-xs font-bold transition flex items-center gap-1" title="Unduh File"><i class="fa-solid fa-download"></i></a>` : ''}
@@ -2342,13 +2350,20 @@
         });
       }
 
-      /* BUKA MODAL KHUSUS UPDATE CEKLIS UNTUK BUKU POLIS TERPILIH */
+      /* BUKA MODAL KHUSUS UPDATE CEKLIS UNTUK BUKU POLIS TERPILIH (DENGAN PROTEKSI PIC) */
       function openModalUpdateChecklist(id) {
         const bp = bukuPolisList.find((item) => item.id === id);
         if (!bp) return;
 
+        // VERIFIKASI PROTEKSI PIC
+        const isPicOwner = bp.pic && bp.pic.trim().toLowerCase() === currentFullName.trim().toLowerCase();
+        if (!isPicOwner) {
+          alert(`Akses Ditolak!\n\nAnda login sebagai "${currentFullName}". Hanya PIC Pembuat (${bp.pic}) yang memiliki hak akses untuk meng-update status kelengkapan dokumen pada nomor polis ini.`);
+          return;
+        }
+
         activeBukuPolisIdForUpdate = id;
-        document.getElementById("update-checklist-sub").innerText = `No Polis: ${bp.noPolis} - Pemegang: ${bp.pemegangPolis}`;
+        document.getElementById("update-checklist-sub").innerText = `No Polis: ${bp.noPolis} - Pemegang: ${bp.pemegangPolis} (PIC: ${bp.pic})`;
 
         const chk = bp.checklists || {};
         document.getElementById("modal-chk-spaj").checked = !!chk.spaj;
@@ -2370,6 +2385,13 @@
 
         const bp = bukuPolisList.find((item) => item.id === activeBukuPolisIdForUpdate);
         if (!bp) return;
+
+        // PROTEKSI VALIDASI ULANG SEBELUM SAVING
+        const isPicOwner = bp.pic && bp.pic.trim().toLowerCase() === currentFullName.trim().toLowerCase();
+        if (!isPicOwner) {
+          alert("Gagal memperbarui: Anda bukan PIC yang terdaftar untuk transaksi ini!");
+          return;
+        }
 
         bp.checklists = {
           spaj: document.getElementById("modal-chk-spaj").checked,
@@ -2394,10 +2416,19 @@
         localStorage.setItem("buku_polis_local", JSON.stringify(bukuPolisList));
         closeModal("modal-update-checklist");
         renderBukuPolisTable();
-        alert(`Status kelengkapan dokumen Buku Polis "${bp.noPolis}" berhasil diperbarui!`);
+        alert(`Status kelengkapan dokumen Buku Polis "${bp.noPolis}" berhasil diperbarui oleh PIC ${currentFullName}!`);
       }
 
       async function deleteBukuPolis(id) {
+        const bp = bukuPolisList.find((item) => item.id === id);
+        if (bp) {
+          const isPicOwner = bp.pic && bp.pic.trim().toLowerCase() === currentFullName.trim().toLowerCase();
+          if (!isPicOwner) {
+            alert(`Akses Ditolak!\n\nHanya PIC (${bp.pic}) yang dapat menghapus data buku polis ini.`);
+            return;
+          }
+        }
+
         if (!confirm("Apakah Anda yakin ingin menghapus data buku polis ini?")) return;
 
         try {
