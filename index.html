@@ -543,7 +543,7 @@
                     <input type="text" id="input-pemegang" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Nama Pemegang Polis" />
                   </div>
 
-                  <!-- DROPDOWN PEKERJAAN / PROFESI TERBARU & LENGKAP -->
+                  <!-- DROPDOWN PEKERJAAN / PROFESI -->
                   <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1.5">Pekerjaan / Profesi *</label>
                     <select id="input-pekerjaan" required onchange="handlePekerjaanChange()" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none cursor-pointer bg-white">
@@ -836,8 +836,8 @@
                     <input type="text" id="bp-kode-produk" required placeholder="Contoh: PRD-001" class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none" />
                   </div>
                   <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">No Polis (Otomatis) *</label>
-                    <input type="text" id="bp-no-polis" readonly placeholder="Otomatis terbuat..." class="w-full border border-slate-200 bg-slate-100 font-extrabold text-cyan-700 rounded-xl px-3.5 py-2 text-sm focus:outline-none font-mono" />
+                    <label class="block text-xs font-bold text-slate-700 mb-1">No Polis (Primary Key - Otomatis) *</label>
+                    <input type="text" id="bp-no-polis" readonly placeholder="Generating..." class="w-full border border-slate-200 bg-slate-100 font-extrabold text-cyan-700 rounded-xl px-3.5 py-2 text-sm focus:outline-none font-mono" />
                   </div>
                   <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Pemegang Polis *</label>
@@ -946,7 +946,7 @@
                         <th class="p-3">JENIS ASURANSI</th>
                         <th class="p-3">TAHUN</th>
                         <th class="p-3">KODE PRODUK</th>
-                        <th class="p-3">NO POLIS</th>
+                        <th class="p-3">NO POLIS (PK)</th>
                         <th class="p-3">PEMEGANG POLIS</th>
                         <th class="p-3">PIC</th>
                         <th class="p-3 text-center">CEKLIS DOKUMEN TERPISAH</th>
@@ -1395,7 +1395,7 @@
       let transactions = [];
       let bukuPolisList = [];
       let tempBukuPolisFile = null;
-      let activeBukuPolisIdForUpdate = null;
+      let activeNoPolisForUpdate = null;
 
       let activeTransactionId = null;
       let editingTransactionId = null;
@@ -1647,6 +1647,7 @@
             .channel("public:buku_polis")
             .on("postgres_changes", { event: "*", schema: "public", table: "buku_polis" }, () => {
               loadBukuPolisFromSupabase();
+              generateAutoNoPolis();
             })
             .subscribe();
         } catch (e) {}
@@ -1886,7 +1887,7 @@
         }
 
         if (tab === "buku-polis") {
-          generateAutoNoPolis();
+          await generateAutoNoPolis();
         }
 
         if (tab === "dashboard") {
@@ -2224,7 +2225,7 @@
         switchTab("repository");
       }
 
-      // FUNGSI KANONIK GENERATE NO POLIS OTOMATIS: K.Tahun.Bulan.0001
+      // GENERATE AUTOMATIC NO POLIS (MENGECEK DB SUPABASE UNTUK CEK LAST NUMBER)
       async function generateAutoNoPolis() {
         const now = new Date();
         const year = document.getElementById("bp-tahun").value || now.getFullYear();
@@ -2233,29 +2234,70 @@
 
         let nextNum = 1;
 
-        const currentMonthEntries = bukuPolisList.filter(
-          (bp) => bp.noPolis && bp.noPolis.startsWith(prefix)
-        );
+        try {
+          const { data, error } = await _supabase
+            .from("buku_polis")
+            .select("no_polis")
+            .ilike("no_polis", `${prefix}%`)
+            .order("no_polis", { ascending: false })
+            .limit(1);
 
-        if (currentMonthEntries.length > 0) {
-          const lastNumbers = currentMonthEntries.map((bp) => {
-            const parts = bp.noPolis.split(".");
-            return parseInt(parts[parts.length - 1], 10) || 0;
-          });
-          nextNum = Math.max(...lastNumbers) + 1;
+          if (error) throw error;
+
+          if (data && data.length > 0) {
+            const lastNoPolis = data[0].no_polis;
+            const parts = lastNoPolis.split(".");
+            const lastNumStr = parts[parts.length - 1];
+            const parsedNum = parseInt(lastNumStr, 10);
+            if (!isNaN(parsedNum)) {
+              nextNum = parsedNum + 1;
+            }
+          }
+        } catch (err) {
+          console.warn("Gagal mengecek DB Supabase, menggunakan data memori lokal:", err);
+          const currentMonthEntries = bukuPolisList.filter(
+            (bp) => bp.noPolis && bp.noPolis.startsWith(prefix)
+          );
+          if (currentMonthEntries.length > 0) {
+            const lastNumbers = currentMonthEntries.map((bp) => {
+              const parts = bp.noPolis.split(".");
+              return parseInt(parts[parts.length - 1], 10) || 0;
+            });
+            nextNum = Math.max(...lastNumbers) + 1;
+          }
         }
 
         const generatedNoPolis = `${prefix}${String(nextNum).padStart(4, "0")}`;
-        document.getElementById("bp-no-polis").value = generatedNoPolis;
+        const inputElem = document.getElementById("bp-no-polis");
+        if (inputElem) inputElem.value = generatedNoPolis;
       }
 
+      // HANDLE SUBMIT DENGAN NO_POLIS SEBAGAI PRIMARY KEY
       async function handleBukuPolisSubmit(e) {
         e.preventDefault();
+
+        const noPolis = document.getElementById("bp-no-polis").value.trim();
+
+        // 1. Cek apakah no_polis duplikat di DB Supabase
+        try {
+          const { data: existingData } = await _supabase
+            .from("buku_polis")
+            .select("no_polis")
+            .eq("no_polis", noPolis)
+            .maybeSingle();
+
+          if (existingData) {
+            alert(`No Polis "${noPolis}" sudah terdaftar sebagai Primary Key di database. Mengenerate No Polis baru...`);
+            await generateAutoNoPolis();
+            return;
+          }
+        } catch (err) {
+          console.warn("Pemeriksaan duplikasi lokal dijalankan");
+        }
 
         const jenisAsuransi = document.getElementById("bp-jenis-asuransi").value;
         const tahun = document.getElementById("bp-tahun").value;
         const kodeProduk = document.getElementById("bp-kode-produk").value.trim();
-        const noPolis = document.getElementById("bp-no-polis").value.trim();
         const pemegang = document.getElementById("bp-pemegang-polis").value.trim();
         const pic = currentFullName;
 
@@ -2271,11 +2313,10 @@
         const keterangan = document.getElementById("bp-keterangan").value.trim();
 
         const newBP = {
-          id: "BP-" + Date.now(),
+          noPolis: noPolis, // Primary Key utama
           jenisAsuransi,
           tahun,
           kodeProduk,
-          noPolis,
           pemegangPolis: pemegang,
           pic,
           checklists,
@@ -2287,9 +2328,10 @@
         };
 
         try {
+          // Menyimpan langsung ke Supabase menggunakan no_polis sebagai Primary Key
           const { error } = await _supabase.from("buku_polis").upsert(
-            { id_polis: newBP.id, payload: newBP, no_polis: noPolis },
-            { onConflict: "id_polis" }
+            { no_polis: noPolis, payload: newBP },
+            { onConflict: "no_polis" }
           );
           if (error) console.warn("Simpan ke Supabase error:", error.message);
         } catch (err) {
@@ -2299,7 +2341,7 @@
         bukuPolisList.unshift(newBP);
         localStorage.setItem("buku_polis_local", JSON.stringify(bukuPolisList));
 
-        alert(`Data Buku Polis "${noPolis}" berhasil tersimpan!`);
+        alert(`Data Buku Polis dengan Primary Key "${noPolis}" berhasil tersimpan!`);
         resetBukuPolisForm();
         renderBukuPolisTable();
       }
@@ -2368,7 +2410,7 @@
             <td class="p-3 text-slate-500 text-xs truncate max-w-[150px]">${bp.keterangan || "-"}</td>
             <td class="p-3 text-center">
               <div class="flex items-center justify-center gap-1.5">
-                <button onclick="openModalUpdateChecklist('${bp.id}')" 
+                <button onclick="openModalUpdateChecklist('${bp.noPolis}')" 
                         class="px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 cursor-pointer ${
                           isPicOwner 
                             ? 'bg-cyan-50 text-cyan-700 hover:bg-cyan-100' 
@@ -2378,7 +2420,7 @@
                   <i class="fa-solid fa-list-check"></i> Update Dokumen
                 </button>
                 ${bp.file ? `<a href="${bp.file.data}" download="${bp.file.name}" class="px-2 py-1 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg text-xs font-bold transition flex items-center gap-1" title="Unduh File"><i class="fa-solid fa-download"></i></a>` : ''}
-                <button onclick="deleteBukuPolis('${bp.id}')" class="px-2 py-1 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-lg text-xs font-bold transition cursor-pointer" title="Hapus">
+                <button onclick="deleteBukuPolis('${bp.noPolis}')" class="px-2 py-1 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-lg text-xs font-bold transition cursor-pointer" title="Hapus">
                   <i class="fa-solid fa-trash"></i>
                 </button>
               </div>
@@ -2388,8 +2430,8 @@
         });
       }
 
-      function openModalUpdateChecklist(id) {
-        const bp = bukuPolisList.find((item) => item.id === id);
+      function openModalUpdateChecklist(noPolis) {
+        const bp = bukuPolisList.find((item) => item.noPolis === noPolis);
         if (!bp) return;
 
         const userLogin = (localStorage.getItem("fullName") || "").trim().toLowerCase();
@@ -2405,7 +2447,7 @@
           return;
         }
 
-        activeBukuPolisIdForUpdate = id;
+        activeNoPolisForUpdate = noPolis;
         document.getElementById("update-checklist-sub").innerText = `No Polis: ${bp.noPolis} - Pemegang: ${bp.pemegangPolis}`;
 
         const chk = bp.checklists || {};
@@ -2423,9 +2465,9 @@
 
       async function handleSaveChecklistUpdate(e) {
         e.preventDefault();
-        if (!activeBukuPolisIdForUpdate) return;
+        if (!activeNoPolisForUpdate) return;
 
-        const bp = bukuPolisList.find((item) => item.id === activeBukuPolisIdForUpdate);
+        const bp = bukuPolisList.find((item) => item.noPolis === activeNoPolisForUpdate);
         if (!bp) return;
 
         const userLogin = (localStorage.getItem("fullName") || "").trim().toLowerCase();
@@ -2448,8 +2490,8 @@
 
         try {
           await _supabase.from("buku_polis").upsert(
-            { id_polis: bp.id, payload: bp, no_polis: bp.noPolis },
-            { onConflict: "id_polis" }
+            { no_polis: bp.noPolis, payload: bp },
+            { onConflict: "no_polis" }
           );
         } catch (err) {
           console.warn("Gagal update Supabase:", err);
@@ -2458,11 +2500,11 @@
         localStorage.setItem("buku_polis_local", JSON.stringify(bukuPolisList));
         closeModal("modal-update-checklist");
         renderBukuPolisTable();
-        alert(`Status kelengkapan dokumen Buku Polis "${bp.noPolis}" berhasil diperbarui oleh PIC ${currentFullName}!`);
+        alert(`Status kelengkapan dokumen Buku Polis "${bp.noPolis}" berhasil diperbarui!`);
       }
 
-      async function deleteBukuPolis(id) {
-        const bp = bukuPolisList.find((item) => item.id === id);
+      async function deleteBukuPolis(noPolis) {
+        const bp = bukuPolisList.find((item) => item.noPolis === noPolis);
         if (bp) {
           const userLogin = (localStorage.getItem("fullName") || "").trim().toLowerCase();
           const picOwner = (bp.pic || "").trim().toLowerCase();
@@ -2472,15 +2514,16 @@
           }
         }
 
-        if (!confirm("Apakah Anda yakin ingin menghapus data buku polis ini?")) return;
+        if (!confirm(`Apakah Anda yakin ingin menghapus data buku polis No Polis "${noPolis}"?`)) return;
 
         try {
-          await _supabase.from("buku_polis").delete().eq("id_polis", id);
+          await _supabase.from("buku_polis").delete().eq("no_polis", noPolis);
         } catch (e) {}
 
-        bukuPolisList = bukuPolisList.filter((bp) => bp.id !== id);
+        bukuPolisList = bukuPolisList.filter((bp) => bp.noPolis !== noPolis);
         localStorage.setItem("buku_polis_local", JSON.stringify(bukuPolisList));
         renderBukuPolisTable();
+        generateAutoNoPolis();
         alert("Buku polis berhasil dihapus.");
       }
 
@@ -2497,7 +2540,7 @@
           "JENIS ASURANSI": bp.jenisAsuransi || "-",
           "TAHUN": bp.tahun || "-",
           "KODE PRODUK": bp.kodeProduk || "-",
-          "NO POLIS": bp.noPolis,
+          "NO POLIS (PK)": bp.noPolis,
           "PEMEGANG POLIS": bp.pemegangPolis,
           "PIC": bp.pic || "-",
           "SPAJ": bp.checklists?.spaj ? "Ada" : "Tidak",
@@ -2840,7 +2883,7 @@
 
         document.getElementById("bulk-note-input").value = "";
         await loadTransactionsFromSupabase();
-        alert(`${selectedCheckboxes.length} transaksi berhasil diproses secara massal!`);
+        alert(`${selectedCheckboxes.length} transaksi berhasil dipproses secara massal!`);
       }
 
       async function exportRepositoryToExcel() {
