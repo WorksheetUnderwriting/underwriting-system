@@ -801,49 +801,50 @@
           </div>
 
           <!-- 3. BUKU POLIS -->
-          <!-- HASIL MONITORING BUKU POLIS -->
-<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-  <div class="card-hover glossy-card p-4.5 rounded-2xl flex items-center justify-between">
-    <div>
-      <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Total Buku Polis</p>
-      <h3 id="bp-stat-total" class="text-2xl font-black text-slate-900 mt-1">0</h3>
-    </div>
-    <div class="p-3 bg-cyan-500/10 text-cyan-600 rounded-xl ring-1 ring-cyan-500/20">
-      <i class="fa-solid fa-book text-lg"></i>
-    </div>
-  </div>
-
-  <div class="card-hover glossy-card p-4.5 rounded-2xl flex items-center justify-between">
-    <div>
-      <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Dokumen Lengkap (100%)</p>
-      <h3 id="bp-stat-complete" class="text-2xl font-black text-emerald-600 mt-1">0</h3>
-    </div>
-    <div class="p-3 bg-emerald-500/10 text-emerald-600 rounded-xl ring-1 ring-emerald-500/20">
-      <i class="fa-solid fa-circle-check text-lg"></i>
-    </div>
-  </div>
-
-  <div class="card-hover glossy-card p-4.5 rounded-2xl flex items-center justify-between">
-    <div>
-      <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Belum Lengkap (&lt;100%)</p>
-      <h3 id="bp-stat-incomplete" class="text-2xl font-black text-amber-600 mt-1">0</h3>
-    </div>
-    <div class="p-3 bg-amber-500/10 text-amber-600 rounded-xl ring-1 ring-amber-500/20">
-      <i class="fa-solid fa-hourglass-half text-lg"></i>
-    </div>
-  </div>
-
-  <div class="card-hover glossy-card p-4.5 rounded-2xl flex items-center justify-between">
-    <div>
-      <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Rata-Rata Kelengkapan</p>
-      <h3 id="bp-stat-avg" class="text-2xl font-black text-blue-600 mt-1">0%</h3>
-    </div>
-    <div class="p-3 bg-blue-500/10 text-blue-600 rounded-xl ring-1 ring-blue-500/20">
-      <i class="fa-solid fa-chart-pie text-lg"></i>
-    </div>
-  </div>
-</div>
           <div id="tab-buku-polis" class="tab-anim hidden space-y-6">
+            <!-- HASIL MONITORING BUKU POLIS -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+              <div class="card-hover glossy-card p-4.5 rounded-2xl flex items-center justify-between">
+                <div>
+                  <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Total Buku Polis</p>
+                  <h3 id="bp-stat-total" class="text-2xl font-black text-slate-900 mt-1">0</h3>
+                </div>
+                <div class="p-3 bg-cyan-500/10 text-cyan-600 rounded-xl ring-1 ring-cyan-500/20">
+                  <i class="fa-solid fa-book text-lg"></i>
+                </div>
+              </div>
+
+              <div class="card-hover glossy-card p-4.5 rounded-2xl flex items-center justify-between">
+                <div>
+                  <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Dokumen Lengkap (100%)</p>
+                  <h3 id="bp-stat-complete" class="text-2xl font-black text-emerald-600 mt-1">0</h3>
+                </div>
+                <div class="p-3 bg-emerald-500/10 text-emerald-600 rounded-xl ring-1 ring-emerald-500/20">
+                  <i class="fa-solid fa-circle-check text-lg"></i>
+                </div>
+              </div>
+
+              <div class="card-hover glossy-card p-4.5 rounded-2xl flex items-center justify-between">
+                <div>
+                  <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Belum Lengkap (&lt;100%)</p>
+                  <h3 id="bp-stat-incomplete" class="text-2xl font-black text-amber-600 mt-1">0</h3>
+                </div>
+                <div class="p-3 bg-amber-500/10 text-amber-600 rounded-xl ring-1 ring-amber-500/20">
+                  <i class="fa-solid fa-hourglass-half text-lg"></i>
+                </div>
+              </div>
+
+              <div class="card-hover glossy-card p-4.5 rounded-2xl flex items-center justify-between">
+                <div>
+                  <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Rata-Rata Kelengkapan</p>
+                  <h3 id="bp-stat-avg" class="text-2xl font-black text-blue-600 mt-1">0%</h3>
+                </div>
+                <div class="p-3 bg-blue-500/10 text-blue-600 rounded-xl ring-1 ring-blue-500/20">
+                  <i class="fa-solid fa-chart-pie text-lg"></i>
+                </div>
+              </div>
+            </div>
+
             <div class="glossy-card rounded-2xl p-8 space-y-8">
               <div class="border-b border-slate-200/80 pb-4 flex justify-between items-center">
                 <div>
@@ -1761,7 +1762,14 @@
         const file = input.files[0];
         
         document.getElementById("excel-status").innerText = "Memuat modul Excel...";
-        await ensureExcelJs();
+        
+        try {
+          await ensureExcelJs();
+        } catch (err) {
+          alert("Gagal memuat modul Excel. Periksa koneksi internet Anda.");
+          document.getElementById("excel-status").innerText = "Gagal memuat modul Excel";
+          return;
+        }
 
         const reader = new FileReader();
         reader.onload = function (e) {
@@ -1930,6 +1938,7 @@
 
         if (tab === "buku-polis") {
           await generateAutoNoPolis();
+          renderBukuPolisTable();
         }
 
         if (tab === "dashboard") {
@@ -2267,7 +2276,7 @@
         switchTab("repository");
       }
 
-      // GENERATE AUTOMATIC NO POLIS (MENGECEK DB SUPABASE UNTUK CEK LAST NUMBER)
+      // GENERATE AUTOMATIC NO POLIS
       async function generateAutoNoPolis() {
         const now = new Date();
         const year = document.getElementById("bp-tahun").value || now.getFullYear();
@@ -2314,13 +2323,12 @@
         if (inputElem) inputElem.value = generatedNoPolis;
       }
 
-      // HANDLE SUBMIT DENGAN NO_POLIS SEBAGAI PRIMARY KEY
+      // HANDLE SUBMIT BUKU POLIS
       async function handleBukuPolisSubmit(e) {
         e.preventDefault();
 
         const noPolis = document.getElementById("bp-no-polis").value.trim();
 
-        // 1. Cek apakah no_polis duplikat di DB Supabase
         try {
           const { data: existingData } = await _supabase
             .from("buku_polis")
@@ -2355,7 +2363,7 @@
         const keterangan = document.getElementById("bp-keterangan").value.trim();
 
         const newBP = {
-          noPolis: noPolis, // Primary Key utama
+          noPolis: noPolis,
           jenisAsuransi,
           tahun,
           kodeProduk,
@@ -2370,7 +2378,6 @@
         };
 
         try {
-          // Menyimpan langsung ke Supabase menggunakan no_polis sebagai Primary Key
           const { error } = await _supabase.from("buku_polis").upsert(
             { no_polis: noPolis, payload: newBP },
             { onConflict: "no_polis" }
@@ -2396,10 +2403,27 @@
         generateAutoNoPolis();
       }
 
+      function updateBukuPolisStats() {
+        const total = bukuPolisList.length;
+        const complete = bukuPolisList.filter(bp => parseInt(bp.progress) === 100).length;
+        const incomplete = total - complete;
+        
+        let totalProgress = 0;
+        bukuPolisList.forEach(bp => totalProgress += (parseInt(bp.progress) || 0));
+        const avg = total > 0 ? Math.round(totalProgress / total) : 0;
+
+        if(document.getElementById("bp-stat-total")) document.getElementById("bp-stat-total").innerText = total;
+        if(document.getElementById("bp-stat-complete")) document.getElementById("bp-stat-complete").innerText = complete;
+        if(document.getElementById("bp-stat-incomplete")) document.getElementById("bp-stat-incomplete").innerText = incomplete;
+        if(document.getElementById("bp-stat-avg")) document.getElementById("bp-stat-avg").innerText = `${avg}%`;
+      }
+
       function renderBukuPolisTable() {
         const tbody = document.getElementById("buku-polis-table-body");
         if (!tbody) return;
         tbody.innerHTML = "";
+
+        updateBukuPolisStats();
 
         const query = (document.getElementById("search-buku-polis")?.value || "").toLowerCase();
         const filtered = bukuPolisList.filter(
@@ -2575,7 +2599,12 @@
           return;
         }
 
-        await ensureExcelJs();
+        try {
+          await ensureExcelJs();
+        } catch (err) {
+          alert("Gagal memuat pustaka Excel. Periksa koneksi internet Anda.");
+          return;
+        }
 
         const data = bukuPolisList.map((bp, idx) => ({
           "NO": idx + 1,
@@ -2806,6 +2835,7 @@
 
         calculateTotalPremi();
         calculateBMI();
+        runAutoEvaluation();
 
         if (t.files) {
           tempFiles = { ...t.files };
@@ -2925,7 +2955,7 @@
 
         document.getElementById("bulk-note-input").value = "";
         await loadTransactionsFromSupabase();
-        alert(`${selectedCheckboxes.length} transaksi berhasil dipproses secara massal!`);
+        alert(`${selectedCheckboxes.length} transaksi berhasil diproses secara massal!`);
       }
 
       async function exportRepositoryToExcel() {
@@ -2935,7 +2965,12 @@
           return;
         }
 
-        await ensureExcelJs();
+        try {
+          await ensureExcelJs();
+        } catch (err) {
+          alert("Gagal memuat pustaka Excel. Periksa koneksi internet Anda.");
+          return;
+        }
 
         const exportData = filtered.map((t, idx) => {
           let lastApproval = "-";
