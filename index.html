@@ -798,7 +798,7 @@
 
           <!-- 3. BUKU POLIS -->
           <div id="tab-buku-polis" class="tab-anim hidden space-y-6">
-            <!-- HASIL MONITORING BUKU POLIS (DITENGAHKAN) -->
+            <!-- HASIL MONITORING BUKU POLIS -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
               <div class="card-hover glossy-card p-4.5 rounded-2xl flex flex-col items-center justify-center text-center gap-2">
                 <div class="p-3 bg-cyan-500/10 text-cyan-600 rounded-xl ring-1 ring-cyan-500/20 flex items-center justify-center shrink-0">
@@ -857,7 +857,8 @@
                   <i class="fa-solid fa-book-open"></i> Input Data Buku Polis Baru
                 </h4>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- GRID INPUT BUKU POLIS (DENGAN FIELD PIC MARKETING BARU) -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Jenis Asuransi *</label>
                     <select id="bp-jenis-asuransi" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none bg-white cursor-pointer">
@@ -882,8 +883,13 @@
                     <label class="block text-xs font-bold text-slate-700 mb-1">Pemegang Polis *</label>
                     <input type="text" id="bp-pemegang-polis" required placeholder="Nama Lengkap Pemegang Polis" class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none" />
                   </div>
+                  <!-- FIELD BARU: PIC MARKETING -->
                   <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">PIC (Otomatis User Login) *</label>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">PIC Marketing *</label>
+                    <input type="text" id="bp-pic-marketing" required placeholder="Nama PIC Marketing" class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none bg-white" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">PIC UW (Otomatis User Login) *</label>
                     <input type="text" id="bp-pic" readonly class="w-full border border-slate-200 bg-slate-100 font-semibold text-slate-700 rounded-xl px-3.5 py-2 text-sm focus:outline-none" />
                   </div>
                 </div>
@@ -968,7 +974,7 @@
                       type="text"
                       id="search-buku-polis"
                       onkeyup="renderBukuPolisTable()"
-                      placeholder="Cari No Polis / Pemegang / PIC..."
+                      placeholder="Cari No Polis / Pemegang / Marketing / PIC..."
                       class="border border-slate-300 text-xs rounded-xl px-3.5 py-2 w-64 focus:ring-2 focus:ring-cyan-500 focus:outline-none bg-white font-medium"
                     />
                     <button onclick="exportBukuPolisToExcel()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-md cursor-pointer shrink-0">
@@ -987,7 +993,8 @@
                         <th class="p-3">KODE PRODUK</th>
                         <th class="p-3">NO POLIS (PK)</th>
                         <th class="p-3">PEMEGANG POLIS</th>
-                        <th class="p-3">PIC</th>
+                        <th class="p-3">PIC MARKETING</th> <!-- KOLOM BARU -->
+                        <th class="p-3">PIC UW</th>
                         <th class="p-3 text-center">CEKLIS DOKUMEN TERPISAH</th>
                         <th class="p-3 text-center">PROGRESS</th>
                         <th class="p-3">KETERANGAN</th>
@@ -2378,7 +2385,7 @@
         if (inputElem) inputElem.value = generatedNoPolis;
       }
 
-      // HANDLE SUBMIT BUKU POLIS
+      // HANDLE SUBMIT BUKU POLIS (UPDATED INCLUDING PIC MARKETING)
       async function handleBukuPolisSubmit(e) {
         e.preventDefault();
 
@@ -2404,6 +2411,7 @@
         const tahun = document.getElementById("bp-tahun").value;
         const kodeProduk = document.getElementById("bp-kode-produk").value.trim();
         const pemegang = document.getElementById("bp-pemegang-polis").value.trim();
+        const picMarketing = document.getElementById("bp-pic-marketing").value.trim();
         const pic = currentFullName;
 
         const checklists = {
@@ -2423,6 +2431,7 @@
           tahun,
           kodeProduk,
           pemegangPolis: pemegang,
+          picMarketing: picMarketing,
           pic,
           checklists,
           progress,
@@ -2452,6 +2461,7 @@
 
       function resetBukuPolisForm() {
         document.getElementById("buku-polis-form").reset();
+        document.getElementById("bp-pic-marketing").value = "";
         document.getElementById("bp-pic").value = currentFullName;
         document.getElementById("bp-progress").value = "0";
         clearBukuPolisFile();
@@ -2473,6 +2483,7 @@
         if(document.getElementById("bp-stat-avg")) document.getElementById("bp-stat-avg").innerText = `${avg}%`;
       }
 
+      // RENDER TABEL BUKU POLIS (DENGAN FIELD PIC MARKETING BARU)
       function renderBukuPolisTable() {
         const tbody = document.getElementById("buku-polis-table-body");
         if (!tbody) return;
@@ -2485,12 +2496,13 @@
           (bp) =>
             (bp.noPolis && bp.noPolis.toLowerCase().includes(query)) ||
             (bp.pemegangPolis && bp.pemegangPolis.toLowerCase().includes(query)) ||
+            (bp.picMarketing && bp.picMarketing.toLowerCase().includes(query)) ||
             (bp.pic && bp.pic.toLowerCase().includes(query)) ||
             (bp.kodeProduk && bp.kodeProduk.toLowerCase().includes(query))
         );
 
         if (filtered.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="11" class="p-6 text-center text-slate-400 font-medium">Belum ada data Buku Polis tersimpan.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="12" class="p-6 text-center text-slate-400 font-medium">Belum ada data Buku Polis tersimpan.</td></tr>`;
           return;
         }
 
@@ -2515,6 +2527,7 @@
             <td class="p-3 font-mono font-bold text-slate-700">${bp.kodeProduk || "-"}</td>
             <td class="p-3 font-mono font-bold text-cyan-700">${bp.noPolis}</td>
             <td class="p-3 font-bold text-slate-800">${bp.pemegangPolis}</td>
+            <td class="p-3 text-slate-700 font-semibold">${bp.picMarketing || "-"}</td>
             <td class="p-3 text-slate-600 font-medium">${bp.pic || "-"}</td>
             <td class="p-3 text-center">
               <div class="flex items-center justify-center gap-1 flex-wrap">
@@ -2648,6 +2661,7 @@
         alert("Buku polis berhasil dihapus.");
       }
 
+      // EKSPOR BUKU POLIS KE EXCEL (TERMASUK PIC MARKETING)
       async function exportBukuPolisToExcel() {
         if (bukuPolisList.length === 0) {
           alert("Belum ada data buku polis untuk diexport!");
@@ -2668,7 +2682,8 @@
           "KODE PRODUK": bp.kodeProduk || "-",
           "NO POLIS (PK)": bp.noPolis,
           "PEMEGANG POLIS": bp.pemegangPolis,
-          "PIC": bp.pic || "-",
+          "PIC MARKETING": bp.picMarketing || "-",
+          "PIC UW": bp.pic || "-",
           "SPAJ": bp.checklists?.spaj ? "Ada" : "Tidak",
           "SPEK PRODUK": bp.checklists?.spek ? "Ada" : "Tidak",
           "NPWP": bp.checklists?.npwp ? "Ada" : "Tidak",
