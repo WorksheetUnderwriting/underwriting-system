@@ -808,7 +808,7 @@
             </form>
           </div>
 
-          <!-- 3. SERTIFIKAT KEPESERTAAN TAB (MODUL MANDIRI TERPISAH) -->
+          <!-- 3. SERTIFIKAT KEPESERTAAN TAB (TERINTEGRASI SUPABASE SERTIFIKAT_KEPESERTAAN & MASTER_POLIS) -->
           <div id="tab-sertifikat" class="tab-anim hidden space-y-6">
             <div class="glossy-card rounded-2xl p-8 space-y-6">
               <div class="border-b border-slate-200/80 pb-4 flex justify-between items-center">
@@ -816,7 +816,7 @@
                   <h3 class="text-lg font-bold text-slate-800">Menu Sertifikat Kepesertaan</h3>
                   <p class="text-xs text-slate-500">Penerbitan, pratinjau, dan unduh sertifikat resmi untuk peserta status Approved Final.</p>
                 </div>
-                <button onclick="renderSertifikatTable()" class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-md cursor-pointer">
+                <button onclick="loadSertifikatFromSupabase()" class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-md cursor-pointer">
                   <i class="fa-solid fa-rotate me-1"></i> Refresh Data
                 </button>
               </div>
@@ -830,7 +830,7 @@
                       <input
                         type="text"
                         id="search-sertifikat"
-                        onkeyup="renderSertifikatTable()"
+                        oninput="filterSertifikatLocal()"
                         placeholder="Cari Nama Peserta, NIK, atau No. Sertifikat..."
                         class="w-full border border-slate-300 text-xs rounded-xl pl-9 pr-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white font-medium"
                       />
@@ -839,14 +839,14 @@
                   </div>
                   <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Filter Produk</label>
-                    <select id="filter-sertifikat-produk" onchange="renderSertifikatTable()" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white cursor-pointer font-medium">
+                    <select id="filter-sertifikat-produk" onchange="filterSertifikatLocal()" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white cursor-pointer font-medium">
                       <option value="">-- Semua Jenis Produk --</option>
                     </select>
                   </div>
                 </div>
               </div>
 
-              <!-- Tabel Sertifikat -->
+              <!-- Tabel Sertifikat Kepesertaan -->
               <div class="overflow-x-auto border border-slate-200/80 rounded-2xl bg-white shadow-sm">
                 <table class="w-full text-left border-collapse">
                   <thead>
@@ -861,7 +861,14 @@
                       <th class="p-3 text-center">AKSI</th>
                     </tr>
                   </thead>
-                  <tbody id="sertifikat-table-body" class="divide-y divide-slate-200/80 text-xs bg-white"></tbody>
+                  <tbody id="sertifikat-table-body" class="divide-y divide-slate-200/80 text-xs bg-white">
+                    <tr>
+                      <td colspan="8" class="p-6 text-center text-slate-400">
+                        <i class="fa-solid fa-spinner animate-spin text-lg text-blue-500 mb-1"></i>
+                        <p class="text-xs">Memuat data sertifikat...</p>
+                      </td>
+                    </tr>
+                  </tbody>
                 </table>
               </div>
             </div>
@@ -1175,7 +1182,7 @@
               <p class="text-xs text-slate-600 mb-4">Dengan ini menyatakan bahwa peserta di bawah ini telah disetujui (*Approved Final*) dan terdaftar dalam program penutupan asuransi:</p>
               <table class="w-full text-xs border-collapse">
                 <tr class="border-b border-slate-100">
-                  <td width="35%" class="py-2 font-bold text-slate-600">Nomor Sertifikat</td>
+                  <td width="35%" class="py-2 font-bold text-slate-600">Nomor Sertifikat / Peserta</td>
                   <td width="5%" class="py-2">:</td>
                   <td id="cert-no" class="py-2 font-mono font-bold text-blue-700">-</td>
                 </tr>
@@ -1593,10 +1600,10 @@
       let activeLevel = parseInt(localStorage.getItem("activeRoleLevel")) || maxUserLevel;
 
       let transactions = [];
+      let sertifikatList = []; // Raw data dari Supabase tabel sertifikat_kepesertaan
       let bukuPolisList = [];
       let tempBukuPolisFile = null;
       let activeNoPolisForUpdate = null;
-      let activeSertifikatIndex = null;
 
       let activeTransactionId = null;
       let editingTransactionId = null;
@@ -1667,19 +1674,6 @@
           if (produk === currentVal) opt.selected = true;
           produkSelect.appendChild(opt);
         });
-
-        // Update dropdown filter di menu sertifikat
-        const filterSertifikatSelect = document.getElementById("filter-sertifikat-produk");
-        if (filterSertifikatSelect) {
-          const allProducts = [...produkIndividu, ...produkKumpulan];
-          filterSertifikatSelect.innerHTML = '<option value="">-- Semua Jenis Produk --</option>';
-          allProducts.forEach((p) => {
-            const opt = document.createElement("option");
-            opt.value = p;
-            opt.textContent = p;
-            filterSertifikatSelect.appendChild(opt);
-          });
-        }
       }
 
       function handleSegmenChange() {
@@ -1744,6 +1738,7 @@
 
         await Promise.all([
           loadTransactionsFromSupabase(),
+          loadSertifikatFromSupabase(),
           loadBukuPolisFromSupabase(),
           preFetchNextID()
         ]);
@@ -1862,9 +1857,173 @@
         }
 
         renderRepository();
-        renderSertifikatTable();
         updateStats();
         if (chartMonthlyInstance && chartStatusInstance) updateCharts();
+      }
+
+      // LOAD DATA DARI SUPABASE (TABEL sertifikat_kepesertaan DENGAN JOIN master_polis)
+      async function loadSertifikatFromSupabase() {
+        const tableBody = document.getElementById("sertifikat-table-body");
+        if (!tableBody) return;
+
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="8" class="p-6 text-center text-slate-400">
+              <i class="fa-solid fa-spinner animate-spin text-lg text-blue-500 mb-1"></i>
+              <p class="text-xs">Memuat data sertifikat...</p>
+            </td>
+          </tr>
+        `;
+
+        try {
+          const { data, error } = await _supabase
+            .from("sertifikat_kepesertaan")
+            .select(`
+              *,
+              master_polis (
+                no_polis,
+                no_polis_sertifikat,
+                nama_pemegang_polis,
+                jenis_asuransi,
+                penerima_manfaat
+              )
+            `)
+            .order("created_at", { ascending: false });
+
+          if (error) throw error;
+
+          sertifikatList = data || [];
+          renderSertifikatTable(sertifikatList);
+          populateFilterSertifikatProduk(sertifikatList);
+
+        } catch (err) {
+          console.warn("Mencoba mengambil fallback dari transaksi Approved Final:", err.message);
+          // Fallback ke data transaksi lokal jika tabel sertifikat_kepesertaan belum tersedia
+          sertifikatList = transactions
+            .filter((t) => t.status === "APPROVED_FINAL")
+            .map((t) => ({
+              no_peserta: `CERT-${t.id}`,
+              nik: t.noKtp,
+              nama_peserta: t.nama,
+              uang_pertanggungan: t.up,
+              start_date: t.dateFormatted,
+              tenor: t.masa,
+              kode_produk: t.produk,
+              master_polis: { jenis_asuransi: t.produk || "Asuransi Heksa Jiwa Kredit" }
+            }));
+            
+          renderSertifikatTable(sertifikatList);
+          populateFilterSertifikatProduk(sertifikatList);
+        }
+      }
+
+      // RENDER TABEL SERTIFIKAT KEPESERTAAN
+      function renderSertifikatTable(dataList) {
+        const tbody = document.getElementById("sertifikat-table-body");
+        if (!tbody) return;
+
+        if (!dataList || dataList.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-400 text-xs">Belum ada data sertifikat peserta status Approved Final.</td></tr>`;
+          return;
+        }
+
+        let htmlRows = "";
+        dataList.forEach((item) => {
+          const formattedUP = item.uang_pertanggungan
+            ? `Rp ${Number(item.uang_pertanggungan).toLocaleString("id-ID")}`
+            : "-";
+            
+          const jenisAsuransi = item.master_polis?.jenis_asuransi || item.kode_produk || "Asuransi Heksa Jiwa Kredit";
+          const startDate = item.start_date ? formatDateID(item.start_date) : "-";
+          const tenorText = item.tenor ? `(${item.tenor} Bulan)` : "";
+
+          htmlRows += `
+            <tr class="hover:bg-slate-50 transition border-b border-slate-100">
+              <td class="p-3 font-mono font-bold text-blue-600">${item.no_peserta || "-"}</td>
+              <td class="p-3 font-mono text-slate-700">${item.nik || item.id_ktp || "-"}</td>
+              <td class="p-3 font-bold text-slate-800">${item.nama_peserta || "-"}</td>
+              <td class="p-3 text-slate-700 font-medium">${jenisAsuransi}</td>
+              <td class="p-3 font-bold text-slate-900">${formattedUP}</td>
+              <td class="p-3 text-slate-600">${startDate} ${tenorText}</td>
+              <td class="p-3"><span class="px-2.5 py-1 text-[10px] font-bold bg-emerald-100 text-emerald-800 rounded-full">Approved Final</span></td>
+              <td class="p-3 text-center">
+                <button onclick="openModalSertifikatByData('${item.no_peserta}')" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 mx-auto cursor-pointer shadow-sm">
+                  <i class="fa-solid fa-file-pdf"></i> Pratinjau & Cetak
+                </button>
+              </td>
+            </tr>
+          `;
+        });
+
+        tbody.innerHTML = htmlRows;
+      }
+
+      // FILTER LOKAL UNTUK PENCARIAN & DROPDOWN PRODUK SERTIFIKAT
+      function filterSertifikatLocal() {
+        const query = (document.getElementById("search-sertifikat")?.value || "").toLowerCase();
+        const selectedProduk = document.getElementById("filter-sertifikat-produk")?.value || "";
+
+        const filtered = sertifikatList.filter((item) => {
+          const matchQuery =
+            (item.nama_peserta && item.nama_peserta.toLowerCase().includes(query)) ||
+            (item.no_peserta && item.no_peserta.toLowerCase().includes(query)) ||
+            (item.nik && item.nik.toLowerCase().includes(query));
+
+          const matchProduct = selectedProduk === "" || item.kode_produk === selectedProduk || item.master_polis?.jenis_asuransi === selectedProduk;
+
+          return matchQuery && matchProduct;
+        });
+
+        renderSertifikatTable(filtered);
+      }
+
+      // ISI DROPDOWN FILTER PRODUK DARI DATA SERTIFIKAT SUPABASE
+      function populateFilterSertifikatProduk(dataList) {
+        const select = document.getElementById("filter-sertifikat-produk");
+        if (!select) return;
+
+        const uniqueProducts = new Set();
+        dataList.forEach((item) => {
+          const pName = item.master_polis?.jenis_asuransi || item.kode_produk;
+          if (pName) uniqueProducts.add(pName);
+        });
+
+        let optionsHTML = `<option value="">-- Semua Jenis Produk --</option>`;
+        uniqueProducts.forEach((prod) => {
+          optionsHTML += `<option value="${prod}">${prod}</option>`;
+        });
+
+        select.innerHTML = optionsHTML;
+      }
+
+      function formatDateID(dateString) {
+        if (!dateString) return "-";
+        const date = new Date(dateString);
+        if (isNaN(date)) return dateString;
+        return date.toLocaleDateString("id-ID", {
+          day: "numeric",
+          month: "numeric",
+          year: "numeric",
+        });
+      }
+
+      function openModalSertifikatByData(noPeserta) {
+        const item = sertifikatList.find((s) => s.no_peserta === noPeserta);
+        if (!item) return;
+
+        const formattedUP = item.uang_pertanggungan
+          ? `Rp ${Number(item.uang_pertanggungan).toLocaleString("id-ID")}`
+          : "-";
+
+        document.getElementById("cert-no").innerText = item.no_peserta || "-";
+        document.getElementById("cert-nama").innerText = item.nama_peserta || "-";
+        document.getElementById("cert-ktp").innerText = item.nik || item.id_ktp || "-";
+        document.getElementById("cert-produk").innerText = item.master_polis?.jenis_asuransi || item.kode_produk || "-";
+        document.getElementById("cert-up").innerText = formattedUP;
+        document.getElementById("cert-masa").innerText = `${formatDateID(item.start_date)} (${item.tenor || "-"} Bulan)`;
+        document.getElementById("cert-status").innerText = "Approved Final";
+
+        document.getElementById("modal-view-sertifikat").classList.remove("hidden");
       }
 
       async function loadBukuPolisFromSupabase() {
@@ -1929,6 +2088,13 @@
             .channel("public:uw_transactions")
             .on("postgres_changes", { event: "*", schema: "public", table: "uw_transactions" }, () => {
               loadTransactionsFromSupabase();
+            })
+            .subscribe();
+
+          _supabase
+            .channel("public:sertifikat_kepesertaan")
+            .on("postgres_changes", { event: "*", schema: "public", table: "sertifikat_kepesertaan" }, () => {
+              loadSertifikatFromSupabase();
             })
             .subscribe();
 
@@ -2184,7 +2350,7 @@
         }
 
         if (tab === "sertifikat") {
-          renderSertifikatTable();
+          await loadSertifikatFromSupabase();
         }
 
         if (tab === "buku-polis") {
@@ -2510,72 +2676,6 @@
         alert(`Kertas Kerja ${newId} Berhasil Disimpan & Diteruskan ke Supervisor!`);
         resetForm();
         switchTab("repository");
-      }
-
-      // RENDER LOGIK TABEL SERTIFIKAT KEPESERTAAN (STANDALONE MENU)
-      function renderSertifikatTable() {
-        const tbody = document.getElementById("sertifikat-table-body");
-        if (!tbody) return;
-        tbody.innerHTML = "";
-
-        const query = (document.getElementById("search-sertifikat")?.value || "").toLowerCase();
-        const selectedProduk = document.getElementById("filter-sertifikat-produk")?.value || "";
-
-        // Hanya mengambil peserta dengan status APPROVED_FINAL dari transaksi
-        const approvedTransactions = transactions.filter(t => t.status === "APPROVED_FINAL");
-
-        const filtered = approvedTransactions.filter((t) => {
-          const matchQuery = (t.nama && t.nama.toLowerCase().includes(query)) ||
-                             (t.noKtp && t.noKtp.toLowerCase().includes(query)) ||
-                             (t.id && t.id.toLowerCase().includes(query));
-          const matchProduk = selectedProduk === "" || t.produk === selectedProduk;
-          return matchQuery && matchProduk;
-        });
-
-        if (filtered.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-400 font-medium">Belum ada sertifikat peserta yang berstatus Approved Final.</td></tr>`;
-          return;
-        }
-
-        filtered.forEach((t) => {
-          const tr = document.createElement("tr");
-          tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
-
-          const noCert = `CERT-${t.id}`;
-          const masaPertanggungan = `${t.dateFormatted || "-"} (${t.masa || "12"} Bulan)`;
-
-          tr.innerHTML = `
-            <td class="p-3 font-mono font-bold text-blue-600">${noCert}</td>
-            <td class="p-3 font-mono text-slate-700">${t.noKtp || "-"}</td>
-            <td class="p-3 font-bold text-slate-800">${t.nama}</td>
-            <td class="p-3 text-slate-700 font-medium">${t.produk || "-"}</td>
-            <td class="p-3 font-bold text-slate-900">Rp ${formatNumberInput(t.up)}</td>
-            <td class="p-3 text-slate-600">${masaPertanggungan}</td>
-            <td class="p-3"><span class="px-2.5 py-1 text-[10px] font-bold bg-emerald-100 text-emerald-800 rounded-full">Approved Final</span></td>
-            <td class="p-3 text-center">
-              <button onclick="openModalSertifikat('${t.id}')" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 mx-auto cursor-pointer shadow-sm">
-                <i class="fa-solid fa-file-pdf"></i> Pratinjau & Cetak
-              </button>
-            </td>
-          `;
-          tbody.appendChild(tr);
-        });
-      }
-
-      function openModalSertifikat(id) {
-        const t = transactions.find(item => item.id === id);
-        if (!t) return;
-
-        document.getElementById("cert-no").innerText = `CERT-${t.id}`;
-        document.getElementById("cert-nama").innerText = t.nama;
-        document.getElementById("cert-ktp").innerText = t.noKtp || "-";
-        document.getElementById("cert-produk").innerText = t.produk || "-";
-        document.getElementById("cert-up").innerText = `Rp ${formatNumberInput(t.up)}`;
-        document.getElementById("cert-masa").innerText = `${t.dateFormatted || "-"} (${t.masa || "12"} Bulan)`;
-        document.getElementById("cert-status").innerText = "Approved Final";
-
-        activeTransactionId = id;
-        document.getElementById("modal-view-sertifikat").classList.remove("hidden");
       }
 
       async function downloadSertifikatPDF() {
@@ -3005,7 +3105,6 @@
         }
 
         renderRepository();
-        renderSertifikatTable();
         updateStats();
         if (chartMonthlyInstance && chartStatusInstance) updateCharts();
       }
@@ -3191,7 +3290,6 @@
 
           transactions = transactions.filter((t) => t.id !== id);
           renderRepository();
-          renderSertifikatTable();
           updateStats();
           alert(`Transaksi ${id} berhasil dihapus.`);
         } catch (err) {
