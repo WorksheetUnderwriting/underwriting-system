@@ -13,6 +13,8 @@
     />
     <!-- Supabase JS Library CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- html2pdf.js Library CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <!-- SCRIPT PROTEKSI HAK AKSES PRODUCTION -->
     <script>
@@ -97,7 +99,9 @@
       #repo-table-body td, 
       #repo-table-body th,
       #buku-polis-table-body td,
-      #buku-polis-table-body th {
+      #buku-polis-table-body th,
+      #sertifikat-table-body td,
+      #sertifikat-table-body th {
         vertical-align: middle !important;
         white-space: nowrap;
       }
@@ -166,7 +170,7 @@
     class="bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#0a1128] to-[#030712] font-sans antialiased text-slate-800 min-h-screen"
   >
     <div class="flex h-screen overflow-hidden">
-      <!-- SIDEBAR -->
+      <!-- SIDEBAR NAVIGASI UTAMA -->
       <aside
         class="w-64 bg-[#070d1e]/80 backdrop-blur-2xl text-slate-300 flex flex-col justify-between no-print z-20 border-r border-blue-500/20 shadow-[5px_0_25px_rgba(0,0,0,0.5)]"
       >
@@ -203,6 +207,14 @@
             >
               <i class="fa-solid fa-pen-to-square w-5 text-center text-emerald-400"></i>
               Kertas Kerja UW
+            </button>
+            <button
+              onclick="switchTab('sertifikat')"
+              id="nav-sertifikat"
+              class="w-full flex items-center gap-3.5 px-4 py-3 text-sm font-semibold rounded-xl hover:bg-blue-950/50 transition cursor-pointer text-slate-400 hover:text-white"
+            >
+              <i class="fa-solid fa-award w-5 text-center text-indigo-400"></i>
+              Sertifikat Kepesertaan
             </button>
             <button
               onclick="switchTab('buku-polis')"
@@ -243,7 +255,7 @@
         </div>
       </aside>
 
-      <!-- MAIN CONTENT -->
+      <!-- MAIN CONTENT AREA -->
       <main class="flex-1 flex flex-col overflow-y-auto">
         <header
           class="bg-[#0b132b]/70 backdrop-blur-xl border-b border-blue-500/20 px-8 py-4 flex justify-between items-center no-print sticky top-0 z-10 shadow-[0_4px_20px_rgba(0,0,0,0.4)]"
@@ -312,7 +324,7 @@
         </header>
 
         <div class="p-8 flex-1 space-y-6">
-          <!-- 1. DASHBOARD -->
+          <!-- 1. DASHBOARD TAB -->
           <div id="tab-dashboard" class="tab-anim space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div class="card-hover glossy-card p-5 rounded-2xl relative overflow-hidden flex items-center justify-between">
@@ -412,7 +424,7 @@
             </div>
           </div>
 
-          <!-- 2. FORM KERTAS KERJA UW -->
+          <!-- 2. FORM KERTAS KERJA UW TAB -->
           <div id="tab-form" class="tab-anim hidden space-y-6">
             <form id="uw-form" onsubmit="handleFormSubmit(event)" class="glossy-card rounded-2xl p-8 space-y-8">
               <div class="border-b border-slate-200/80 pb-4 flex justify-between items-center">
@@ -796,7 +808,66 @@
             </form>
           </div>
 
-          <!-- 3. BUKU POLIS -->
+          <!-- 3. SERTIFIKAT KEPESERTAAN TAB (MODUL MANDIRI TERPISAH) -->
+          <div id="tab-sertifikat" class="tab-anim hidden space-y-6">
+            <div class="glossy-card rounded-2xl p-8 space-y-6">
+              <div class="border-b border-slate-200/80 pb-4 flex justify-between items-center">
+                <div>
+                  <h3 class="text-lg font-bold text-slate-800">Menu Sertifikat Kepesertaan</h3>
+                  <p class="text-xs text-slate-500">Penerbitan, pratinjau, dan unduh sertifikat resmi untuk peserta status Approved Final.</p>
+                </div>
+                <button onclick="renderSertifikatTable()" class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-md cursor-pointer">
+                  <i class="fa-solid fa-rotate me-1"></i> Refresh Data
+                </button>
+              </div>
+
+              <!-- Bar Filter & Pencarian Sertifikat -->
+              <div class="bg-white/80 p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Pencarian Sertifikat</label>
+                    <div class="relative">
+                      <input
+                        type="text"
+                        id="search-sertifikat"
+                        onkeyup="renderSertifikatTable()"
+                        placeholder="Cari Nama Peserta, NIK, atau No. Sertifikat..."
+                        class="w-full border border-slate-300 text-xs rounded-xl pl-9 pr-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white font-medium"
+                      />
+                      <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-xs"></i>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Filter Produk</label>
+                    <select id="filter-sertifikat-produk" onchange="renderSertifikatTable()" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white cursor-pointer font-medium">
+                      <option value="">-- Semua Jenis Produk --</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tabel Sertifikat -->
+              <div class="overflow-x-auto border border-slate-200/80 rounded-2xl bg-white shadow-sm">
+                <table class="w-full text-left border-collapse">
+                  <thead>
+                    <tr class="bg-slate-100/80 text-slate-500 uppercase text-[10px] font-bold tracking-wider border-b border-slate-200">
+                      <th class="p-3">NO. SERTIFIKAT</th>
+                      <th class="p-3">NIK / ID KTP</th>
+                      <th class="p-3">NAMA PESERTA</th>
+                      <th class="p-3">PRODUK ASURANSI</th>
+                      <th class="p-3">UANG PERTANGGUNGAN</th>
+                      <th class="p-3">MASA PERTANGGUNGAN</th>
+                      <th class="p-3">STATUS UNDERWRITING</th>
+                      <th class="p-3 text-center">AKSI</th>
+                    </tr>
+                  </thead>
+                  <tbody id="sertifikat-table-body" class="divide-y divide-slate-200/80 text-xs bg-white"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. BUKU POLIS TAB -->
           <div id="tab-buku-polis" class="tab-anim hidden space-y-6">
             <!-- HASIL MONITORING BUKU POLIS -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
@@ -857,7 +928,6 @@
                   <i class="fa-solid fa-book-open"></i> Input Data Buku Polis Baru
                 </h4>
 
-                <!-- GRID INPUT BUKU POLIS (DROPDOWN PIC MARKETING DIUPDATE) -->
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Jenis Asuransi *</label>
@@ -884,7 +954,6 @@
                     <input type="text" id="bp-pemegang-polis" required placeholder="Nama Lengkap Pemegang Polis" class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none" />
                   </div>
 
-                  <!-- FIELD BARU: DROPDOWN PIC MARKETING -->
                   <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">PIC Marketing *</label>
                     <select id="bp-pic-marketing" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none bg-white cursor-pointer">
@@ -1017,7 +1086,7 @@
             </div>
           </div>
 
-          <!-- 4. REPOSITORY TRANSAKSI -->
+          <!-- 5. REPOSITORY TRANSAKSI TAB -->
           <div id="tab-repository" class="tab-anim hidden space-y-6">
             <div class="glossy-card rounded-2xl overflow-hidden">
               <div class="p-6 border-b border-slate-200/80 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -1081,6 +1150,82 @@
           </div>
         </div>
       </main>
+    </div>
+
+    <!-- MODAL KHUSUS PRATINJAU & UNDUH SERTIFIKAT KEPESERTAAN -->
+    <div id="modal-view-sertifikat" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md flex items-center justify-center hidden z-50 p-4">
+      <div class="bg-white rounded-3xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+        <div class="p-5 bg-blue-600 text-white flex justify-between items-center no-print border-b border-blue-500/20">
+          <div>
+            <h3 class="font-bold text-base"><i class="fa-solid fa-award me-2"></i>Pratinjau Sertifikat Kepesertaan</h3>
+            <p class="text-xs text-blue-100">Worksheet Underwriting System</p>
+          </div>
+          <button onclick="closeModal('modal-view-sertifikat')" class="text-white hover:text-slate-200 text-2xl cursor-pointer">&times;</button>
+        </div>
+
+        <div class="p-6 overflow-y-auto space-y-6 flex-1 bg-slate-100">
+          <div id="sertifikat-pdf-area" style="border: 4px double #0d6efd; padding: 35px; background: #ffffff; color: #1e293b;" class="shadow-sm">
+            <div class="text-center">
+              <h2 class="text-2xl font-bold text-blue-600 mb-1" style="letter-spacing: 2px;">SERTIFIKAT KEPESERTAAN</h2>
+              <p class="text-xs text-slate-500 mb-3 uppercase tracking-widest">WORKSHEET UNDERWRITING SYSTEM</p>
+              <hr style="border-top: 2px solid #0d6efd;" class="my-3">
+            </div>
+
+            <div class="my-4">
+              <p class="text-xs text-slate-600 mb-4">Dengan ini menyatakan bahwa peserta di bawah ini telah disetujui (*Approved Final*) dan terdaftar dalam program penutupan asuransi:</p>
+              <table class="w-full text-xs border-collapse">
+                <tr class="border-b border-slate-100">
+                  <td width="35%" class="py-2 font-bold text-slate-600">Nomor Sertifikat</td>
+                  <td width="5%" class="py-2">:</td>
+                  <td id="cert-no" class="py-2 font-mono font-bold text-blue-700">-</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                  <td class="py-2 font-bold text-slate-600">Nama Peserta / Tertanggung</td>
+                  <td>:</td>
+                  <td id="cert-nama" class="py-2 font-bold text-slate-900">-</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                  <td class="py-2 font-bold text-slate-600">NIK / ID KTP</td>
+                  <td>:</td>
+                  <td id="cert-ktp" class="py-2 font-mono text-slate-800">-</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                  <td class="py-2 font-bold text-slate-600">Produk Asuransi</td>
+                  <td>:</td>
+                  <td id="cert-produk" class="py-2 font-semibold text-slate-800">-</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                  <td class="py-2 font-bold text-slate-600">Uang Pertanggungan (UP)</td>
+                  <td>:</td>
+                  <td id="cert-up" class="py-2 font-bold text-slate-900">-</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                  <td class="py-2 font-bold text-slate-600">Masa Pertanggungan</td>
+                  <td>:</td>
+                  <td id="cert-masa" class="py-2 font-semibold text-slate-800">-</td>
+                </tr>
+                <tr>
+                  <td class="py-2 font-bold text-slate-600">Status Underwriting</td>
+                  <td>:</td>
+                  <td class="py-2"><span class="px-2.5 py-1 text-[10px] font-bold bg-emerald-100 text-emerald-800 rounded-full" id="cert-status">Approved Final</span></td>
+                </tr>
+              </table>
+            </div>
+
+            <div class="mt-8 pt-4 border-t border-slate-200 text-center text-slate-500 text-[10px] leading-relaxed">
+              <p class="mb-0">Dokumen ini diterbitkan secara elektronik oleh Worksheet Underwriting System.</p>
+              <p class="mb-0">Keabsahan sertifikat ini sah dan berlaku tanpa memerlukan tanda tangan basah.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-4 border-t border-slate-200 bg-slate-50 flex justify-end gap-3 no-print">
+          <button onclick="closeModal('modal-view-sertifikat')" class="px-4 py-2 bg-slate-200 text-slate-700 hover:bg-slate-300 text-xs font-bold rounded-xl cursor-pointer transition">Tutup</button>
+          <button onclick="downloadSertifikatPDF()" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl flex items-center gap-2 cursor-pointer shadow-md glow-emerald">
+            <i class="fa-solid fa-file-arrow-down"></i> Unduh PDF Otomatis
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- MODAL KHUSUS UPDATE CEKLIS DOKUMEN BUKU POLIS -->
@@ -1451,6 +1596,7 @@
       let bukuPolisList = [];
       let tempBukuPolisFile = null;
       let activeNoPolisForUpdate = null;
+      let activeSertifikatIndex = null;
 
       let activeTransactionId = null;
       let editingTransactionId = null;
@@ -1521,6 +1667,19 @@
           if (produk === currentVal) opt.selected = true;
           produkSelect.appendChild(opt);
         });
+
+        // Update dropdown filter di menu sertifikat
+        const filterSertifikatSelect = document.getElementById("filter-sertifikat-produk");
+        if (filterSertifikatSelect) {
+          const allProducts = [...produkIndividu, ...produkKumpulan];
+          filterSertifikatSelect.innerHTML = '<option value="">-- Semua Jenis Produk --</option>';
+          allProducts.forEach((p) => {
+            const opt = document.createElement("option");
+            opt.value = p;
+            opt.textContent = p;
+            filterSertifikatSelect.appendChild(opt);
+          });
+        }
       }
 
       function handleSegmenChange() {
@@ -1703,6 +1862,7 @@
         }
 
         renderRepository();
+        renderSertifikatTable();
         updateStats();
         if (chartMonthlyInstance && chartStatusInstance) updateCharts();
       }
@@ -1995,7 +2155,7 @@
       }
 
       async function switchTab(tab) {
-        ["dashboard", "form", "buku-polis", "repository"].forEach((t) => {
+        ["dashboard", "form", "sertifikat", "buku-polis", "repository"].forEach((t) => {
           const tabElem = document.getElementById(`tab-${t}`);
           const navElem = document.getElementById(`nav-${t}`);
           if (tabElem) tabElem.classList.add("hidden");
@@ -2010,6 +2170,7 @@
         const titles = {
           dashboard: "Dashboard Underwriting",
           form: "Form Kertas Kerja Underwriting",
+          sertifikat: "Sertifikat Kepesertaan",
           "buku-polis": "Buku Polis & Legalitas Dokumen",
           repository: "Repository Transaksi Kertas Kerja"
         };
@@ -2020,6 +2181,10 @@
         if (tab === "form" && !editingTransactionId) {
           document.getElementById("form-id-display").innerText = cachedNextID || "WS-2026-0001";
           preFetchNextID();
+        }
+
+        if (tab === "sertifikat") {
+          renderSertifikatTable();
         }
 
         if (tab === "buku-polis") {
@@ -2345,6 +2510,89 @@
         alert(`Kertas Kerja ${newId} Berhasil Disimpan & Diteruskan ke Supervisor!`);
         resetForm();
         switchTab("repository");
+      }
+
+      // RENDER LOGIK TABEL SERTIFIKAT KEPESERTAAN (STANDALONE MENU)
+      function renderSertifikatTable() {
+        const tbody = document.getElementById("sertifikat-table-body");
+        if (!tbody) return;
+        tbody.innerHTML = "";
+
+        const query = (document.getElementById("search-sertifikat")?.value || "").toLowerCase();
+        const selectedProduk = document.getElementById("filter-sertifikat-produk")?.value || "";
+
+        // Hanya mengambil peserta dengan status APPROVED_FINAL dari transaksi
+        const approvedTransactions = transactions.filter(t => t.status === "APPROVED_FINAL");
+
+        const filtered = approvedTransactions.filter((t) => {
+          const matchQuery = (t.nama && t.nama.toLowerCase().includes(query)) ||
+                             (t.noKtp && t.noKtp.toLowerCase().includes(query)) ||
+                             (t.id && t.id.toLowerCase().includes(query));
+          const matchProduk = selectedProduk === "" || t.produk === selectedProduk;
+          return matchQuery && matchProduk;
+        });
+
+        if (filtered.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-400 font-medium">Belum ada sertifikat peserta yang berstatus Approved Final.</td></tr>`;
+          return;
+        }
+
+        filtered.forEach((t) => {
+          const tr = document.createElement("tr");
+          tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+
+          const noCert = `CERT-${t.id}`;
+          const masaPertanggungan = `${t.dateFormatted || "-"} (${t.masa || "12"} Bulan)`;
+
+          tr.innerHTML = `
+            <td class="p-3 font-mono font-bold text-blue-600">${noCert}</td>
+            <td class="p-3 font-mono text-slate-700">${t.noKtp || "-"}</td>
+            <td class="p-3 font-bold text-slate-800">${t.nama}</td>
+            <td class="p-3 text-slate-700 font-medium">${t.produk || "-"}</td>
+            <td class="p-3 font-bold text-slate-900">Rp ${formatNumberInput(t.up)}</td>
+            <td class="p-3 text-slate-600">${masaPertanggungan}</td>
+            <td class="p-3"><span class="px-2.5 py-1 text-[10px] font-bold bg-emerald-100 text-emerald-800 rounded-full">Approved Final</span></td>
+            <td class="p-3 text-center">
+              <button onclick="openModalSertifikat('${t.id}')" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 mx-auto cursor-pointer shadow-sm">
+                <i class="fa-solid fa-file-pdf"></i> Pratinjau & Cetak
+              </button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      function openModalSertifikat(id) {
+        const t = transactions.find(item => item.id === id);
+        if (!t) return;
+
+        document.getElementById("cert-no").innerText = `CERT-${t.id}`;
+        document.getElementById("cert-nama").innerText = t.nama;
+        document.getElementById("cert-ktp").innerText = t.noKtp || "-";
+        document.getElementById("cert-produk").innerText = t.produk || "-";
+        document.getElementById("cert-up").innerText = `Rp ${formatNumberInput(t.up)}`;
+        document.getElementById("cert-masa").innerText = `${t.dateFormatted || "-"} (${t.masa || "12"} Bulan)`;
+        document.getElementById("cert-status").innerText = "Approved Final";
+
+        activeTransactionId = id;
+        document.getElementById("modal-view-sertifikat").classList.remove("hidden");
+      }
+
+      async function downloadSertifikatPDF() {
+        await ensurePdfJs();
+        const element = document.getElementById("sertifikat-pdf-area");
+        const certNama = document.getElementById("cert-nama").innerText || "Peserta";
+        const certNo = document.getElementById("cert-no").innerText || "Sertifikat";
+
+        const options = {
+          margin: [10, 10, 10, 10],
+          filename: `Sertifikat_${certNama.replace(/\s+/g, "_")}_${certNo}.pdf`,
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true },
+          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+        };
+
+        html2pdf().set(options).from(element).save();
       }
 
       // GENERATE AUTOMATIC NO POLIS
@@ -2757,6 +3005,7 @@
         }
 
         renderRepository();
+        renderSertifikatTable();
         updateStats();
         if (chartMonthlyInstance && chartStatusInstance) updateCharts();
       }
@@ -2942,6 +3191,7 @@
 
           transactions = transactions.filter((t) => t.id !== id);
           renderRepository();
+          renderSertifikatTable();
           updateStats();
           alert(`Transaksi ${id} berhasil dihapus.`);
         } catch (err) {
