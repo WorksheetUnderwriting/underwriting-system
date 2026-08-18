@@ -1546,7 +1546,7 @@
       const { createClient } = supabase;
       const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      const IDLE_TIMEOUT_MS = 5 * 60 * 1000;
+      const IDLE_TIMEOUT_MS = 15 * 60 * 1000;
       let idleTimer;
 
       function resetIdleTimer() {
@@ -1555,7 +1555,7 @@
       }
 
       function autoLogout() {
-        alert("Sesi Anda telah berakhir karena tidak ada aktivitas selama 5 menit.");
+        alert("Sesi Anda telah berakhir karena tidak ada aktivitas selama 15 menit.");
         localStorage.removeItem("isLoggedIn");
         localStorage.removeItem("username");
         localStorage.removeItem("fullName");
@@ -1596,11 +1596,11 @@
       };
 
       const currentFullName = localStorage.getItem("fullName") || "Pengguna UW";
-      const maxUserLevel = parseInt(localStorage.getItem("userRoleLevel")) || 1;
-      let activeLevel = parseInt(localStorage.getItem("activeRoleLevel")) || maxUserLevel;
+      const maxUserLevel = parseInt(localStorage.getItem("userRoleLevel"), 10) || 1;
+      let activeLevel = parseInt(localStorage.getItem("activeRoleLevel"), 10) || maxUserLevel;
 
       let transactions = [];
-      let sertifikatList = []; // Raw data dari Supabase tabel sertifikat_kepesertaan
+      let sertifikatList = [];
       let bukuPolisList = [];
       let tempBukuPolisFile = null;
       let activeNoPolisForUpdate = null;
@@ -1729,6 +1729,11 @@
       }
 
       document.addEventListener("DOMContentLoaded", async () => {
+        if (localStorage.getItem("isLoggedIn") !== "true") {
+          window.location.replace("login.html");
+          return;
+        }
+
         initUserHeader();
         populateRoleSelector();
         updateProdukOptions();
@@ -1861,7 +1866,6 @@
         if (chartMonthlyInstance && chartStatusInstance) updateCharts();
       }
 
-      // LOAD DATA DARI SUPABASE (TABEL sertifikat_kepesertaan DENGAN JOIN master_polis)
       async function loadSertifikatFromSupabase() {
         const tableBody = document.getElementById("sertifikat-table-body");
         if (!tableBody) return;
@@ -1898,7 +1902,6 @@
 
         } catch (err) {
           console.warn("Mencoba mengambil fallback dari transaksi Approved Final:", err.message);
-          // Fallback ke data transaksi lokal jika tabel sertifikat_kepesertaan belum tersedia
           sertifikatList = transactions
             .filter((t) => t.status === "APPROVED_FINAL")
             .map((t) => ({
@@ -1917,7 +1920,6 @@
         }
       }
 
-      // RENDER TABEL SERTIFIKAT KEPESERTAAN
       function renderSertifikatTable(dataList) {
         const tbody = document.getElementById("sertifikat-table-body");
         if (!tbody) return;
@@ -1958,7 +1960,6 @@
         tbody.innerHTML = htmlRows;
       }
 
-      // FILTER LOKAL UNTUK PENCARIAN & DROPDOWN PRODUK SERTIFIKAT
       function filterSertifikatLocal() {
         const query = (document.getElementById("search-sertifikat")?.value || "").toLowerCase();
         const selectedProduk = document.getElementById("filter-sertifikat-produk")?.value || "";
@@ -1977,7 +1978,6 @@
         renderSertifikatTable(filtered);
       }
 
-      // ISI DROPDOWN FILTER PRODUK DARI DATA SERTIFIKAT SUPABASE
       function populateFilterSertifikatProduk(dataList) {
         const select = document.getElementById("filter-sertifikat-produk");
         if (!select) return;
@@ -2122,8 +2122,8 @@
       }
 
       function changeRole(lvl) {
-        activeLevel = parseInt(lvl);
-        localStorage.setItem("activeRoleLevel", activeLevel);
+        activeLevel = parseInt(lvl, 10);
+        localStorage.setItem("activeRoleLevel", String(activeLevel));
         initUserHeader();
         renderRepository();
         updateStats();
@@ -2316,6 +2316,7 @@
           localStorage.removeItem("fullName");
           localStorage.removeItem("userRoleLevel");
           localStorage.removeItem("activeRoleLevel");
+          localStorage.removeItem("userModule");
           window.location.replace("login.html");
         }
       }
@@ -2695,7 +2696,6 @@
         html2pdf().set(options).from(element).save();
       }
 
-      // GENERATE AUTOMATIC NO POLIS
       async function generateAutoNoPolis() {
         const now = new Date();
         const year = document.getElementById("bp-tahun").value || now.getFullYear();
@@ -2742,7 +2742,6 @@
         if (inputElem) inputElem.value = generatedNoPolis;
       }
 
-      // HANDLE SUBMIT BUKU POLIS
       async function handleBukuPolisSubmit(e) {
         e.preventDefault();
 
@@ -2840,7 +2839,6 @@
         if(document.getElementById("bp-stat-avg")) document.getElementById("bp-stat-avg").innerText = `${avg}%`;
       }
 
-      // RENDER TABEL BUKU POLIS
       function renderBukuPolisTable() {
         const tbody = document.getElementById("buku-polis-table-body");
         if (!tbody) return;
@@ -3018,7 +3016,6 @@
         alert("Buku polis berhasil dihapus.");
       }
 
-      // EKSPOR BUKU POLIS KE EXCEL
       async function exportBukuPolisToExcel() {
         if (bukuPolisList.length === 0) {
           alert("Belum ada data buku polis untuk diexport!");
@@ -3149,7 +3146,7 @@
           } else if (t.status === "REJECTED") {
             statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 shadow-sm inline-block">Ditolak</span>`;
           } else if (t.status && t.status.startsWith("PENDING_LEVEL_")) {
-            const reqLvl = parseInt(t.status.split("_")[2]);
+            const reqLvl = parseInt(t.status.split("_")[2], 10);
             statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 shadow-sm inline-block">Pending ${roleLevelNames[reqLvl] || reqLvl}</span>`;
           } else {
             statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-100 text-slate-800 shadow-sm inline-block">${t.status || 'Pending'}</span>`;
@@ -3382,7 +3379,7 @@
 
         document.getElementById("bulk-note-input").value = "";
         await loadTransactionsFromSupabase();
-        alert(`${selectedCheckboxes.length} transaksi berhasil dipproses secara massal!`);
+        alert(`${selectedCheckboxes.length} transaksi berhasil diproses secara massal!`);
       }
 
       async function exportRepositoryToExcel() {
