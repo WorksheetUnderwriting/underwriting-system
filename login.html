@@ -89,8 +89,7 @@
             class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 backdrop-blur-md border border-blue-400/20 text-xs text-blue-300 font-semibold tracking-wide"
           >
             <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
-            <i class="fa-solid fa-shield-halved text-blue-400"></i> Secure
-            Portal
+            <i class="fa-solid fa-shield-halved text-blue-400"></i> Secure Portal
           </div>
         </div>
 
@@ -133,7 +132,7 @@
               >
                 <i class="fa-solid fa-file-pdf text-xs"></i>
               </div>
-              <span>Cetak Kertas Kerja</span>
+              <span>Cetak Kertas Kerja & Sertifikat</span>
             </div>
           </div>
         </div>
@@ -284,7 +283,7 @@
       const { createClient } = supabase;
       const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      // Cek jika pengguna sudah login sebelumnya
+      // Otomatis arahkan ke halaman utama jika sudah login sebelumnya
       document.addEventListener("DOMContentLoaded", () => {
         if (localStorage.getItem("isLoggedIn") === "true") {
           window.location.replace("index.html");
@@ -318,7 +317,7 @@
         submitBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin text-xs"></i> <span>Memproses Autentikasi...</span>`;
 
         try {
-          // Mencocokkan data langsung ke tabel user_roles di database Supabase
+          // 1. Mencocokkan data langsung ke tabel user_roles di Supabase
           const { data: userData, error: userError } = await _supabase
             .from("user_roles")
             .select("*")
@@ -327,29 +326,46 @@
             .maybeSingle();
 
           if (userError) {
-            throw new Error("Gagal terhubung ke server database. Periksa koneksi Anda!");
+            throw new Error("Gagal terhubung ke server database. Periksa koneksi internet Anda!");
           }
 
           if (!userData) {
             throw new Error("Email atau password yang Anda masukkan salah!");
           }
 
-          // Bersihkan session lama di localStorage
-          localStorage.clear();
+          // 2. Pemetaan & Penyelarasan Level Role (Numerik 1-5 untuk index.html)
+          let parsedRoleLevel = parseInt(userData.role, 10);
+          if (isNaN(parsedRoleLevel)) {
+            const roleMapping = {
+              "underwriter": 1,
+              "checker": 1,
+              "staff": 1,
+              "supervisor": 2,
+              "head_dept": 3,
+              "head_div": 4,
+              "director": 5,
+              "admin": 5
+            };
+            const strRole = String(userData.role || "").toLowerCase();
+            parsedRoleLevel = roleMapping[strRole] || 1;
+          }
 
-          // Format nama pengguna otomatis dari nama email
-          const rawName = userData.email.split("@")[0];
-          const formattedName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+          // 3. Format nama lengkap pengguna
+          let formattedName = userData.full_name || userData.nama_lengkap;
+          if (!formattedName) {
+            const rawName = userData.email.split("@")[0];
+            formattedName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+          }
 
-          // Simpan sesi baru ke localStorage
+          // 4. Simpan parameter sesi secara aman di LocalStorage
           localStorage.setItem("isLoggedIn", "true");
           localStorage.setItem("username", userData.email);
           localStorage.setItem("fullName", formattedName);
-          localStorage.setItem("userRoleLevel", userData.role || "staff");
-          localStorage.setItem("activeRoleLevel", userData.role || "staff");
+          localStorage.setItem("userRoleLevel", String(parsedRoleLevel));
+          localStorage.setItem("activeRoleLevel", String(parsedRoleLevel));
           localStorage.setItem("userModule", "uw");
 
-          // Redirect ke halaman utama sistem
+          // 5. Dialihkan langsung ke halaman utama sistem
           window.location.replace("index.html");
         } catch (err) {
           console.error("Login Error:", err.message);
