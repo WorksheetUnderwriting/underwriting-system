@@ -211,11 +211,7 @@
                   required
                   autocomplete="email"
                   placeholder="nama@heksainsurance.co.id"
-                  oninvalid="
-                    this.setCustomValidity(
-                      'Mohon masukkan alamat email yang valid!',
-                    )
-                  "
+                  oninvalid="this.setCustomValidity('Mohon masukkan alamat email yang valid!')"
                   oninput="this.setCustomValidity('')"
                   class="w-full pl-9 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-semibold placeholder:text-slate-400 placeholder:font-normal focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 focus:outline-none transition-all duration-200"
                 />
@@ -288,6 +284,13 @@
       const { createClient } = supabase;
       const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+      // Cek jika pengguna sudah login sebelumnya
+      document.addEventListener("DOMContentLoaded", () => {
+        if (localStorage.getItem("isLoggedIn") === "true") {
+          window.location.replace("index.html");
+        }
+      });
+
       function togglePasswordVisibility() {
         const passwordInput = document.getElementById("password");
         const eyeIcon = document.getElementById("toggleEyeIcon");
@@ -305,14 +308,14 @@
 
       async function handleLogin(event) {
         event.preventDefault();
-        const emailInput = document.getElementById("email").value.trim();
+        const emailInput = document.getElementById("email").value.trim().toLowerCase();
         const passwordInput = document.getElementById("password").value;
         const errorDiv = document.getElementById("errorMessage");
         const submitBtn = document.getElementById("submitBtn");
 
         errorDiv.classList.add("hidden");
         submitBtn.disabled = true;
-        submitBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> <span>Memproses Autentikasi...</span>`;
+        submitBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin text-xs"></i> <span>Memproses Autentikasi...</span>`;
 
         try {
           // Mencocokkan data langsung ke tabel user_roles di database Supabase
@@ -321,32 +324,35 @@
             .select("*")
             .eq("email", emailInput)
             .eq("password", passwordInput)
-            .single();
+            .maybeSingle();
 
-          if (userError || !userData) {
-            throw new Error("Email atau password salah!");
+          if (userError) {
+            throw new Error("Gagal terhubung ke server database. Periksa koneksi Anda!");
+          }
+
+          if (!userData) {
+            throw new Error("Email atau password yang Anda masukkan salah!");
           }
 
           // Bersihkan session lama di localStorage
-          localStorage.removeItem("isLoggedIn");
-          localStorage.removeItem("username");
-          localStorage.removeItem("fullName");
-          localStorage.removeItem("userRoleLevel");
-          localStorage.removeItem("activeRoleLevel");
-          localStorage.removeItem("userModule");
+          localStorage.clear();
 
-          // Simpan sesi baru ke localStorage untuk dibaca oleh file index.html
+          // Format nama pengguna otomatis dari nama email
+          const rawName = userData.email.split("@")[0];
+          const formattedName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+
+          // Simpan sesi baru ke localStorage
           localStorage.setItem("isLoggedIn", "true");
           localStorage.setItem("username", userData.email);
-          localStorage.setItem("fullName", userData.email.split("@")[0]); // Mengambil nama depan otomatis
-          localStorage.setItem("userRoleLevel", userData.role);
-          localStorage.setItem("activeRoleLevel", userData.role);
+          localStorage.setItem("fullName", formattedName);
+          localStorage.setItem("userRoleLevel", userData.role || "staff");
+          localStorage.setItem("activeRoleLevel", userData.role || "staff");
           localStorage.setItem("userModule", "uw");
 
           // Redirect ke halaman utama sistem
           window.location.replace("index.html");
         } catch (err) {
-          console.error("Login gagal:", err.message);
+          console.error("Login Error:", err.message);
           showError(err.message);
           submitBtn.disabled = false;
           submitBtn.innerHTML = `<i class="fa-solid fa-right-to-bracket text-xs"></i> <span>Masuk ke System</span>`;
