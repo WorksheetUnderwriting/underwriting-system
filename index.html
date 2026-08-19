@@ -146,7 +146,7 @@
         margin-bottom: 8px !important;
       }
 
-      /* Style Profesional e-Sertifikat Presisi A4 */
+      /* Style Profesional e-Sertifikat Presisi A4 (PERBAIKAN RUANG KOSONG) */
       .cert-paper {
         width: 210mm;
         min-height: 297mm;
@@ -161,18 +161,21 @@
         margin: 0 auto;
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
+        justify-content: flex-start; /* Merapatkan konten ke atas */
       }
       .cert-table {
         width: 100%;
         border-collapse: collapse;
-        margin-bottom: 12px;
+        margin-bottom: 20px; /* Memberikan jarak proporsional ke catatan bawah */
       }
       .cert-table td {
         padding: 4px 0;
         vertical-align: top;
         font-size: 9.5px;
         border: none;
+      }
+      .cert-notes-area {
+        margin-top: 10px; /* Menghilangkan jarak kosong berlebihan di tengah */
       }
 
       @media print {
@@ -1208,6 +1211,7 @@
         <div class="p-6 overflow-y-auto space-y-6 flex-1 bg-slate-100 flex justify-center">
           <div id="sertifikat-pdf-area" class="cert-paper">
             
+            <!-- BAGIAN UTAMA (HEADER + TABEL DATA) -->
             <div>
               <!-- HEADER LOGO DAN PERUSAHAAN -->
               <table class="cert-table" style="margin-bottom: 12px; border-bottom: 2px solid #000; padding-bottom: 8px;">
@@ -1314,8 +1318,8 @@
               </table>
             </div>
 
-            <!-- FOOTER / CATATAN & KLAUSULA -->
-            <div style="font-size: 8.5px; line-height: 1.4; text-align: justify;">
+            <!-- FOOTER / CATATAN & KLAUSULA (SEKARANG MERAPAT DENGAN AREA ATAS) -->
+            <div class="cert-notes-area" style="font-size: 8.5px; line-height: 1.4; text-align: justify;">
               <div style="margin-bottom: 5px;">
                 Sertifikat ini dikeluarkan secara otomatis oleh sistem setelah dilakukan verifikasi, validasi dan Premi yang dibayarkan sudah diterima. Premi yang dibayarkan sudah termasuk komponen biaya administrasi, biaya asuransi dan imbal jasa pemasaran produk asuransi.
               </div>
