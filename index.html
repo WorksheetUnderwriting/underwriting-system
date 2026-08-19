@@ -1429,14 +1429,14 @@
           </div>
         </div>
 
-        <!-- FOOTER MODAL AKSI -->
+        <!-- FOOTER MODAL AKSI (DISEDERHANAKAN MENJADI VIEW DAN UNDUH SAJA) -->
         <div class="p-4 border-t border-slate-200 bg-slate-50 flex justify-end gap-3 no-print">
           <button onclick="closeModal('modal-view-sertifikat')" class="px-4 py-2 bg-slate-200 text-slate-700 hover:bg-slate-300 text-xs font-bold rounded-xl cursor-pointer transition">Tutup</button>
-          <button id="btn-download-cert" onclick="downloadSertifikatPDF()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-md">
-            <i class="fa-solid fa-file-pdf"></i> <span id="btn-cert-text">Unduh Hal 1 Saja</span>
+          <button id="btn-view-cert" onclick="viewSertifikatPDF()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-md">
+            <i class="fa-solid fa-eye"></i> <span id="btn-view-text">View (Buka Tab Baru)</span>
           </button>
-          <button id="btn-merge-cert" onclick="mergeAndDownloadAllPages()" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl flex items-center gap-2 cursor-pointer shadow-md glow-blue">
-            <i class="fa-solid fa-object-ungroup"></i> <span id="btn-merge-text">Gabung & Unduh Hal 1, 2, & 3 Otomatis</span>
+          <button id="btn-merge-cert" onclick="mergeAndDownloadAllPages()" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl flex items-center gap-2 cursor-pointer shadow-md glow-emerald">
+            <i class="fa-solid fa-download"></i> <span id="btn-merge-text">Unduh Sertifikat Lengkap (Hal 1-3)</span>
           </button>
         </div>
 
@@ -2495,6 +2495,44 @@
         select.innerHTML = optionsHTML;
       }
 
+      // FUNGSI PRATINJAU DOKUMEN (VIEW DI TAB BARU)
+      async function viewSertifikatPDF() {
+        if (!activeSelectedCertItem) {
+          alert("Data sertifikat tidak valid!");
+          return;
+        }
+
+        const btnViewText = document.getElementById("btn-view-text");
+        const btnView = document.getElementById("btn-view-cert");
+        btnViewText.innerText = "Memproses View...";
+        btnView.disabled = true;
+
+        try {
+          await ensurePdfJs();
+
+          const element = document.getElementById("sertifikat-pdf-area");
+          const options = {
+            margin: [0, 0, 0, 0],
+            filename: `sertifikat_preview.pdf`,
+            image: { type: "jpeg", quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true, logging: false },
+            jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+          };
+
+          const worker = html2pdf().set(options).from(element);
+          const pdfBlob = await worker.outputPdf('blob');
+          const pdfUrl = URL.createObjectURL(pdfBlob);
+          
+          window.open(pdfUrl, '_blank');
+        } catch (err) {
+          console.error("Gagal membuka pratinjau PDF:", err);
+          alert("Terjadi kesalahan saat memuat pratinjau dokumen PDF.");
+        } finally {
+          btnViewText.innerText = "View (Buka Tab Baru)";
+          btnView.disabled = false;
+        }
+      }
+
       // FUNGSI OTOMATIS MENGGABUNGKAN HAL 1 (DARI HTML) DENGAN HAL 2 & 3 (DARI MASTER POLIS)
       async function mergeAndDownloadAllPages() {
         if (!activeSelectedCertItem) {
@@ -2566,7 +2604,7 @@
           console.error("Gagal menggabungkan PDF:", err);
           alert("Terjadi kesalahan saat menggabungkan dokumen PDF secara otomatis.");
         } finally {
-          btnMergeText.innerText = "Gabung & Unduh Hal 1, 2, & 3 Otomatis";
+          btnMergeText.innerText = "Unduh Sertifikat Lengkap (Hal 1-3)";
           btnMerge.disabled = false;
         }
       }
@@ -3244,33 +3282,6 @@
         alert(`Kertas Kerja ${newId} Berhasil Disimpan & Diteruskan ke Supervisor!`);
         resetForm();
         switchTab("repository");
-      }
-
-      async function downloadSertifikatPDF() {
-        await ensurePdfJs();
-        const element = document.getElementById("sertifikat-pdf-area");
-        const certNama = document.getElementById("cert-nama-peserta").innerText || "Peserta";
-        const certNo = document.getElementById("cert-no-peserta").innerText || "Sertifikat";
-
-        const btnText = document.getElementById("btn-cert-text");
-        const btnDownload = document.getElementById("btn-download-cert");
-        btnText.innerText = "Memproses...";
-        btnDownload.disabled = true;
-
-        const options = {
-          margin: [0, 0, 0, 0],
-          filename: `Sertifikat_Hal_1_${certNama.replace(/\s+/g, "_")}_${certNo}.pdf`,
-          image: { type: "jpeg", quality: 0.98 },
-          html2canvas: { scale: 2, useCORS: true, logging: false },
-          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
-        };
-
-        try {
-          await html2pdf().set(options).from(element).save();
-        } finally {
-          btnText.innerText = "Unduh Hal 1 Saja";
-          btnDownload.disabled = false;
-        }
       }
 
       async function generateAutoNoPolis() {
