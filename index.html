@@ -1668,7 +1668,7 @@
       const { createClient } = supabase;
       const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      // ATURAN ATURAN MASTER POLIS DAN KLAUSULA KHUSUS
+      // ATURAN MASTER POLIS DAN KLAUSULA KHUSUS LENGKAP (TERMASUK 10 POLIS PDF BARU)
       const MASTER_POLIS_CONFIG = {
         "K.2019.09.0025.R": {
           judulSertifikat: "SERTIFIKAT KEPESERTAAN ASURANSI HEKSA JIWA KREDIT",
@@ -1719,6 +1719,57 @@
           judulSertifikat: "e - SERTIFIKAT KEPESERTAAN ASURANSI",
           jenisAsuransi: "Asuransi HEKSA Jiwa Kredit",
           catatanKhusus: "Apabila klaim dengan umur klaim 6 bulan sejak tanggal mulai asuransi diterima oleh Heksa mencapai 20% dari premi yang diterima, maka akan diberlakukan masa tunggu selama 30 hari sejak tanggal mulai asuransi kecuali karena kecelakaan, dan apabila klaim terjadi di 31-90 hari maka berlaku Lien Clause 50% dari manfaat asuransi yang disetujui oleh Penanggung sesuai syarat dan ketentuan berlaku kecuali karena kecelakaan."
+        },
+        // --- 10 DOKUMEN PDF BARU DITAMBAHKAN DI SINI ---
+        "K.2023.03.0016.R": {
+          judulSertifikat: "e - SERTIFIKAT KEPESERTAAN ASURANSI",
+          jenisAsuransi: "Asuransi HEKSA Jiwa Kredit",
+          catatanKhusus: "Subject To No Claim adalah Periode dimana pertanggungan asuransi akan diterima oleh Penanggung dengan status tidak ada klaim sampai dengan data diterima dan/atau periode saat keterlambatan pembayaran premi sampai dengan terjadinya transaksi pembayaran premi."
+        },
+        "K.2023.03.0017.R": {
+          judulSertifikat: "e - SERTIFIKAT KEPESERTAAN ASURANSI",
+          jenisAsuransi: "Asuransi HEKSA Jiwa Kredit",
+          catatanKhusus: "Manfaat Uang Pertanggungan Kombinasi.\nSubject To No Claim adalah Periode dimana pertanggungan asuransi akan diterima oleh Penanggung dengan status tidak ada klaim sampai dengan data diterima dan/atau periode saat keterlambatan pembayaran premi."
+        },
+        "K.2023.03.0018.R": {
+          judulSertifikat: "e - SERTIFIKAT KEPESERTAAN ASURANSI",
+          jenisAsuransi: "Asuransi HEKSA Jiwa Kredit",
+          catatanKhusus: "Manfaat Uang Pertanggungan Tetap.\nSubject To No Claim adalah Periode dimana pertanggungan asuransi akan diterima oleh Penanggung dengan status tidak ada klaim sampai dengan data diterima."
+        },
+        "K.2023.05.0022": {
+          judulSertifikat: "e - SERTIFIKAT KEPESERTAAN ASURANSI",
+          jenisAsuransi: "Asuransi Kematian Berjangka",
+          catatanKhusus: "Pengecualian Perbuatan sendiri atau usaha bunuh diri apabila terjadi dalam 2 (dua) tahun pertama polis."
+        },
+        "K.2023.05.0025": {
+          judulSertifikat: "e - SERTIFIKAT KEPESERTAAN ASURANSI",
+          jenisAsuransi: "Asuransi Kematian Berjangka",
+          catatanKhusus: "Tidak ada Manfaat Asuransi yang dapat dibayarkan apabila Tertanggung Meninggal Dunia karena sakit dalam waktu 3 (tiga) bulan sejak tanggal berlakunya Masa Pertanggungan."
+        },
+        "K.2023.05.0027": {
+          judulSertifikat: "e - SERTIFIKAT KEPESERTAAN ASURANSI",
+          jenisAsuransi: "Asuransi Kematian Berjangka",
+          catatanKhusus: "1 Tahun Uang Pertanggungan Tetap Selanjutnya Uang Pertanggungan Menurun.\nTidak ada Manfaat Asuransi yang dapat dibayarkan apabila Tertanggung Meninggal Dunia karena sakit dalam waktu 3 (tiga) bulan sejak tanggal berlakunya Masa Pertanggungan."
+        },
+        "K.2023.07.0027.R": {
+          judulSertifikat: "e - SERTIFIKAT KEPESERTAAN ASURANSI",
+          jenisAsuransi: "Asuransi HEKSA Jiwa Kredit",
+          catatanKhusus: "Masa tunggu 30 hari, tidak berlaku untuk Kejadian Meninggal karena kecelakaan.\nApabila terdapat klaim pada usia polis 31 hari-90 hari maka klaim yang dibayarkan hanya sebesar 70% dari Klaim yang disetujui."
+        },
+        "K.2023.09.0040.R": {
+          judulSertifikat: "e - SERTIFIKAT KEPESERTAAN ASURANSI",
+          jenisAsuransi: "Asuransi HEKSA Jiwa Kredit",
+          catatanKhusus: "Masa tunggu 30 hari, kecuali karena kecelakaan."
+        },
+        "K.2023.10.0038.R": {
+          judulSertifikat: "e - SERTIFIKAT KEPESERTAAN ASURANSI",
+          jenisAsuransi: "Asuransi HEKSA Jiwa Kredit",
+          catatanKhusus: "Tidak ada manfaat asuransi yang dapat dibayarkan apabila tertanggung meninggal dunia karena sakit dalam waktu 6 (enam) bulan sejak berlakunya masa pertanggungan."
+        },
+        "K.2024.03.0009.R": {
+          judulSertifikat: "e - SERTIFIKAT KEPESERTAAN ASURANSI",
+          jenisAsuransi: "Asuransi HEKSA Jiwa Kredit",
+          catatanKhusus: "Pertanggungan ini berlaku Lien Clause untuk klaim kurang dari sama dengan 3 bulan, nilai klaim yang diterima oleh Penerima Manfaat adalah 50% dari Uang Pertanggungan kecuali karena kecelakaan."
         }
       };
 
