@@ -1160,9 +1160,11 @@
       </main>
     </div>
 
-    <!-- MODAL KHUSUS PRATINJAU & UNDUH SERTIFIKAT KEPESERTAAN (DENGAN 3 LOGO HEADER PERSIS GAMBAR CONTOH) -->
+    <!-- MODAL KHUSUS PRATINJAU & UNDUH SERTIFIKAT KEPESERTAAN (DENGAN HEADER TABEL MURNI TERISOLASI) -->
     <div id="modal-view-sertifikat" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md flex items-center justify-center hidden z-50 p-4">
-      <div class="bg-white rounded-3xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+        
+        <!-- HEADER MODAL -->
         <div class="p-5 bg-blue-600 text-white flex justify-between items-center no-print border-b border-blue-500/20">
           <div>
             <h3 class="font-bold text-base"><i class="fa-solid fa-award me-2"></i>Pratinjau Sertifikat Kepesertaan</h3>
@@ -1171,141 +1173,142 @@
           <button onclick="closeModal('modal-view-sertifikat')" class="text-white hover:text-slate-200 text-2xl cursor-pointer">&times;</button>
         </div>
 
-        <div class="p-6 overflow-y-auto space-y-6 flex-1 bg-slate-100">
-          <div id="sertifikat-pdf-area" style="border: 1.5px solid #000; padding: 25px 30px; background: #ffffff; color: #000; font-family: 'Arial', sans-serif;" class="shadow-sm">
+        <!-- AREA DOKUMEN SERTIFIKAT -->
+        <div class="p-6 overflow-y-auto space-y-6 flex-1 bg-slate-100 flex justify-center">
+          <div id="sertifikat-pdf-area" style="width: 100%; max-width: 790px; background: #ffffff; color: #000000; padding: 30px; border: 1.5px solid #000000; box-sizing: border-box; font-family: Arial, sans-serif;">
             
-            <!-- HEADER LOGO BERJARAK PERSIS DOKUMEN CONTOH GAMBAR -->
-            <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; border-bottom: 2px solid #000; padding-bottom: 12px; margin-bottom: 16px; background-color: #ffffff;">
-  
-  <!-- 1. LOGO KIRI: HEKSA Insurance -->
-  <!-- HEADER LOGO DENGAN LOGO.PNG ASLI DI KIRI -->
-<div style="display: flex; align-items: center; justify-content: space-between; width: 100%; border-bottom: 2px solid #000; padding-bottom: 12px; margin-bottom: 16px; background-color: #ffffff;">
-  
-  <!-- 1. LOGO KIRI: Memanggil file 'logo.png' Anda -->
-  <div style="width: 25%; text-align: left;">
-    <img src="logo.png" alt="Heksa Insurance Logo" style="max-height: 45px; width: auto; object-fit: contain;" />
-  </div>
+            <!-- HEADER 3 LOGO MENGGUNAKAN TABEL MURNI (STABIL & TIDAK BERANTAK) -->
+            <table style="width: 100%; border-collapse: collapse; border-bottom: 2px solid #000000; padding-bottom: 10px; margin-bottom: 20px;">
+              <tr>
+                <!-- LOGO KIRI (logo.png) -->
+                <td style="width: 25%; vertical-align: middle; text-align: left; border: none; padding: 0;">
+                  <img src="logo.png" alt="Heksa Insurance Logo" style="max-height: 48px; width: auto; display: block;" />
+                </td>
+                
+                <!-- ALAMAT TENGAH -->
+                <td style="width: 50%; vertical-align: middle; text-align: center; border: none; padding: 0 5px;">
+                  <h2 style="font-size: 13px; font-weight: 900; color: #000000; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.2;">
+                    PT HEKSA SOLUTION INSURANCE
+                  </h2>
+                  <p style="font-size: 8px; color: #333333; margin: 3px 0 0 0; line-height: 1.3;">
+                    Satrio Tower Lantai 8 Jl. Prof. DR. Satrio Blok C4, Jakarta Selatan 12950
+                  </p>
+                  <p style="font-size: 8px; color: #333333; margin: 1px 0 0 0; line-height: 1.3;">
+                    E-mail: corp@heksainsurance.co.id | www.heksainsurance.co.id | Telp. (021) 27883999
+                  </p>
+                </td>
 
-  <!-- 2. TEKS TENGAH: Nama Perusahaan & Alamat -->
-  <div style="width: 50%; text-align: center;">
-    <h2 style="font-family: Arial, sans-serif; font-size: 13px; font-weight: 900; color: #000000; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
-      PT HEKSA SOLUTION INSURANCE
-    </h2>
-    <p style="font-family: Arial, sans-serif; font-size: 8px; color: #333333; margin: 3px 0 0 0; line-height: 1.2;">
-      Satrio Tower Lantai 8 Jl. Prof. DR. Satrio Blok C4, Jakarta Selatan 12950
-    </p>
-    <p style="font-family: Arial, sans-serif; font-size: 8px; color: #333333; margin: 1px 0 0 0; line-height: 1.2;">
-      E-mail: corp@heksainsurance.co.id | www.heksainsurance.co.id | Telp. (021) 27883999
-    </p>
-  </div>
-
-  <!-- 3. LOGO KANAN: PAHAMI & MILIKI ASURANSI (OJK) -->
-  <div style="width: 25%; text-align: right;">
-    <svg width="125" height="42" viewBox="0 0 160 55" xmlns="http://www.w3.org/2000/svg">
-      <rect x="25" y="2" width="110" height="13" rx="3" fill="#004080"/>
-      <text x="80" y="11" font-family="Arial, sans-serif" font-weight="bold" font-size="8" fill="#FFFFFF" text-anchor="middle">PAHAMI & MILIKI</text>
-      <path d="M12,22 L20,12 L28,22 L24,22 L24,32 L16,32 L16,22 Z" fill="#D92626"/>
-      <circle cx="20" cy="10" r="3" fill="#004080"/>
-      <text x="32" y="30" font-family="Arial, sans-serif" font-weight="900" font-size="17" fill="#004080" letter-spacing="0.5">SURANSI</text>
-    </svg>
-  </div>
-
-
-
-            <!-- JUDUL SERTIFIKAT -->
-            <div class="text-center mb-6">
-              <h3 class="text-base font-extrabold uppercase tracking-wide" style="margin-bottom: 2px;">e - SERTIFIKAT KEPESERTAAN ASURANSI</h3>
-            </div>
-
-            <!-- TAMPILAN 14 BIDANG (SESUAI DOKUMEN GAMBAR CONTOH) -->
-            <table class="w-full text-xs border-collapse font-sans" style="line-height: 1.8;">
-              <tbody>
-                <tr>
-                  <td width="38%" class="font-bold">No. Peserta</td>
-                  <td width="3%">:</td>
-                  <td width="59%" id="cert-no-peserta" class="font-mono font-bold">2020101-2511000000050929</td>
-                </tr>
-                <tr>
-                  <td class="font-bold">Pemegang Polis/No. Polis</td>
-                  <td>:</td>
-                  <td id="cert-pemegang-polis" class="font-semibold">KOPERASI SIMPAN PINJAM TEPIAN TADUH / K.2025.08.0063</td>
-                </tr>
-                <tr>
-                  <td class="font-bold">Cabang</td>
-                  <td>:</td>
-                  <td id="cert-cabang">KOPERASI SIMPAN PINJAM TEPIAN TADUH</td>
-                </tr>
-                <tr>
-                  <td class="font-bold">Penanggung</td>
-                  <td>:</td>
-                  <td id="cert-penanggung" class="font-bold">PT HEKSA SOLUTION INSURANCE</td>
-                </tr>
-                <tr>
-                  <td class="font-bold">Nama Peserta</td>
-                  <td>:</td>
-                  <td id="cert-nama-peserta" class="font-bold text-sm">ADI RIAN</td>
-                </tr>
-                <tr>
-                  <td class="font-bold">Tgl. Lahir</td>
-                  <td>:</td>
-                  <td id="cert-tgl-lahir">04-07-1988 &nbsp;&nbsp;&nbsp;Umur : 37 Tahun</td>
-                </tr>
-                <tr>
-                  <td class="font-bold">Jenis Asuransi</td>
-                  <td>:</td>
-                  <td id="cert-jenis-asuransi" class="font-semibold">Asuransi HEKSA Jiwa Kredit</td>
-                </tr>
-                <tr>
-                  <td class="font-bold">Uang Pertanggungan</td>
-                  <td>:</td>
-                  <td id="cert-uang-pertanggungan" class="font-bold">Rp. 112,000,000,-</td>
-                </tr>
-                <tr>
-                  <td class="font-bold">Total Premi</td>
-                  <td>:</td>
-                  <td id="cert-total-premi" class="font-bold">Rp. 4,083,520</td>
-                </tr>
-                <tr>
-                  <td class="font-bold">Manfaat Uang Pertanggungan</td>
-                  <td>:</td>
-                  <td id="cert-manfaat-up">Uang Pertanggungan Menurun</td>
-                </tr>
-                <tr>
-                  <td class="font-bold">Subject To No Claim <sup>*)Pertanggal</sup></td>
-                  <td>:</td>
-                  <td id="cert-subject-no-claim">30-09-2025</td>
-                </tr>
-                <tr>
-                  <td class="font-bold">Mulai Asuransi</td>
-                  <td>:</td>
-                  <td id="cert-mulai-asuransi" class="font-semibold">13-11-2025 s/d 30-09-2035</td>
-                </tr>
-                <tr>
-                  <td class="font-bold">Jangka Waktu Asuransi</td>
-                  <td>:</td>
-                  <td id="cert-jangka-waktu">120 Bulan</td>
-                </tr>
-                <tr>
-                  <td class="font-bold">Penerima Manfaat <sup>**)</sup></td>
-                  <td>:</td>
-                  <td id="cert-penerima-manfaat" class="font-semibold">KOPERASI SIMPAN PINJAM TEPIAN TADUH</td>
-                </tr>
-              </tbody>
+                <!-- LOGO KANAN (PAHAMI & MILIKI ASURANSI) -->
+                <td style="width: 25%; vertical-align: middle; text-align: right; border: none; padding: 0;">
+                  <svg width="120" height="40" viewBox="0 0 160 55" xmlns="http://www.w3.org/2000/svg" style="display: inline-block;">
+                    <rect x="25" y="2" width="110" height="13" rx="3" fill="#004080"/>
+                    <text x="80" y="11" font-family="Arial, sans-serif" font-weight="bold" font-size="8" fill="#FFFFFF" text-anchor="middle">PAHAMI & MILIKI</text>
+                    <path d="M12,22 L20,12 L28,22 L24,22 L24,32 L16,32 L16,22 Z" fill="#D92626"/>
+                    <circle cx="20" cy="10" r="3" fill="#004080"/>
+                    <text x="32" y="30" font-family="Arial, sans-serif" font-weight="900" font-size="17" fill="#004080" letter-spacing="0.5">SURANSI</text>
+                  </svg>
+                </td>
+              </tr>
             </table>
 
-            <div class="mt-8 pt-4 border-t border-slate-300 text-center text-slate-500 text-[10px] leading-relaxed">
-              <p class="mb-0">Dokumen ini diterbitkan secara elektronik oleh Worksheet Underwriting System PT HEKSA SOLUTION INSURANCE.</p>
-              <p class="mb-0">Keabsahan sertifikat ini sah dan berlaku tanpa memerlukan tanda tangan basah.</p>
+            <!-- JUDUL SERTIFIKAT -->
+            <div style="text-align: center; margin-bottom: 20px;">
+              <h3 style="font-size: 15px; font-weight: 800; text-transform: uppercase; margin: 0; letter-spacing: 0.5px;">
+                e - SERTIFIKAT KEPESERTAAN ASURANSI
+              </h3>
             </div>
+
+            <!-- RINCIAN DATA PESERTA -->
+            <table style="width: 100%; border-collapse: collapse; font-size: 11px; line-height: 1.8;">
+              <tr>
+                <td style="width: 35%; font-weight: bold; padding: 2px 0; border: none;">No. Peserta</td>
+                <td style="width: 3%; border: none;">:</td>
+                <td style="width: 62%; font-family: monospace; font-weight: bold; border: none;" id="cert-no-peserta">2020101-2511000000050929</td>
+              </tr>
+              <tr>
+                <td style="font-weight: bold; padding: 2px 0; border: none;">Pemegang Polis/No. Polis</td>
+                <td style="border: none;">:</td>
+                <td style="font-weight: bold; border: none;" id="cert-pemegang-polis">PT BANK MANDIRI TASPEN / K.2023.05.0025</td>
+              </tr>
+              <tr>
+                <td style="font-weight: bold; padding: 2px 0; border: none;">Cabang</td>
+                <td style="border: none;">:</td>
+                <td style="border: none;" id="cert-cabang">KOPERASI SIMPAN PINJAM TEPIAN TADUH</td>
+              </tr>
+              <tr>
+                <td style="font-weight: bold; padding: 2px 0; border: none;">Penanggung</td>
+                <td style="border: none;">:</td>
+                <td style="font-weight: bold; border: none;" id="cert-penanggung">PT HEKSA SOLUTION INSURANCE</td>
+              </tr>
+              <tr>
+                <td style="font-weight: bold; padding: 2px 0; border: none;">Nama Peserta</td>
+                <td style="border: none;">:</td>
+                <td style="font-weight: bold; border: none;" id="cert-nama-peserta">ADI RIAN</td>
+              </tr>
+              <tr>
+                <td style="font-weight: bold; padding: 2px 0; border: none;">Tgl. Lahir</td>
+                <td style="border: none;">:</td>
+                <td style="border: none;" id="cert-tgl-lahir">04-07-1988 &nbsp;&nbsp;&nbsp;&nbsp; Umur : 37 Tahun</td>
+              </tr>
+              <tr>
+                <td style="font-weight: bold; padding: 2px 0; border: none;">Jenis Asuransi</td>
+                <td style="border: none;">:</td>
+                <td style="border: none;" id="cert-jenis-asuransi">Asuransi Kematian Berjangka</td>
+              </tr>
+              <tr>
+                <td style="font-weight: bold; padding: 2px 0; border: none;">Uang Pertanggungan</td>
+                <td style="border: none;">:</td>
+                <td style="font-weight: bold; border: none;" id="cert-uang-pertanggungan">Rp. 112.000.000,-</td>
+              </tr>
+              <tr>
+                <td style="font-weight: bold; padding: 2px 0; border: none;">Total Premi</td>
+                <td style="border: none;">:</td>
+                <td style="font-weight: bold; border: none;" id="cert-total-premi">Rp. 4.083.520,-</td>
+              </tr>
+              <tr>
+                <td style="font-weight: bold; padding: 2px 0; border: none;">Manfaat Uang Pertanggungan</td>
+                <td style="border: none;">:</td>
+                <td style="border: none;" id="cert-manfaat-up">Uang Pertanggungan Menurun</td>
+              </tr>
+              <tr>
+                <td style="font-weight: bold; padding: 2px 0; border: none;">Subject To No Claim <sup>*)Pertanggal</sup></td>
+                <td style="border: none;">:</td>
+                <td style="border: none;" id="cert-subject-no-claim">30-09-2025</td>
+              </tr>
+              <tr>
+                <td style="font-weight: bold; padding: 2px 0; border: none;">Mulai Asuransi</td>
+                <td style="border: none;">:</td>
+                <td style="border: none;" id="cert-mulai-asuransi">13-11-2025 s/d 30-09-2035</td>
+              </tr>
+              <tr>
+                <td style="font-weight: bold; padding: 2px 0; border: none;">Jangka Waktu Asuransi</td>
+                <td style="border: none;">:</td>
+                <td style="border: none;" id="cert-jangka-waktu">120 Bulan</td>
+              </tr>
+              <tr>
+                <td style="font-weight: bold; padding: 2px 0; border: none;">Penerima Manfaat <sup>**)</sup></td>
+                <td style="border: none;">:</td>
+                <td style="border: none;" id="cert-penerima-manfaat">PT BANK MANDIRI TASPEN</td>
+              </tr>
+            </table>
+
+            <!-- FOOTER / CATATAN -->
+            <div style="margin-top: 25px; padding-top: 10px; border-top: 1px solid #cccccc; font-size: 9px; color: #555555; line-height: 1.4; text-align: justify;">
+              <p style="margin: 0 0 4px 0;">Sertifikat ini dikeluarkan secara otomatis oleh sistem setelah dilakukan verifikasi, validasi dan Premi yang dibayarkan sudah diterima.</p>
+              <p style="margin: 0;">*) Subject To No Claim adalah Periode dimana pertanggungan asuransi akan diterima oleh Penanggung dengan status tidak ada klaim.</p>
+            </div>
+
           </div>
         </div>
 
+        <!-- FOOTER MODAL AKSI -->
         <div class="p-4 border-t border-slate-200 bg-slate-50 flex justify-end gap-3 no-print">
           <button onclick="closeModal('modal-view-sertifikat')" class="px-4 py-2 bg-slate-200 text-slate-700 hover:bg-slate-300 text-xs font-bold rounded-xl cursor-pointer transition">Tutup</button>
-          <button onclick="downloadSertifikatPDF()" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl flex items-center gap-2 cursor-pointer shadow-md glow-emerald">
+          <button onclick="downloadSertifikatPDF()" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl flex items-center gap-2 cursor-pointer shadow-md">
             <i class="fa-solid fa-file-arrow-down"></i> Unduh Sertifikat PDF
           </button>
         </div>
+
       </div>
     </div>
 
@@ -1694,16 +1697,16 @@
       let isExcelLoaded = false;
       let isPdfLoaded = false;
 
-      // DATA DUMMY SERTIFIKAT PERSIS DOKUMEN CONTOH GAMBAR (FALLBACK/DEFAULT)
+      // DATA DUMMY SERTIFIKAT (FALLBACK/DEFAULT)
       const sampleSertifikat = {
         no_peserta: "2020101-2511000000050929",
-        pemegang_polis: "KOPERASI SIMPAN PINJAM TEPIAN TADUH / K.2025.08.0063",
+        pemegang_polis: "PT BANK MANDIRI TASPEN / K.2023.05.0025",
         cabang: "KOPERASI SIMPAN PINJAM TEPIAN TADUH",
         penanggung: "PT HEKSA SOLUTION INSURANCE",
         nama_peserta: "ADI RIAN",
         tgl_lahir: "04-07-1988",
         umur: "37 Tahun",
-        jenis_asuransi: "Asuransi HEKSA Jiwa Kredit",
+        jenis_asuransi: "Asuransi Kematian Berjangka",
         uang_pertanggungan: "112000000",
         total_premi: "4083520",
         manfaat_up: "Uang Pertanggungan Menurun",
@@ -1711,7 +1714,7 @@
         mulai_asuransi: "13-11-2025",
         akhir_asuransi: "30-09-2035",
         jangka_waktu: "120 Bulan",
-        penerima_manfaat: "KOPERASI SIMPAN PINJAM TEPIAN TADUH"
+        penerima_manfaat: "PT BANK MANDIRI TASPEN"
       };
 
       // DAFTAR PRODUK DINAMIS
@@ -2010,7 +2013,7 @@
             : "Rp. 0";
 
           const pemegangText = item.pemegang_polis || (item.master_polis ? `${item.master_polis.nama_pemegang_polis} / ${item.master_polis.no_polis}` : "-");
-          const jenisAsuransi = item.jenis_asuransi || item.master_polis?.jenis_asuransi || "Asuransi HEKSA Jiwa Kredit";
+          const jenisAsuransi = item.jenis_asuransi || item.master_polis?.jenis_asuransi || "Asuransi Kematian Berjangka";
           const periodeText = item.mulai_asuransi ? `${item.mulai_asuransi} s/d ${item.akhir_asuransi || '-'}` : "-";
 
           htmlRows += `
@@ -2051,8 +2054,8 @@
         document.getElementById("cert-cabang").innerText = item.cabang || item.pemegang_polis || "-";
         document.getElementById("cert-penanggung").innerText = item.penanggung || "PT HEKSA SOLUTION INSURANCE";
         document.getElementById("cert-nama-peserta").innerText = item.nama_peserta || "-";
-        document.getElementById("cert-tgl-lahir").innerHTML = `${item.tgl_lahir || "-"} &nbsp;&nbsp;&nbsp;Umur : ${item.umur || "37 Tahun"}`;
-        document.getElementById("cert-jenis-asuransi").innerText = item.jenis_asuransi || item.master_polis?.jenis_asuransi || "Asuransi HEKSA Jiwa Kredit";
+        document.getElementById("cert-tgl-lahir").innerHTML = `${item.tgl_lahir || "-"} &nbsp;&nbsp;&nbsp;&nbsp; Umur : ${item.umur || "37 Tahun"}`;
+        document.getElementById("cert-jenis-asuransi").innerText = item.jenis_asuransi || item.master_polis?.jenis_asuransi || "Asuransi Kematian Berjangka";
         document.getElementById("cert-uang-pertanggungan").innerText = formattedUP;
         document.getElementById("cert-total-premi").innerText = formattedPremi;
         document.getElementById("cert-manfaat-up").innerText = item.manfaat_up || "Uang Pertanggungan Menurun";
@@ -3464,7 +3467,7 @@
 
         document.getElementById("bulk-note-input").value = "";
         await loadTransactionsFromSupabase();
-        alert(`${selectedCheckboxes.length} transaksi berhasil diproses secara massal!`);
+        alert(`${selectedCheckboxes.length} transaksi berhasil dipproses secara massal!`);
       }
 
       async function exportRepositoryToExcel() {
