@@ -2277,7 +2277,7 @@
         tbody.innerHTML = htmlRows;
       }
 
-      // LOAD MASTER POLIS UNTUK MENU TAB LAMPIRAN HAL 2 & 3
+      // LOAD MASTER POLIS UNTUK MENU TAB LAMPIRAN HAL 2 & 3 (DIPERBAIKI DENGAN LIMIT AGAR RINGAN)
       async function loadMasterPolisForLampiran() {
         const tbody = document.getElementById("lampiran-table-body");
         if (!tbody) return;
@@ -2285,8 +2285,9 @@
         try {
           const { data, error } = await _supabase
             .from("master_polis")
-            .select("*")
-            .order("created_at", { ascending: false });
+            .select("no_polis, nama_pemegang_polis, jenis_asuransi, pdf_lampiran")
+            .order("created_at", { ascending: false })
+            .limit(50); // Batasi pemuatan data agar performa tabel responsif
 
           if (error) throw error;
 
@@ -2503,7 +2504,6 @@
 
         const noPolis = activeSelectedCertItem.no_polis || activeSelectedCertItem.master_polis?.no_polis;
         
-        // Cari file PDF Halaman 2 & 3 dari master_polis
         let lampiranData = activeSelectedCertItem.master_polis?.pdf_lampiran;
         if (!lampiranData && noPolis) {
           const foundMaster = masterPolisLampiranList.find(m => m.no_polis === noPolis);
@@ -2523,7 +2523,6 @@
         try {
           await ensurePdfJs();
 
-          // 1. Generate PDF Halaman 1 dari elemen HTML sertifikat
           const element = document.getElementById("sertifikat-pdf-area");
           const options = {
             margin: [0, 0, 0, 0],
@@ -2537,11 +2536,9 @@
           const pdfBlobHal1 = await worker.outputPdf('blob');
           const arrayBufferHal1 = await pdfBlobHal1.arrayBuffer();
 
-          // 2. Ambil base64 Lampiran Halaman 2 & 3 dari Master Polis
           const base64Response = await fetch(lampiranData.data);
           const arrayBufferHal23 = await base64Response.arrayBuffer();
 
-          // 3. Gabungkan menggunakan PDF-Lib
           const mergedPdfDoc = await PDFLib.PDFDocument.create();
 
           const pdfDoc1 = await PDFLib.PDFDocument.load(arrayBufferHal1);
@@ -2554,7 +2551,6 @@
 
           const mergedPdfBytes = await mergedPdfDoc.save();
 
-          // 4. Unduh file hasil gabungan ke komputer pengguna
           const blobFinal = new Blob([mergedPdfBytes], { type: 'application/pdf' });
           const link = document.createElement('a');
           link.href = URL.createObjectURL(blobFinal);
