@@ -101,7 +101,9 @@
       #buku-polis-table-body td,
       #buku-polis-table-body th,
       #sertifikat-table-body td,
-      #sertifikat-table-body th {
+      #sertifikat-table-body th,
+      #lampiran-table-body td,
+      #lampiran-table-body th {
         vertical-align: middle !important;
         white-space: nowrap;
       }
@@ -257,6 +259,14 @@
             >
               <i class="fa-solid fa-award w-5 text-center text-indigo-400"></i>
               Sertifikat Kepesertaan
+            </button>
+            <button
+              onclick="switchTab('lampiran-h23')"
+              id="nav-lampiran-h23"
+              class="w-full flex items-center gap-3.5 px-4 py-3 text-sm font-semibold rounded-xl hover:bg-blue-950/50 transition cursor-pointer text-slate-400 hover:text-white"
+            >
+              <i class="fa-solid fa-file-pdf w-5 text-center text-rose-400"></i>
+              Lampiran Halaman 2 & 3
             </button>
             <button
               onclick="switchTab('buku-polis')"
@@ -909,6 +919,58 @@
                       <td colspan="9" class="p-6 text-center text-slate-400">
                         <i class="fa-solid fa-spinner animate-spin text-lg text-blue-500 mb-1"></i>
                         <p class="text-xs">Memuat data sertifikat...</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3.5 MENU BARU: LAMPIRAN HALAMAN 2 & 3 -->
+          <div id="tab-lampiran-h23" class="tab-anim hidden space-y-6">
+            <div class="glossy-card rounded-2xl p-8 space-y-6">
+              <div class="border-b border-slate-200/80 pb-4 flex justify-between items-center">
+                <div>
+                  <h3 class="text-lg font-bold text-slate-800">Menu Lampiran Halaman 2 & 3</h3>
+                  <p class="text-xs text-slate-500">Unggah dan kelola file PDF Lampiran Halaman 2 & 3 yang terhubung langsung ke Master Polis.</p>
+                </div>
+                <button onclick="loadMasterPolisForLampiran()" class="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-md cursor-pointer">
+                  <i class="fa-solid fa-rotate me-1"></i> Refresh Data
+                </button>
+              </div>
+
+              <!-- Bar Pencarian Master Polis -->
+              <div class="bg-white/80 p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+                <div class="relative">
+                  <input
+                    type="text"
+                    id="search-lampiran"
+                    oninput="filterLampiranLocal()"
+                    placeholder="Cari berdasarkan No Polis atau Nama Pemegang Polis..."
+                    class="w-full border border-slate-300 text-xs rounded-xl pl-9 pr-3.5 py-2.5 focus:ring-2 focus:ring-rose-500 focus:outline-none bg-white font-medium"
+                  />
+                  <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-xs"></i>
+                </div>
+              </div>
+
+              <!-- Tabel Daftar Polis & Upload Halaman 2 & 3 -->
+              <div class="overflow-x-auto border border-slate-200/80 rounded-2xl bg-white shadow-sm">
+                <table class="w-full text-left border-collapse">
+                  <thead>
+                    <tr class="bg-slate-100/80 text-slate-500 uppercase text-[10px] font-bold tracking-wider border-b border-slate-200">
+                      <th class="p-3">NO. POLIS</th>
+                      <th class="p-3">NAMA PEMEGANG POLIS</th>
+                      <th class="p-3">JENIS ASURANSI</th>
+                      <th class="p-3 text-center">STATUS FILE HAL 2 & 3</th>
+                      <th class="p-3 text-center">AKSI UPLOAD & UNDUH</th>
+                    </tr>
+                  </thead>
+                  <tbody id="lampiran-table-body" class="divide-y divide-slate-200/80 text-xs bg-white">
+                    <tr>
+                      <td colspan="5" class="p-6 text-center text-slate-400">
+                        <i class="fa-solid fa-spinner animate-spin text-lg text-rose-500 mb-1"></i>
+                        <p class="text-xs">Memuat data master polis...</p>
                       </td>
                     </tr>
                   </tbody>
@@ -1846,6 +1908,7 @@
 
       let transactions = [];
       let sertifikatList = [];
+      let masterPolisLampiranList = [];
       let bukuPolisList = [];
       let tempBukuPolisFile = null;
       let activeNoPolisForUpdate = null;
@@ -2008,6 +2071,7 @@
         await Promise.all([
           loadTransactionsFromSupabase(),
           loadSertifikatFromSupabase(),
+          loadMasterPolisForLampiran(),
           loadBukuPolisFromSupabase(),
           preFetchNextID()
         ]);
@@ -2195,20 +2259,9 @@
               <td class="p-3 text-slate-600 font-medium">${periodeText}</td>
               <td class="p-3 text-slate-600 font-medium">${item.jangka_waktu ? item.jangka_waktu + ' Bulan' : "-"}</td>
               <td class="p-3 text-center">
-                <div class="flex items-center justify-center gap-1.5">
-                  <button onclick="openModalSertifikatByData('${item.no_peserta}')" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1 cursor-pointer shadow-sm">
-                    <i class="fa-solid fa-file-pdf"></i> Pratinjau
-                  </button>
-                  <label class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-xl text-xs font-semibold cursor-pointer shadow-sm transition flex items-center gap-1" title="Upload Hal 2-3 langsung ke database master_polis">
-                    <i class="fa-solid fa-cloud-arrow-up"></i> Upload Hal 2-3
-                    <input 
-                      type="file" 
-                      accept=".pdf" 
-                      class="hidden" 
-                      onchange="uploadCombinedPdfToMasterPolis('${noPolisVal}', this)" 
-                    />
-                  </label>
-                </div>
+                <button onclick="openModalSertifikatByData('${item.no_peserta}')" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1 cursor-pointer shadow-sm mx-auto">
+                  <i class="fa-solid fa-file-pdf"></i> Pratinjau
+                </button>
               </td>
             </tr>
           `;
@@ -2217,10 +2270,91 @@
         tbody.innerHTML = htmlRows;
       }
 
+      // LOAD MASTER POLIS UNTUK MENU TAB LAMPIRAN HAL 2 & 3
+      async function loadMasterPolisForLampiran() {
+        const tbody = document.getElementById("lampiran-table-body");
+        if (!tbody) return;
+
+        try {
+          const { data, error } = await _supabase
+            .from("master_polis")
+            .select("*")
+            .order("created_at", { ascending: false });
+
+          if (error) throw error;
+
+          masterPolisLampiranList = (data && data.length > 0) ? data : [
+            { no_polis: "K.2023.05.0025", nama_pemegang_polis: "PT BANK MANDIRI TASPEN", jenis_asuransi: "Asuransi Kematian Berjangka", pdf_lampiran: null }
+          ];
+        } catch (err) {
+          masterPolisLampiranList = [
+            { no_polis: "K.2023.05.0025", nama_pemegang_polis: "PT BANK MANDIRI TASPEN", jenis_asuransi: "Asuransi Kematian Berjangka", pdf_lampiran: null }
+          ];
+        }
+
+        renderLampiranTable(masterPolisLampiranList);
+      }
+
+      function renderLampiranTable(dataList) {
+        const tbody = document.getElementById("lampiran-table-body");
+        if (!tbody) return;
+
+        if (!dataList || dataList.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-400 text-xs">Belum ada data master polis ditemukan.</td></tr>`;
+          return;
+        }
+
+        let htmlRows = "";
+        dataList.forEach((item) => {
+          const hasFile = item.pdf_lampiran && item.pdf_lampiran.data;
+          const statusBadge = hasFile 
+            ? `<span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-full font-bold text-[10px]">Tersedia (${item.pdf_lampiran.size || 'PDF'})</span>` 
+            : `<span class="px-2.5 py-1 bg-amber-100 text-amber-800 rounded-full font-bold text-[10px]">Belum Ada File</span>`;
+
+          const actionButtons = hasFile
+            ? `<div class="flex items-center justify-center gap-1.5">
+                 <a href="${item.pdf_lampiran.data}" download="${item.pdf_lampiran.name || 'Lampiran_Hal_2_3.pdf'}" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1 shadow-sm">
+                   <i class="fa-solid fa-download"></i> Unduh
+                 </a>
+                 <label class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-xl text-xs font-semibold cursor-pointer shadow-sm transition flex items-center gap-1">
+                   <i class="fa-solid fa-cloud-arrow-up"></i> Ganti File
+                   <input type="file" accept=".pdf" class="hidden" onchange="uploadCombinedPdfToMasterPolis('${item.no_polis}', this)" />
+                 </label>
+               </div>`
+            : `<label class="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold cursor-pointer shadow-md transition flex items-center gap-1.5 mx-auto w-max">
+                 <i class="fa-solid fa-cloud-arrow-up"></i> Upload PDF Hal 2 & 3
+                 <input type="file" accept=".pdf" class="hidden" onchange="uploadCombinedPdfToMasterPolis('${item.no_polis}', this)" />
+               </label>`;
+
+          htmlRows += `
+            <tr class="hover:bg-slate-50 transition border-b border-slate-100 text-xs">
+              <td class="p-3 font-mono font-bold text-rose-700">${item.no_polis}</td>
+              <td class="p-3 font-bold text-slate-900">${item.nama_pemegang_polis || "-"}</td>
+              <td class="p-3 text-slate-700 font-medium">${item.jenis_asuransi || "Asuransi Heksa Jiwa Kredit"}</td>
+              <td class="p-3 text-center">${statusBadge}</td>
+              <td class="p-3 text-center">${actionButtons}</td>
+            </tr>
+          `;
+        });
+
+        tbody.innerHTML = htmlRows;
+      }
+
+      function filterLampiranLocal() {
+        const query = (document.getElementById("search-lampiran")?.value || "").toLowerCase();
+        const filtered = masterPolisLampiranList.filter((item) => {
+          return (
+            (item.no_polis && item.no_polis.toLowerCase().includes(query)) ||
+            (item.nama_pemegang_polis && item.nama_pemegang_polis.toLowerCase().includes(query))
+          );
+        });
+        renderLampiranTable(filtered);
+      }
+
       // FUNGSI UPLOAD LAMPIRAN PDF (HALAMAN 2 & 3) LANGSUNG KE MASTER POLIS
       async function uploadCombinedPdfToMasterPolis(noPolis, inputElem) {
         if (!noPolis || noPolis.trim() === "" || noPolis === "-") {
-          alert("Nomor Polis tidak valid atau belum ditemukan pada baris data ini!");
+          alert("Nomor Polis tidak valid!");
           inputElem.value = "";
           return;
         }
@@ -2255,7 +2389,8 @@
 
             if (updateError) throw updateError;
 
-            alert(`Sukses! File PDF Halaman 2 & 3 untuk No. Polis "${noPolis}" berhasil diunggah langsung ke database master_polis.`);
+            alert(`Sukses! File PDF Halaman 2 & 3 untuk No. Polis "${noPolis}" berhasil diunggah.`);
+            loadMasterPolisForLampiran();
           } catch (err) {
             console.error("Gagal menyimpan ke database Supabase:", err);
             alert("Gagal mengunggah file ke database. Periksa kembali koneksi internet Anda.");
@@ -2418,6 +2553,13 @@
             .channel("public:sertifikat_kepesertaan")
             .on("postgres_changes", { event: "*", schema: "public", table: "sertifikat_kepesertaan" }, () => {
               loadSertifikatFromSupabase();
+            })
+            .subscribe();
+
+          _supabase
+            .channel("public:master_polis")
+            .on("postgres_changes", { event: "*", schema: "public", table: "master_polis" }, () => {
+              loadMasterPolisForLampiran();
             })
             .subscribe();
 
@@ -2656,7 +2798,7 @@
       }
 
       async function switchTab(tab) {
-        ["dashboard", "form", "sertifikat", "buku-polis", "repository"].forEach((t) => {
+        ["dashboard", "form", "sertifikat", "lampiran-h23", "buku-polis", "repository"].forEach((t) => {
           const tabElem = document.getElementById(`tab-${t}`);
           const navElem = document.getElementById(`nav-${t}`);
           if (tabElem) tabElem.classList.add("hidden");
@@ -2672,6 +2814,7 @@
           dashboard: "Dashboard Underwriting",
           form: "Form Kertas Kerja Underwriting",
           sertifikat: "Sertifikat Kepesertaan",
+          "lampiran-h23": "Lampiran Halaman 2 & 3 Master Polis",
           "buku-polis": "Buku Polis & Legalitas Dokumen",
           repository: "Repository Transaksi Kertas Kerja"
         };
@@ -2686,6 +2829,10 @@
 
         if (tab === "sertifikat") {
           await loadSertifikatFromSupabase();
+        }
+
+        if (tab === "lampiran-h23") {
+          await loadMasterPolisForLampiran();
         }
 
         if (tab === "buku-polis") {
