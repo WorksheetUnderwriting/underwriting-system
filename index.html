@@ -15,6 +15,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- html2pdf.js Library CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- PDF-Lib CDN untuk Menggabungkan PDF secara Otomatis -->
+    <script src="https://unpkg.com/pdf-lib@1.4.0/dist/pdf-lib.min.js"></script>
 
     <!-- SCRIPT PROTEKSI HAK AKSES PRODUCTION -->
     <script>
@@ -321,7 +323,7 @@
                 Dashboard Underwriting
               </h2>
               <p class="text-xs font-medium text-blue-200/70">
-                Selamat datang kembali di portal kertas kerja UW[cite: 3]
+                Selamat datang kembali di portal kertas kerja UW
               </p>
             </div>
           </div>
@@ -1430,8 +1432,11 @@
         <!-- FOOTER MODAL AKSI -->
         <div class="p-4 border-t border-slate-200 bg-slate-50 flex justify-end gap-3 no-print">
           <button onclick="closeModal('modal-view-sertifikat')" class="px-4 py-2 bg-slate-200 text-slate-700 hover:bg-slate-300 text-xs font-bold rounded-xl cursor-pointer transition">Tutup</button>
-          <button id="btn-download-cert" onclick="downloadSertifikatPDF()" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl flex items-center gap-2 cursor-pointer shadow-md">
-            <i class="fa-solid fa-file-arrow-down"></i> <span id="btn-cert-text">Unduh Sertifikat PDF (1 Halaman)</span>
+          <button id="btn-download-cert" onclick="downloadSertifikatPDF()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-md">
+            <i class="fa-solid fa-file-pdf"></i> <span id="btn-cert-text">Unduh Hal 1 Saja</span>
+          </button>
+          <button id="btn-merge-cert" onclick="mergeAndDownloadAllPages()" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl flex items-center gap-2 cursor-pointer shadow-md glow-blue">
+            <i class="fa-solid fa-object-ungroup"></i> <span id="btn-merge-text">Gabung & Unduh Hal 1, 2, & 3 Otomatis</span>
           </button>
         </div>
 
@@ -1912,6 +1917,7 @@
       let bukuPolisList = [];
       let tempBukuPolisFile = null;
       let activeNoPolisForUpdate = null;
+      let activeSelectedCertItem = null;
 
       let activeTransactionId = null;
       let editingTransactionId = null;
@@ -2206,7 +2212,8 @@
                 no_polis,
                 nama_pemegang_polis,
                 jenis_asuransi,
-                penerima_manfaat
+                penerima_manfaat,
+                pdf_lampiran
               )
             `)
             .order("created_at", { ascending: false });
@@ -2391,6 +2398,7 @@
 
             alert(`Sukses! File PDF Halaman 2 & 3 untuk No. Polis "${noPolis}" berhasil diunggah.`);
             loadMasterPolisForLampiran();
+            loadSertifikatFromSupabase();
           } catch (err) {
             console.error("Gagal menyimpan ke database Supabase:", err);
             alert("Gagal mengunggah file ke database. Periksa kembali koneksi internet Anda.");
@@ -2402,6 +2410,7 @@
 
       function openModalSertifikatByData(noPeserta) {
         const item = sertifikatList.find((s) => s.no_peserta === noPeserta) || sampleSertifikat;
+        activeSelectedCertItem = item;
         const noPolis = item.no_polis || item.master_polis?.no_polis || "K.2023.05.0025";
         
         const config = MASTER_POLIS_CONFIG[noPolis] || {
@@ -2483,6 +2492,87 @@
         });
 
         select.innerHTML = optionsHTML;
+      }
+
+      // FUNGSI OTOMATIS MENGGABUNGKAN HAL 1 (DARI HTML) DENGAN HAL 2 & 3 (DARI MASTER POLIS)
+      async function mergeAndDownloadAllPages() {
+        if (!activeSelectedCertItem) {
+          alert("Data sertifikat tidak valid!");
+          return;
+        }
+
+        const noPolis = activeSelectedCertItem.no_polis || activeSelectedCertItem.master_polis?.no_polis;
+        
+        // Cari file PDF Halaman 2 & 3 dari master_polis
+        let lampiranData = activeSelectedCertItem.master_polis?.pdf_lampiran;
+        if (!lampiranData && noPolis) {
+          const foundMaster = masterPolisLampiranList.find(m => m.no_polis === noPolis);
+          if (foundMaster) lampiranData = foundMaster.pdf_lampiran;
+        }
+
+        if (!lampiranData || !lampiranData.data) {
+          alert(`File Lampiran Halaman 2 & 3 untuk No. Polis "${noPolis || '-'}" belum diunggah!\n\nSilakan unggah terlebih dahulu di menu "Lampiran Halaman 2 & 3" pada sidebar.`);
+          return;
+        }
+
+        const btnMergeText = document.getElementById("btn-merge-text");
+        const btnMerge = document.getElementById("btn-merge-cert");
+        btnMergeText.innerText = "Menggabungkan PDF Hal 1, 2, & 3...";
+        btnMerge.disabled = true;
+
+        try {
+          await ensurePdfJs();
+
+          // 1. Generate PDF Halaman 1 dari elemen HTML sertifikat
+          const element = document.getElementById("sertifikat-pdf-area");
+          const options = {
+            margin: [0, 0, 0, 0],
+            filename: `temp_hal_1.pdf`,
+            image: { type: "jpeg", quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true, logging: false },
+            jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+          };
+
+          const worker = html2pdf().set(options).from(element);
+          const pdfBlobHal1 = await worker.outputPdf('blob');
+          const arrayBufferHal1 = await pdfBlobHal1.arrayBuffer();
+
+          // 2. Ambil base64 Lampiran Halaman 2 & 3 dari Master Polis
+          const base64Response = await fetch(lampiranData.data);
+          const arrayBufferHal23 = await base64Response.arrayBuffer();
+
+          // 3. Gabungkan menggunakan PDF-Lib
+          const mergedPdfDoc = await PDFLib.PDFDocument.create();
+
+          const pdfDoc1 = await PDFLib.PDFDocument.load(arrayBufferHal1);
+          const copiedPages1 = await mergedPdfDoc.copyPages(pdfDoc1, pdfDoc1.getPageIndices());
+          copiedPages1.forEach((page) => mergedPdfDoc.addPage(page));
+
+          const pdfDoc2 = await PDFLib.PDFDocument.load(arrayBufferHal23);
+          const copiedPages2 = await mergedPdfDoc.copyPages(pdfDoc2, pdfDoc2.getPageIndices());
+          copiedPages2.forEach((page) => mergedPdfDoc.addPage(page));
+
+          const mergedPdfBytes = await mergedPdfDoc.save();
+
+          // 4. Unduh file hasil gabungan ke komputer pengguna
+          const blobFinal = new Blob([mergedPdfBytes], { type: 'application/pdf' });
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blobFinal);
+          const certNama = activeSelectedCertItem.nama_peserta || "Peserta";
+          const certNo = activeSelectedCertItem.no_peserta || "Sertifikat";
+          link.download = `Sertifikat_Lengkap_Hal_1_2_3_${certNama.replace(/\s+/g, "_")}_${certNo}.pdf`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+
+          alert("Berhasil! File PDF Halaman 1, 2, dan 3 telah digabungkan menjadi satu kesatuan dokumen lengkap.");
+        } catch (err) {
+          console.error("Gagal menggabungkan PDF:", err);
+          alert("Terjadi kesalahan saat menggabungkan dokumen PDF secara otomatis.");
+        } finally {
+          btnMergeText.innerText = "Gabung & Unduh Hal 1, 2, & 3 Otomatis";
+          btnMerge.disabled = false;
+        }
       }
 
       async function loadBukuPolisFromSupabase() {
@@ -3168,12 +3258,12 @@
 
         const btnText = document.getElementById("btn-cert-text");
         const btnDownload = document.getElementById("btn-download-cert");
-        btnText.innerText = "Memproses PDF...";
+        btnText.innerText = "Memproses...";
         btnDownload.disabled = true;
 
         const options = {
           margin: [0, 0, 0, 0],
-          filename: `Sertifikat_${certNama.replace(/\s+/g, "_")}_${certNo}.pdf`,
+          filename: `Sertifikat_Hal_1_${certNama.replace(/\s+/g, "_")}_${certNo}.pdf`,
           image: { type: "jpeg", quality: 0.98 },
           html2canvas: { scale: 2, useCORS: true, logging: false },
           jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
@@ -3182,7 +3272,7 @@
         try {
           await html2pdf().set(options).from(element).save();
         } finally {
-          btnText.innerText = "Unduh Sertifikat PDF (1 Halaman)";
+          btnText.innerText = "Unduh Hal 1 Saja";
           btnDownload.disabled = false;
         }
       }
@@ -4100,7 +4190,7 @@
 
         const btnText = document.getElementById("btn-pdf-text");
         const btnDownload = document.getElementById("btn-download-pdf");
-        btnText.innerText = "Memproses PDF...";
+        btnText.innerText = "Memproses...";
         btnDownload.disabled = true;
 
         const element = document.querySelector(".pdf-template");
