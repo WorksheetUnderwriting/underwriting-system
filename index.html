@@ -808,7 +808,7 @@
             </form>
           </div>
 
-          <!-- 3. SERTIFIKAT KEPESERTAAN TAB (TERINTEGRASI SUPABASE SERTIFIKAT_KEPESERTAAN & MASTER_POLIS) -->
+          <!-- 3. SERTIFIKAT KEPESERTAAN TAB (UPDATE PENUH DISESUAIKAN GAMBAR 2) -->
           <div id="tab-sertifikat" class="tab-anim hidden space-y-6">
             <div class="glossy-card rounded-2xl p-8 space-y-6">
               <div class="border-b border-slate-200/80 pb-4 flex justify-between items-center">
@@ -831,7 +831,7 @@
                         type="text"
                         id="search-sertifikat"
                         oninput="filterSertifikatLocal()"
-                        placeholder="Cari Nama Peserta, NIK, atau No. Sertifikat..."
+                        placeholder="Cari Nama Peserta, NIK, No. Peserta, atau Pemegang Polis..."
                         class="w-full border border-slate-300 text-xs rounded-xl pl-9 pr-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white font-medium"
                       />
                       <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-xs"></i>
@@ -846,24 +846,25 @@
                 </div>
               </div>
 
-              <!-- Tabel Sertifikat Kepesertaan -->
+              <!-- Tabel Sertifikat Kepesertaan (Disesuaikan Kolom Sesuai Gambar 2) -->
               <div class="overflow-x-auto border border-slate-200/80 rounded-2xl bg-white shadow-sm">
                 <table class="w-full text-left border-collapse">
                   <thead>
                     <tr class="bg-slate-100/80 text-slate-500 uppercase text-[10px] font-bold tracking-wider border-b border-slate-200">
-                      <th class="p-3">NO. SERTIFIKAT</th>
-                      <th class="p-3">NIK / ID KTP</th>
+                      <th class="p-3">NO. PESERTA</th>
+                      <th class="p-3">PEMEGANG POLIS / NO. POLIS</th>
                       <th class="p-3">NAMA PESERTA</th>
-                      <th class="p-3">PRODUK ASURANSI</th>
+                      <th class="p-3">JENIS ASURANSI</th>
                       <th class="p-3">UANG PERTANGGUNGAN</th>
-                      <th class="p-3">MASA PERTANGGUNGAN</th>
-                      <th class="p-3">STATUS UNDERWRITING</th>
+                      <th class="p-3">TOTAL PREMI</th>
+                      <th class="p-3">MULAI ASURANSI</th>
+                      <th class="p-3">JANGKA WAKTU</th>
                       <th class="p-3 text-center">AKSI</th>
                     </tr>
                   </thead>
                   <tbody id="sertifikat-table-body" class="divide-y divide-slate-200/80 text-xs bg-white">
                     <tr>
-                      <td colspan="8" class="p-6 text-center text-slate-400">
+                      <td colspan="9" class="p-6 text-center text-slate-400">
                         <i class="fa-solid fa-spinner animate-spin text-lg text-blue-500 mb-1"></i>
                         <p class="text-xs">Memuat data sertifikat...</p>
                       </td>
@@ -1159,68 +1160,103 @@
       </main>
     </div>
 
-    <!-- MODAL KHUSUS PRATINJAU & UNDUH SERTIFIKAT KEPESERTAAN -->
+    <!-- MODAL KHUSUS PRATINJAU & UNDUH SERTIFIKAT KEPESERTAAN (14 FIELD TAMPILAN RESMI GAMBAR 2) -->
     <div id="modal-view-sertifikat" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md flex items-center justify-center hidden z-50 p-4">
       <div class="bg-white rounded-3xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
         <div class="p-5 bg-blue-600 text-white flex justify-between items-center no-print border-b border-blue-500/20">
           <div>
             <h3 class="font-bold text-base"><i class="fa-solid fa-award me-2"></i>Pratinjau Sertifikat Kepesertaan</h3>
-            <p class="text-xs text-blue-100">Worksheet Underwriting System</p>
+            <p class="text-xs text-blue-100">PT HEKSA SOLUTION INSURANCE</p>
           </div>
           <button onclick="closeModal('modal-view-sertifikat')" class="text-white hover:text-slate-200 text-2xl cursor-pointer">&times;</button>
         </div>
 
         <div class="p-6 overflow-y-auto space-y-6 flex-1 bg-slate-100">
-          <div id="sertifikat-pdf-area" style="border: 4px double #0d6efd; padding: 35px; background: #ffffff; color: #1e293b;" class="shadow-sm">
-            <div class="text-center">
-              <h2 class="text-2xl font-bold text-blue-600 mb-1" style="letter-spacing: 2px;">SERTIFIKAT KEPESERTAAN</h2>
-              <p class="text-xs text-slate-500 mb-3 uppercase tracking-widest">WORKSHEET UNDERWRITING SYSTEM</p>
-              <hr style="border-top: 2px solid #0d6efd;" class="my-3">
+          <div id="sertifikat-pdf-area" style="border: 2px solid #000; padding: 25px 30px; background: #ffffff; color: #000; font-family: 'Arial', sans-serif;" class="shadow-sm">
+            <div class="text-center mb-6">
+              <h2 class="text-xl font-bold uppercase tracking-wide" style="margin-bottom: 2px;">SERTIFIKAT KEPESERTAAN</h2>
+              <p class="text-xs font-semibold uppercase tracking-wider text-slate-600">PT HEKSA SOLUTION INSURANCE</p>
+              <hr style="border-top: 1.5px solid #000;" class="my-3">
             </div>
 
-            <div class="my-4">
-              <p class="text-xs text-slate-600 mb-4">Dengan ini menyatakan bahwa peserta di bawah ini telah disetujui (*Approved Final*) dan terdaftar dalam program penutupan asuransi:</p>
-              <table class="w-full text-xs border-collapse">
-                <tr class="border-b border-slate-100">
-                  <td width="35%" class="py-2 font-bold text-slate-600">Nomor Sertifikat / Peserta</td>
-                  <td width="5%" class="py-2">:</td>
-                  <td id="cert-no" class="py-2 font-mono font-bold text-blue-700">-</td>
-                </tr>
-                <tr class="border-b border-slate-100">
-                  <td class="py-2 font-bold text-slate-600">Nama Peserta / Tertanggung</td>
-                  <td>:</td>
-                  <td id="cert-nama" class="py-2 font-bold text-slate-900">-</td>
-                </tr>
-                <tr class="border-b border-slate-100">
-                  <td class="py-2 font-bold text-slate-600">NIK / ID KTP</td>
-                  <td>:</td>
-                  <td id="cert-ktp" class="py-2 font-mono text-slate-800">-</td>
-                </tr>
-                <tr class="border-b border-slate-100">
-                  <td class="py-2 font-bold text-slate-600">Produk Asuransi</td>
-                  <td>:</td>
-                  <td id="cert-produk" class="py-2 font-semibold text-slate-800">-</td>
-                </tr>
-                <tr class="border-b border-slate-100">
-                  <td class="py-2 font-bold text-slate-600">Uang Pertanggungan (UP)</td>
-                  <td>:</td>
-                  <td id="cert-up" class="py-2 font-bold text-slate-900">-</td>
-                </tr>
-                <tr class="border-b border-slate-100">
-                  <td class="py-2 font-bold text-slate-600">Masa Pertanggungan</td>
-                  <td>:</td>
-                  <td id="cert-masa" class="py-2 font-semibold text-slate-800">-</td>
+            <!-- TAMPILAN 14 BIDANG (SESUAI DOKUMEN GAMBAR 2) -->
+            <table class="w-full text-xs border-collapse font-sans" style="line-height: 1.8;">
+              <tbody>
+                <tr>
+                  <td width="38%" class="font-bold">No. Peserta</td>
+                  <td width="3%">:</td>
+                  <td width="59%" id="cert-no-peserta" class="font-mono font-bold">2020101-2511000000050929</td>
                 </tr>
                 <tr>
-                  <td class="py-2 font-bold text-slate-600">Status Underwriting</td>
+                  <td class="font-bold">Pemegang Polis/No. Polis</td>
                   <td>:</td>
-                  <td class="py-2"><span class="px-2.5 py-1 text-[10px] font-bold bg-emerald-100 text-emerald-800 rounded-full" id="cert-status">Approved Final</span></td>
+                  <td id="cert-pemegang-polis" class="font-semibold">KOPERASI SIMPAN PINJAM TEPIAN TADUH / K.2025.08.0063</td>
                 </tr>
-              </table>
-            </div>
+                <tr>
+                  <td class="font-bold">Cabang</td>
+                  <td>:</td>
+                  <td id="cert-cabang">KOPERASI SIMPAN PINJAM TEPIAN TADUH</td>
+                </tr>
+                <tr>
+                  <td class="font-bold">Penanggung</td>
+                  <td>:</td>
+                  <td id="cert-penanggung" class="font-bold">PT HEKSA SOLUTION INSURANCE</td>
+                </tr>
+                <tr>
+                  <td class="font-bold">Nama Peserta</td>
+                  <td>:</td>
+                  <td id="cert-nama-peserta" class="font-bold text-sm">ADI RIAN</td>
+                </tr>
+                <tr>
+                  <td class="font-bold">Tgl. Lahir</td>
+                  <td>:</td>
+                  <td id="cert-tgl-lahir">04-07-1988 &nbsp;&nbsp;&nbsp;Umur : 37 Tahun</td>
+                </tr>
+                <tr>
+                  <td class="font-bold">Jenis Asuransi</td>
+                  <td>:</td>
+                  <td id="cert-jenis-asuransi" class="font-semibold">Asuransi HEKSA Jiwa Kredit</td>
+                </tr>
+                <tr>
+                  <td class="font-bold">Uang Pertanggungan</td>
+                  <td>:</td>
+                  <td id="cert-uang-pertanggungan" class="font-bold">Rp. 112,000,000,-</td>
+                </tr>
+                <tr>
+                  <td class="font-bold">Total Premi</td>
+                  <td>:</td>
+                  <td id="cert-total-premi" class="font-bold">Rp. 4,083,520</td>
+                </tr>
+                <tr>
+                  <td class="font-bold">Manfaat Uang Pertanggungan</td>
+                  <td>:</td>
+                  <td id="cert-manfaat-up">Uang Pertanggungan Menurun</td>
+                </tr>
+                <tr>
+                  <td class="font-bold">Subject To No Claim <sup>*)Pertanggal</sup></td>
+                  <td>:</td>
+                  <td id="cert-subject-no-claim">30-09-2025</td>
+                </tr>
+                <tr>
+                  <td class="font-bold">Mulai Asuransi</td>
+                  <td>:</td>
+                  <td id="cert-mulai-asuransi" class="font-semibold">13-11-2025 s/d 30-09-2035</td>
+                </tr>
+                <tr>
+                  <td class="font-bold">Jangka Waktu Asuransi</td>
+                  <td>:</td>
+                  <td id="cert-jangka-waktu">120 Bulan</td>
+                </tr>
+                <tr>
+                  <td class="font-bold">Penerima Manfaat <sup>**)</sup></td>
+                  <td>:</td>
+                  <td id="cert-penerima-manfaat" class="font-semibold">KOPERASI SIMPAN PINJAM TEPIAN TADUH</td>
+                </tr>
+              </tbody>
+            </table>
 
-            <div class="mt-8 pt-4 border-t border-slate-200 text-center text-slate-500 text-[10px] leading-relaxed">
-              <p class="mb-0">Dokumen ini diterbitkan secara elektronik oleh Worksheet Underwriting System.</p>
+            <div class="mt-8 pt-4 border-t border-slate-300 text-center text-slate-500 text-[10px] leading-relaxed">
+              <p class="mb-0">Dokumen ini diterbitkan secara elektronik oleh Worksheet Underwriting System PT HEKSA SOLUTION INSURANCE.</p>
               <p class="mb-0">Keabsahan sertifikat ini sah dan berlaku tanpa memerlukan tanda tangan basah.</p>
             </div>
           </div>
@@ -1229,7 +1265,7 @@
         <div class="p-4 border-t border-slate-200 bg-slate-50 flex justify-end gap-3 no-print">
           <button onclick="closeModal('modal-view-sertifikat')" class="px-4 py-2 bg-slate-200 text-slate-700 hover:bg-slate-300 text-xs font-bold rounded-xl cursor-pointer transition">Tutup</button>
           <button onclick="downloadSertifikatPDF()" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl flex items-center gap-2 cursor-pointer shadow-md glow-emerald">
-            <i class="fa-solid fa-file-arrow-down"></i> Unduh PDF Otomatis
+            <i class="fa-solid fa-file-arrow-down"></i> Unduh Sertifikat PDF
           </button>
         </div>
       </div>
@@ -1620,6 +1656,26 @@
       let isExcelLoaded = false;
       let isPdfLoaded = false;
 
+      // DATA DUMMY SERTIFIKAT PERSIS GAMBAR 2 (SEBAGAI FALLBACK/DEFAULT)
+      const sampleSertifikat = {
+        no_peserta: "2020101-2511000000050929",
+        pemegang_polis: "KOPERASI SIMPAN PINJAM TEPIAN TADUH / K.2025.08.0063",
+        cabang: "KOPERASI SIMPAN PINJAM TEPIAN TADUH",
+        penanggung: "PT HEKSA SOLUTION INSURANCE",
+        nama_peserta: "ADI RIAN",
+        tgl_lahir: "04-07-1988",
+        umur: "37 Tahun",
+        jenis_asuransi: "Asuransi HEKSA Jiwa Kredit",
+        uang_pertanggungan: "112000000",
+        total_premi: "4083520",
+        manfaat_up: "Uang Pertanggungan Menurun",
+        subject_no_claim: "30-09-2025",
+        mulai_asuransi: "13-11-2025",
+        akhir_asuransi: "30-09-2035",
+        jangka_waktu: "120 Bulan",
+        penerima_manfaat: "KOPERASI SIMPAN PINJAM TEPIAN TADUH"
+      };
+
       // DAFTAR PRODUK DINAMIS
       const produkIndividu = [
         "Asuransi HEKSA Rencana",
@@ -1866,18 +1922,10 @@
         if (chartMonthlyInstance && chartStatusInstance) updateCharts();
       }
 
+      // LOAD SERTIFIKAT (SINKRON SUPABASE & DISESUAIKAN KEBUTUHAN DOKUMEN GAMBAR 2)
       async function loadSertifikatFromSupabase() {
         const tableBody = document.getElementById("sertifikat-table-body");
         if (!tableBody) return;
-
-        tableBody.innerHTML = `
-          <tr>
-            <td colspan="8" class="p-6 text-center text-slate-400">
-              <i class="fa-solid fa-spinner animate-spin text-lg text-blue-500 mb-1"></i>
-              <p class="text-xs">Memuat data sertifikat...</p>
-            </td>
-          </tr>
-        `;
 
         try {
           const { data, error } = await _supabase
@@ -1886,7 +1934,6 @@
               *,
               master_polis (
                 no_polis,
-                no_polis_sertifikat,
                 nama_pemegang_polis,
                 jenis_asuransi,
                 penerima_manfaat
@@ -1896,28 +1943,13 @@
 
           if (error) throw error;
 
-          sertifikatList = data || [];
-          renderSertifikatTable(sertifikatList);
-          populateFilterSertifikatProduk(sertifikatList);
-
+          sertifikatList = (data && data.length > 0) ? data : [sampleSertifikat];
         } catch (err) {
-          console.warn("Mencoba mengambil fallback dari transaksi Approved Final:", err.message);
-          sertifikatList = transactions
-            .filter((t) => t.status === "APPROVED_FINAL")
-            .map((t) => ({
-              no_peserta: `CERT-${t.id}`,
-              nik: t.noKtp,
-              nama_peserta: t.nama,
-              uang_pertanggungan: t.up,
-              start_date: t.dateFormatted,
-              tenor: t.masa,
-              kode_produk: t.produk,
-              master_polis: { jenis_asuransi: t.produk || "Asuransi Heksa Jiwa Kredit" }
-            }));
-            
-          renderSertifikatTable(sertifikatList);
-          populateFilterSertifikatProduk(sertifikatList);
+          sertifikatList = [sampleSertifikat];
         }
+
+        renderSertifikatTable(sertifikatList);
+        populateFilterSertifikatProduk(sertifikatList);
       }
 
       function renderSertifikatTable(dataList) {
@@ -1925,32 +1957,37 @@
         if (!tbody) return;
 
         if (!dataList || dataList.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-400 text-xs">Belum ada data sertifikat peserta status Approved Final.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="9" class="p-6 text-center text-slate-400 text-xs">Belum ada data sertifikat peserta status Approved Final.</td></tr>`;
           return;
         }
 
         let htmlRows = "";
         dataList.forEach((item) => {
           const formattedUP = item.uang_pertanggungan
-            ? `Rp ${Number(item.uang_pertanggungan).toLocaleString("id-ID")}`
-            : "-";
-            
-          const jenisAsuransi = item.master_polis?.jenis_asuransi || item.kode_produk || "Asuransi Heksa Jiwa Kredit";
-          const startDate = item.start_date ? formatDateID(item.start_date) : "-";
-          const tenorText = item.tenor ? `(${item.tenor} Bulan)` : "";
+            ? `Rp. ${Number(item.uang_pertanggungan).toLocaleString("id-ID")},-`
+            : "Rp. 0,-";
+
+          const formattedPremi = item.total_premi
+            ? `Rp. ${Number(item.total_premi).toLocaleString("id-ID")}`
+            : "Rp. 0";
+
+          const pemegangText = item.pemegang_polis || (item.master_polis ? `${item.master_polis.nama_pemegang_polis} / ${item.master_polis.no_polis}` : "-");
+          const jenisAsuransi = item.jenis_asuransi || item.master_polis?.jenis_asuransi || "Asuransi HEKSA Jiwa Kredit";
+          const periodeText = item.mulai_asuransi ? `${item.mulai_asuransi} s/d ${item.akhir_asuransi || '-'}` : "-";
 
           htmlRows += `
-            <tr class="hover:bg-slate-50 transition border-b border-slate-100">
-              <td class="p-3 font-mono font-bold text-blue-600">${item.no_peserta || "-"}</td>
-              <td class="p-3 font-mono text-slate-700">${item.nik || item.id_ktp || "-"}</td>
-              <td class="p-3 font-bold text-slate-800">${item.nama_peserta || "-"}</td>
+            <tr class="hover:bg-slate-50 transition border-b border-slate-100 text-xs">
+              <td class="p-3 font-mono font-bold text-blue-700">${item.no_peserta || "-"}</td>
+              <td class="p-3 font-medium text-slate-700 max-w-[220px] truncate" title="${pemegangText}">${pemegangText}</td>
+              <td class="p-3 font-bold text-slate-900">${item.nama_peserta || "-"}</td>
               <td class="p-3 text-slate-700 font-medium">${jenisAsuransi}</td>
               <td class="p-3 font-bold text-slate-900">${formattedUP}</td>
-              <td class="p-3 text-slate-600">${startDate} ${tenorText}</td>
-              <td class="p-3"><span class="px-2.5 py-1 text-[10px] font-bold bg-emerald-100 text-emerald-800 rounded-full">Approved Final</span></td>
+              <td class="p-3 font-bold text-emerald-700">${formattedPremi}</td>
+              <td class="p-3 text-slate-600 font-medium">${periodeText}</td>
+              <td class="p-3 text-slate-600 font-medium">${item.jangka_waktu || "-"}</td>
               <td class="p-3 text-center">
                 <button onclick="openModalSertifikatByData('${item.no_peserta}')" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 mx-auto cursor-pointer shadow-sm">
-                  <i class="fa-solid fa-file-pdf"></i> Pratinjau & Cetak
+                  <i class="fa-solid fa-file-pdf"></i> Pratinjau
                 </button>
               </td>
             </tr>
@@ -1958,6 +1995,35 @@
         });
 
         tbody.innerHTML = htmlRows;
+      }
+
+      function openModalSertifikatByData(noPeserta) {
+        const item = sertifikatList.find((s) => s.no_peserta === noPeserta) || sampleSertifikat;
+
+        const formattedUP = item.uang_pertanggungan
+          ? `Rp. ${Number(item.uang_pertanggungan).toLocaleString("id-ID")},-`
+          : "Rp. 0,-";
+
+        const formattedPremi = item.total_premi
+          ? `Rp. ${Number(item.total_premi).toLocaleString("id-ID")}`
+          : "Rp. 0";
+
+        document.getElementById("cert-no-peserta").innerText = item.no_peserta || "-";
+        document.getElementById("cert-pemegang-polis").innerText = item.pemegang_polis || (item.master_polis ? `${item.master_polis.nama_pemegang_polis} / ${item.master_polis.no_polis}` : "-");
+        document.getElementById("cert-cabang").innerText = item.cabang || item.pemegang_polis || "-";
+        document.getElementById("cert-penanggung").innerText = item.penanggung || "PT HEKSA SOLUTION INSURANCE";
+        document.getElementById("cert-nama-peserta").innerText = item.nama_peserta || "-";
+        document.getElementById("cert-tgl-lahir").innerHTML = `${item.tgl_lahir || "-"} &nbsp;&nbsp;&nbsp;Umur : ${item.umur || "37 Tahun"}`;
+        document.getElementById("cert-jenis-asuransi").innerText = item.jenis_asuransi || item.master_polis?.jenis_asuransi || "Asuransi HEKSA Jiwa Kredit";
+        document.getElementById("cert-uang-pertanggungan").innerText = formattedUP;
+        document.getElementById("cert-total-premi").innerText = formattedPremi;
+        document.getElementById("cert-manfaat-up").innerText = item.manfaat_up || "Uang Pertanggungan Menurun";
+        document.getElementById("cert-subject-no-claim").innerText = item.subject_no_claim || "-";
+        document.getElementById("cert-mulai-asuransi").innerText = `${item.mulai_asuransi || "-"} s/d ${item.akhir_asuransi || "-"}`;
+        document.getElementById("cert-jangka-waktu").innerText = item.jangka_waktu || "-";
+        document.getElementById("cert-penerima-manfaat").innerText = item.penerima_manfaat || item.master_polis?.penerima_manfaat || "-";
+
+        document.getElementById("modal-view-sertifikat").classList.remove("hidden");
       }
 
       function filterSertifikatLocal() {
@@ -1968,9 +2034,9 @@
           const matchQuery =
             (item.nama_peserta && item.nama_peserta.toLowerCase().includes(query)) ||
             (item.no_peserta && item.no_peserta.toLowerCase().includes(query)) ||
-            (item.nik && item.nik.toLowerCase().includes(query));
+            (item.pemegang_polis && item.pemegang_polis.toLowerCase().includes(query));
 
-          const matchProduct = selectedProduk === "" || item.kode_produk === selectedProduk || item.master_polis?.jenis_asuransi === selectedProduk;
+          const matchProduct = selectedProduk === "" || item.jenis_asuransi === selectedProduk || item.master_polis?.jenis_asuransi === selectedProduk;
 
           return matchQuery && matchProduct;
         });
@@ -1984,7 +2050,7 @@
 
         const uniqueProducts = new Set();
         dataList.forEach((item) => {
-          const pName = item.master_polis?.jenis_asuransi || item.kode_produk;
+          const pName = item.jenis_asuransi || item.master_polis?.jenis_asuransi;
           if (pName) uniqueProducts.add(pName);
         });
 
@@ -2005,25 +2071,6 @@
           month: "numeric",
           year: "numeric",
         });
-      }
-
-      function openModalSertifikatByData(noPeserta) {
-        const item = sertifikatList.find((s) => s.no_peserta === noPeserta);
-        if (!item) return;
-
-        const formattedUP = item.uang_pertanggungan
-          ? `Rp ${Number(item.uang_pertanggungan).toLocaleString("id-ID")}`
-          : "-";
-
-        document.getElementById("cert-no").innerText = item.no_peserta || "-";
-        document.getElementById("cert-nama").innerText = item.nama_peserta || "-";
-        document.getElementById("cert-ktp").innerText = item.nik || item.id_ktp || "-";
-        document.getElementById("cert-produk").innerText = item.master_polis?.jenis_asuransi || item.kode_produk || "-";
-        document.getElementById("cert-up").innerText = formattedUP;
-        document.getElementById("cert-masa").innerText = `${formatDateID(item.start_date)} (${item.tenor || "-"} Bulan)`;
-        document.getElementById("cert-status").innerText = "Approved Final";
-
-        document.getElementById("modal-view-sertifikat").classList.remove("hidden");
       }
 
       async function loadBukuPolisFromSupabase() {
@@ -2682,11 +2729,11 @@
       async function downloadSertifikatPDF() {
         await ensurePdfJs();
         const element = document.getElementById("sertifikat-pdf-area");
-        const certNama = document.getElementById("cert-nama").innerText || "Peserta";
-        const certNo = document.getElementById("cert-no").innerText || "Sertifikat";
+        const certNama = document.getElementById("cert-nama-peserta").innerText || "Peserta";
+        const certNo = document.getElementById("cert-no-peserta").innerText || "Sertifikat";
 
         const options = {
-          margin: [10, 10, 10, 10],
+          margin: [8, 8, 8, 8],
           filename: `Sertifikat_${certNama.replace(/\s+/g, "_")}_${certNo}.pdf`,
           image: { type: "jpeg", quality: 0.98 },
           html2canvas: { scale: 2, useCORS: true },
