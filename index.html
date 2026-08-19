@@ -146,36 +146,40 @@
         margin-bottom: 8px !important;
       }
 
-      /* Style Profesional e-Sertifikat Presisi A4 (PERBAIKAN RUANG KOSONG) */
+      /* Style e-Sertifikat Presisi 1 Halaman A4 + Font Diperbesar */
       .cert-paper {
         width: 210mm;
-        min-height: 297mm;
+        height: 297mm; /* Dikunci persis 1 halaman A4 */
+        max-height: 297mm;
         background: #ffffff;
         color: #000000;
-        padding: 16mm 18mm;
+        padding: 12mm 16mm;
         border: 1px solid #000000;
         box-sizing: border-box;
         font-family: Arial, Helvetica, sans-serif;
-        font-size: 9.5px;
-        line-height: 1.35;
+        font-size: 11px; /* Font diperbesar dari sebelumnya */
+        line-height: 1.3;
         margin: 0 auto;
         display: flex;
         flex-direction: column;
-        justify-content: flex-start; /* Merapatkan konten ke atas */
+        justify-content: flex-start;
+        overflow: hidden; /* Mencegah meluber ke halaman 2 */
       }
       .cert-table {
         width: 100%;
         border-collapse: collapse;
-        margin-bottom: 20px; /* Memberikan jarak proporsional ke catatan bawah */
+        margin-bottom: 10px;
       }
       .cert-table td {
-        padding: 4px 0;
+        padding: 3.5px 0;
         vertical-align: top;
-        font-size: 9.5px;
+        font-size: 11px; /* Font diperbesar */
         border: none;
       }
       .cert-notes-area {
-        margin-top: 10px; /* Menghilangkan jarak kosong berlebihan di tengah */
+        margin-top: 4px;
+        font-size: 10px; /* Font catatan diperbesar */
+        line-height: 1.35;
       }
 
       @media print {
@@ -193,9 +197,11 @@
         }
         .pdf-template, .cert-paper {
           border: none;
-          padding: 12mm 15mm;
-          width: 100%;
-          min-height: 100vh;
+          padding: 10mm 14mm;
+          width: 210mm;
+          height: 297mm;
+          max-height: 297mm;
+          overflow: hidden;
         }
       }
     </style>
@@ -1196,38 +1202,38 @@
 
     <!-- MODAL KHUSUS PRATINJAU & UNDUH SERTIFIKAT KEPESERTAAN -->
     <div id="modal-view-sertifikat" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md flex items-center justify-center hidden z-50 p-4">
-      <div class="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="bg-white rounded-3xl max-w-4xl w-full max-h-[95vh] flex flex-col shadow-2xl overflow-hidden">
         
         <!-- HEADER MODAL -->
-        <div class="p-5 bg-blue-600 text-white flex justify-between items-center no-print border-b border-blue-500/20">
+        <div class="p-5 bg-blue-600 text-white flex justify-between items-center no-print border-b border-blue-500/25">
           <div>
-            <h3 class="font-bold text-base"><i class="fa-solid fa-award me-2"></i>Pratinjau Sertifikat Kepesertaan</h3>
+            <h3 class="font-bold text-base"><i class="fa-solid fa-award me-2"></i>Pratinjau Sertifikat Kepesertaan (1 Halaman A4)</h3>
             <p class="text-xs text-blue-100">PT HEKSA SOLUTION INSURANCE</p>
           </div>
           <button onclick="closeModal('modal-view-sertifikat')" class="text-white hover:text-slate-200 text-2xl cursor-pointer">&times;</button>
         </div>
 
-        <!-- AREA DOKUMEN SERTIFIKAT PRESISI A4 -->
-        <div class="p-6 overflow-y-auto space-y-6 flex-1 bg-slate-100 flex justify-center">
+        <!-- AREA DOKUMEN SERTIFIKAT 1 HALAMAN PRESISI -->
+        <div class="p-4 overflow-y-auto space-y-4 flex-1 bg-slate-200 flex justify-center">
           <div id="sertifikat-pdf-area" class="cert-paper">
             
             <!-- BAGIAN UTAMA (HEADER + TABEL DATA) -->
             <div>
               <!-- HEADER LOGO DAN PERUSAHAAN -->
-              <table class="cert-table" style="margin-bottom: 12px; border-bottom: 2px solid #000; padding-bottom: 8px;">
+              <table class="cert-table" style="margin-bottom: 8px; border-bottom: 2px solid #000; padding-bottom: 6px;">
                 <tr>
                   <td style="width: 20%; vertical-align: middle;">
-                    <img src="logo.png" alt="HEKSA Insurance" style="height: 40px; width: auto;" onerror="this.src='https://via.placeholder.com/120x40?text=HEKSA+LOGI';">
+                    <img src="logo.png" alt="HEKSA Insurance" style="height: 38px; width: auto;" onerror="this.src='https://via.placeholder.com/120x40?text=HEKSA+LOGI';">
                   </td>
                   <td style="width: 58%; text-align: center; vertical-align: middle;">
-                    <div style="font-size: 12px; font-weight: bold; color: #000; margin-bottom: 2px;">PT HEKSA SOLUTION INSURANCE</div>
-                    <div style="font-size: 8px; color: #333333; line-height: 1.3;">
+                    <div style="font-size: 13px; font-weight: bold; color: #000; margin-bottom: 2px;">PT HEKSA SOLUTION INSURANCE</div>
+                    <div style="font-size: 8.5px; color: #333333; line-height: 1.25;">
                       Satrio Tower Lantai 8 Jl. Prof. DR. Satrio Blok C4, Jakarta Selatan 12950<br>
                       E-mail: corp@heksainsurance.co.id | www.heksainsurance.co.id | Telp. (021) 27883999
                     </div>
                   </td>
                   <td style="width: 22%; text-align: right; vertical-align: middle;">
-                    <svg width="110" height="36" viewBox="0 0 160 55" xmlns="http://www.w3.org/2000/svg" style="display: inline-block;">
+                    <svg width="105" height="34" viewBox="0 0 160 55" xmlns="http://www.w3.org/2000/svg" style="display: inline-block;">
                       <rect x="25" y="2" width="110" height="13" rx="3" fill="#004080"/>
                       <text x="80" y="11" font-family="Arial, sans-serif" font-weight="bold" font-size="8" fill="#FFFFFF" text-anchor="middle">PAHAMI & MILIKI</text>
                       <path d="M12,22 L20,12 L28,22 L24,22 L24,32 L16,32 L16,22 Z" fill="#D92626"/>
@@ -1239,7 +1245,7 @@
               </table>
 
               <!-- JUDUL SERTIFIKAT DINAMIS -->
-              <div id="lbl-judul-sertifikat" style="text-align: center; font-size: 13px; font-weight: bold; text-transform: uppercase; margin-top: 10px; margin-bottom: 16px; letter-spacing: 0.5px; text-decoration: underline;">
+              <div id="lbl-judul-sertifikat" style="text-align: center; font-size: 13.5px; font-weight: bold; text-transform: uppercase; margin-top: 6px; margin-bottom: 10px; letter-spacing: 0.5px; text-decoration: underline;">
                 E-SERTIFIKAT KEPESERTAAN ASURANSI
               </div>
 
@@ -1318,27 +1324,27 @@
               </table>
             </div>
 
-            <!-- FOOTER / CATATAN & KLAUSULA (SEKARANG MERAPAT DENGAN AREA ATAS) -->
-            <div class="cert-notes-area" style="font-size: 8.5px; line-height: 1.4; text-align: justify;">
-              <div style="margin-bottom: 5px;">
+            <!-- FOOTER / CATATAN & KLAUSULA -->
+            <div class="cert-notes-area" style="text-align: justify;">
+              <div style="margin-bottom: 4px;">
                 Sertifikat ini dikeluarkan secara otomatis oleh sistem setelah dilakukan verifikasi, validasi dan Premi yang dibayarkan sudah diterima. Premi yang dibayarkan sudah termasuk komponen biaya administrasi, biaya asuransi dan imbal jasa pemasaran produk asuransi.
               </div>
-              <div style="margin-bottom: 5px;">
+              <div style="margin-bottom: 4px;">
                 *) Subject To No Claim adalah Periode dimana pertanggungan asuransi akan diterima oleh Penanggung dengan status tidak ada klaim sampai dengan data diterima dan/atau periode saat keterlambatan pembayaran premi sampai dengan terjadinya transaksi pembayaran premi.
               </div>
-              <div style="margin-bottom: 5px;">
+              <div style="margin-bottom: 4px;">
                 **) Penerima Manfaat memenuhi syarat dan ketentuan Banker Clause dimana Manfaat Asuransi (Uang pertanggungan) ditujukan kepada Pemegang Polis untuk sisa pinjaman, apabila terdapat sisa manfaat, akan diberikan kepada Ahli Waris Peserta/Tertanggung.
               </div>
 
               <!-- AREA KLAUSULA KHUSUS DINAMIS BERDASARKAN POLIS -->
-              <div id="lbl-catatan-khusus" style="margin-top: 8px; margin-bottom: 8px; font-weight: bold; font-size: 9px; color: #000000; background-color: #f8fafc; padding: 6px; border-left: 3px solid #000; white-space: pre-line;"></div>
+              <div id="lbl-catatan-khusus" style="margin-top: 6px; margin-bottom: 6px; font-weight: bold; font-size: 10px; color: #000000; background-color: #f8fafc; padding: 5px; border-left: 3px solid #000; white-space: pre-line;"></div>
 
-              <div style="margin-top: 6px; margin-bottom: 10px; font-weight: bold; font-size: 9px;">
+              <div style="margin-top: 4px; margin-bottom: 8px; font-weight: bold; font-size: 10px;">
                 Sertifikat ini merupakan bagian yang tidak terpisahkan dari Polis No. <span id="lbl-no-polis-footer">-</span>
               </div>
 
               <!-- KOTAK LAYANAN PELANGGAN -->
-              <div style="border: 1px solid #000000; padding: 6px 10px; font-size: 8px; line-height: 1.3;">
+              <div style="border: 1px solid #000000; padding: 5px 8px; font-size: 9px; line-height: 1.25;">
                 <table style="width: 100%; border-collapse: collapse; border: none;">
                   <tr>
                     <td style="width: 65%; vertical-align: top; border: none; padding: 0;">
@@ -1361,7 +1367,7 @@
         <div class="p-4 border-t border-slate-200 bg-slate-50 flex justify-end gap-3 no-print">
           <button onclick="closeModal('modal-view-sertifikat')" class="px-4 py-2 bg-slate-200 text-slate-700 hover:bg-slate-300 text-xs font-bold rounded-xl cursor-pointer transition">Tutup</button>
           <button onclick="downloadSertifikatPDF()" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl flex items-center gap-2 cursor-pointer shadow-md">
-            <i class="fa-solid fa-file-arrow-down"></i> Unduh Sertifikat PDF
+            <i class="fa-solid fa-file-arrow-down"></i> Unduh Sertifikat PDF (1 Halaman)
           </button>
         </div>
 
