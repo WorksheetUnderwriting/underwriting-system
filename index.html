@@ -146,19 +146,22 @@
         margin-bottom: 8px !important;
       }
 
-      /* Style Spesifik e-Sertifikat Print & Modal */
+      /* Style Profesional e-Sertifikat Presisi A4 */
       .cert-paper {
-        width: 100%;
-        max-width: 210mm;
+        width: 210mm;
+        min-height: 297mm;
         background: #ffffff;
         color: #000000;
-        padding: 12mm 15mm;
+        padding: 16mm 18mm;
         border: 1px solid #000000;
         box-sizing: border-box;
         font-family: Arial, Helvetica, sans-serif;
         font-size: 9.5px;
         line-height: 1.35;
         margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
       }
       .cert-table {
         width: 100%;
@@ -166,7 +169,7 @@
         margin-bottom: 12px;
       }
       .cert-table td {
-        padding: 2.5px 0;
+        padding: 4px 0;
         vertical-align: top;
         font-size: 9.5px;
         border: none;
@@ -175,7 +178,7 @@
       @media print {
         @page {
           size: A4 portrait;
-          margin: 4mm;
+          margin: 0;
         }
         .no-print {
           display: none !important;
@@ -186,8 +189,10 @@
           padding: 0;
         }
         .pdf-template, .cert-paper {
-          border: 1px solid #000;
-          padding: 12px;
+          border: none;
+          padding: 12mm 15mm;
+          width: 100%;
+          min-height: 100vh;
         }
       }
     </style>
@@ -450,7 +455,7 @@
             </div>
           </div>
 
-          <!-- 2. FORM KERTAS KERJA UW TAB -->
+          <!-- 2. FORM KERTAS KERJA UW TAB (HALAMAN 1) -->
           <div id="tab-form" class="tab-anim hidden space-y-6">
             <form id="uw-form" onsubmit="handleFormSubmit(event)" class="glossy-card rounded-2xl p-8 space-y-8">
               <div class="border-b border-slate-200/80 pb-4 flex justify-between items-center">
@@ -1199,148 +1204,150 @@
           <button onclick="closeModal('modal-view-sertifikat')" class="text-white hover:text-slate-200 text-2xl cursor-pointer">&times;</button>
         </div>
 
-        <!-- AREA DOKUMEN SERTIFIKAT -->
+        <!-- AREA DOKUMEN SERTIFIKAT PRESISI A4 -->
         <div class="p-6 overflow-y-auto space-y-6 flex-1 bg-slate-100 flex justify-center">
           <div id="sertifikat-pdf-area" class="cert-paper">
             
-            <!-- HEADER LOGO DAN PERUSAHAAN -->
-            <table class="cert-table" style="margin-bottom: 12px; border-bottom: 1px solid #000; padding-bottom: 8px;">
-              <tr>
-                <td style="width: 20%; vertical-align: middle;">
-                  <img src="logo.png" alt="HEKSA Insurance" style="height: 38px; width: auto;" onerror="this.src='https://via.placeholder.com/120x40?text=HEKSA+LOGI';">
-                </td>
-                <td style="width: 60%; text-align: center; vertical-align: middle;">
-                  <div style="font-size: 11px; font-weight: bold; color: #000; margin-bottom: 2px;">PT HEKSA SOLUTION INSURANCE</div>
-                  <div style="font-size: 7.5px; color: #333333; line-height: 1.2;">
-                    Satrio Tower Lantai 8 Jl. Prof. DR. Satrio Blok C4, Jakarta Selatan 12950<br>
-                    E-mail: corp@heksainsurance.co.id | www.heksainsurance.co.id | Telp. (021) 27883999
-                  </div>
-                </td>
-                <td style="width: 20%; text-align: right; vertical-align: middle;">
-                  <svg width="110" height="36" viewBox="0 0 160 55" xmlns="http://www.w3.org/2000/svg" style="display: inline-block;">
-                    <rect x="25" y="2" width="110" height="13" rx="3" fill="#004080"/>
-                    <text x="80" y="11" font-family="Arial, sans-serif" font-weight="bold" font-size="8" fill="#FFFFFF" text-anchor="middle">PAHAMI & MILIKI</text>
-                    <path d="M12,22 L20,12 L28,22 L24,22 L24,32 L16,32 L16,22 Z" fill="#D92626"/>
-                    <circle cx="20" cy="10" r="3" fill="#004080"/>
-                    <text x="32" y="30" font-family="Arial, sans-serif" font-weight="900" font-size="17" fill="#004080" letter-spacing="0.5">SURANSI</text>
-                  </svg>
-                </td>
-              </tr>
-            </table>
+            <div>
+              <!-- HEADER LOGO DAN PERUSAHAAN -->
+              <table class="cert-table" style="margin-bottom: 12px; border-bottom: 2px solid #000; padding-bottom: 8px;">
+                <tr>
+                  <td style="width: 20%; vertical-align: middle;">
+                    <img src="logo.png" alt="HEKSA Insurance" style="height: 40px; width: auto;" onerror="this.src='https://via.placeholder.com/120x40?text=HEKSA+LOGI';">
+                  </td>
+                  <td style="width: 58%; text-align: center; vertical-align: middle;">
+                    <div style="font-size: 12px; font-weight: bold; color: #000; margin-bottom: 2px;">PT HEKSA SOLUTION INSURANCE</div>
+                    <div style="font-size: 8px; color: #333333; line-height: 1.3;">
+                      Satrio Tower Lantai 8 Jl. Prof. DR. Satrio Blok C4, Jakarta Selatan 12950<br>
+                      E-mail: corp@heksainsurance.co.id | www.heksainsurance.co.id | Telp. (021) 27883999
+                    </div>
+                  </td>
+                  <td style="width: 22%; text-align: right; vertical-align: middle;">
+                    <svg width="110" height="36" viewBox="0 0 160 55" xmlns="http://www.w3.org/2000/svg" style="display: inline-block;">
+                      <rect x="25" y="2" width="110" height="13" rx="3" fill="#004080"/>
+                      <text x="80" y="11" font-family="Arial, sans-serif" font-weight="bold" font-size="8" fill="#FFFFFF" text-anchor="middle">PAHAMI & MILIKI</text>
+                      <path d="M12,22 L20,12 L28,22 L24,22 L24,32 L16,32 L16,22 Z" fill="#D92626"/>
+                      <circle cx="20" cy="10" r="3" fill="#004080"/>
+                      <text x="32" y="30" font-family="Arial, sans-serif" font-weight="900" font-size="17" fill="#004080" letter-spacing="0.5">SURANSI</text>
+                    </svg>
+                  </td>
+                </tr>
+              </table>
 
-            <!-- JUDUL SERTIFIKAT DINAMIS -->
-            <div id="lbl-judul-sertifikat" style="text-align: center; font-size: 12px; font-weight: bold; text-transform: uppercase; margin-top: 10px; margin-bottom: 15px; letter-spacing: 0.5px; text-decoration: underline;">
-              e - SERTIFIKAT KEPESERTAAN ASURANSI
+              <!-- JUDUL SERTIFIKAT DINAMIS -->
+              <div id="lbl-judul-sertifikat" style="text-align: center; font-size: 13px; font-weight: bold; text-transform: uppercase; margin-top: 10px; margin-bottom: 16px; letter-spacing: 0.5px; text-decoration: underline;">
+                E-SERTIFIKAT KEPESERTAAN ASURANSI
+              </div>
+
+              <!-- RINCIAN DATA PESERTA -->
+              <table class="cert-table">
+                <tr>
+                  <td style="width: 32%;">No. Peserta</td>
+                  <td style="width: 3%; text-align: center;">:</td>
+                  <td style="width: 65%; font-weight: bold;" id="cert-no-peserta">-</td>
+                </tr>
+                <tr>
+                  <td>Pemegang Polis / No. Polis</td>
+                  <td style="text-align: center;">:</td>
+                  <td style="font-weight: bold;"><span id="cert-pemegang-polis">-</span> / <span id="cert-no-polis">-</span></td>
+                </tr>
+                <tr>
+                  <td>Cabang</td>
+                  <td style="text-align: center;">:</td>
+                  <td style="font-weight: bold;" id="cert-cabang">-</td>
+                </tr>
+                <tr>
+                  <td>Penanggung</td>
+                  <td style="text-align: center;">:</td>
+                  <td style="font-weight: bold;" id="cert-penanggung">PT HEKSA SOLUTION INSURANCE</td>
+                </tr>
+                <tr>
+                  <td>Nama Peserta</td>
+                  <td style="text-align: center;">:</td>
+                  <td style="font-weight: bold;" id="cert-nama-peserta">-</td>
+                </tr>
+                <tr>
+                  <td>Tgl. Lahir</td>
+                  <td style="text-align: center;">:</td>
+                  <td style="font-weight: bold;"><span id="cert-tgl-lahir">-</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Umur : <span id="cert-umur">-</span> Tahun</td>
+                </tr>
+                <tr>
+                  <td>Jenis Asuransi</td>
+                  <td style="text-align: center;">:</td>
+                  <td style="font-weight: bold;" id="cert-jenis-asuransi">-</td>
+                </tr>
+                <tr>
+                  <td>Uang Pertanggungan</td>
+                  <td style="text-align: center;">:</td>
+                  <td style="font-weight: bold;" id="cert-uang-pertanggungan">-</td>
+                </tr>
+                <tr>
+                  <td>Total Premi</td>
+                  <td style="text-align: center;">:</td>
+                  <td style="font-weight: bold;" id="cert-total-premi">-</td>
+                </tr>
+                <tr>
+                  <td>Manfaat Uang Pertanggungan</td>
+                  <td style="text-align: center;">:</td>
+                  <td style="font-weight: bold;" id="cert-manfaat-up">Uang Pertanggungan Menurun</td>
+                </tr>
+                <tr>
+                  <td>Subject To No Claim *) Pertanggal</td>
+                  <td style="text-align: center;">:</td>
+                  <td style="font-weight: bold;" id="cert-subject-no-claim">-</td>
+                </tr>
+                <tr>
+                  <td>Mulai Asuransi</td>
+                  <td style="text-align: center;">:</td>
+                  <td style="font-weight: bold;"><span id="cert-mulai-asuransi">-</span> s/d <span id="cert-akhir-asuransi">-</span></td>
+                </tr>
+                <tr>
+                  <td>Jangka Waktu Asuransi</td>
+                  <td style="text-align: center;">:</td>
+                  <td style="font-weight: bold;"><span id="cert-jangka-waktu">-</span> Bulan</td>
+                </tr>
+                <tr>
+                  <td>Penerima Manfaat **)</td>
+                  <td style="text-align: center;">:</td>
+                  <td style="font-weight: bold;" id="cert-penerima-manfaat">-</td>
+                </tr>
+              </table>
             </div>
 
-            <!-- RINCIAN DATA PESERTA -->
-            <table class="cert-table">
-              <tr>
-                <td style="width: 32%;">No. Peserta</td>
-                <td style="width: 2%; text-align: center;">:</td>
-                <td style="width: 66%; font-weight: bold;" id="cert-no-peserta">-</td>
-              </tr>
-              <tr>
-                <td>Pemegang Polis/No. Polis</td>
-                <td style="text-align: center;">:</td>
-                <td style="font-weight: bold;"><span id="cert-pemegang-polis">-</span> / <span id="cert-no-polis">-</span></td>
-              </tr>
-              <tr>
-                <td>Cabang</td>
-                <td style="text-align: center;">:</td>
-                <td style="font-weight: bold;" id="cert-cabang">-</td>
-              </tr>
-              <tr>
-                <td>Penanggung</td>
-                <td style="text-align: center;">:</td>
-                <td style="font-weight: bold;" id="cert-penanggung">PT HEKSA SOLUTION INSURANCE</td>
-              </tr>
-              <tr>
-                <td>Nama Peserta</td>
-                <td style="text-align: center;">:</td>
-                <td style="font-weight: bold;" id="cert-nama-peserta">-</td>
-              </tr>
-              <tr>
-                <td>Tgl. Lahir</td>
-                <td style="text-align: center;">:</td>
-                <td style="font-weight: bold;"><span id="cert-tgl-lahir">-</span> Umur : <span id="cert-umur">-</span> Tahun</td>
-              </tr>
-              <tr>
-                <td>Jenis Asuransi</td>
-                <td style="text-align: center;">:</td>
-                <td style="font-weight: bold;" id="cert-jenis-asuransi">-</td>
-              </tr>
-              <tr>
-                <td>Uang Pertanggungan</td>
-                <td style="text-align: center;">:</td>
-                <td style="font-weight: bold;" id="cert-uang-pertanggungan">-</td>
-              </tr>
-              <tr>
-                <td>Total Premi</td>
-                <td style="text-align: center;">:</td>
-                <td style="font-weight: bold;" id="cert-total-premi">-</td>
-              </tr>
-              <tr>
-                <td>Manfaat Uang Pertanggungan</td>
-                <td style="text-align: center;">:</td>
-                <td style="font-weight: bold;" id="cert-manfaat-up">Uang Pertanggungan Menurun</td>
-              </tr>
-              <tr>
-                <td>Subject To No Claim *) Pertanggal</td>
-                <td style="text-align: center;">:</td>
-                <td style="font-weight: bold;" id="cert-subject-no-claim">-</td>
-              </tr>
-              <tr>
-                <td>Mulai Asuransi</td>
-                <td style="text-align: center;">:</td>
-                <td style="font-weight: bold;"><span id="cert-mulai-asuransi">-</span> s/d <span id="cert-akhir-asuransi">-</span></td>
-              </tr>
-              <tr>
-                <td>Jangka Waktu Asuransi</td>
-                <td style="text-align: center;">:</td>
-                <td style="font-weight: bold;"><span id="cert-jangka-waktu">-</span> Bulan</td>
-              </tr>
-              <tr>
-                <td>Penerima Manfaat **)</td>
-                <td style="text-align: center;">:</td>
-                <td style="font-weight: bold;" id="cert-penerima-manfaat">-</td>
-              </tr>
-            </table>
-
             <!-- FOOTER / CATATAN & KLAUSULA -->
-            <div style="margin-top: 10px; font-size: 8px; line-height: 1.35; text-align: justify;">
-              <div style="margin-bottom: 4px;">
-                Sertifikat ini dikeluarkan secara otomatis oleh sistem setelah dilakukan verifikasi, validasi dan Premi yang dibayarkan sudah diterima, Premi yang dibayarkan sudah termasuk komponen biaya administrasi, biaya asuransi dan imbal jasa pemasaran produk asuransi.
+            <div style="font-size: 8.5px; line-height: 1.4; text-align: justify;">
+              <div style="margin-bottom: 5px;">
+                Sertifikat ini dikeluarkan secara otomatis oleh sistem setelah dilakukan verifikasi, validasi dan Premi yang dibayarkan sudah diterima. Premi yang dibayarkan sudah termasuk komponen biaya administrasi, biaya asuransi dan imbal jasa pemasaran produk asuransi.
               </div>
-              <div style="margin-bottom: 4px;">
-                *) Subject To No Claim adalah Periode dimana pertanggungan asuransi akan diterima oleh Penanggung dengan status tidak ada klaim sampai dengan data diterima dan/atau periode saat keterlambatan pembayaran premi sampai dengan terjadinya transaksi pembayaran premi
+              <div style="margin-bottom: 5px;">
+                *) Subject To No Claim adalah Periode dimana pertanggungan asuransi akan diterima oleh Penanggung dengan status tidak ada klaim sampai dengan data diterima dan/atau periode saat keterlambatan pembayaran premi sampai dengan terjadinya transaksi pembayaran premi.
               </div>
-              <div style="margin-bottom: 4px;">
+              <div style="margin-bottom: 5px;">
                 **) Penerima Manfaat memenuhi syarat dan ketentuan Banker Clause dimana Manfaat Asuransi (Uang pertanggungan) ditujukan kepada Pemegang Polis untuk sisa pinjaman, apabila terdapat sisa manfaat, akan diberikan kepada Ahli Waris Peserta/Tertanggung.
               </div>
 
               <!-- AREA KLAUSULA KHUSUS DINAMIS BERDASARKAN POLIS -->
-              <div id="lbl-catatan-khusus" style="margin-top: 6px; margin-bottom: 6px; font-weight: bold; font-size: 8.5px; color: #000000; white-space: pre-line;"></div>
+              <div id="lbl-catatan-khusus" style="margin-top: 8px; margin-bottom: 8px; font-weight: bold; font-size: 9px; color: #000000; background-color: #f8fafc; padding: 6px; border-left: 3px solid #000; white-space: pre-line;"></div>
 
-              <div style="margin-top: 6px; font-weight: bold; font-size: 8.5px;">
+              <div style="margin-top: 6px; margin-bottom: 10px; font-weight: bold; font-size: 9px;">
                 Sertifikat ini merupakan bagian yang tidak terpisahkan dari Polis No. <span id="lbl-no-polis-footer">-</span>
               </div>
-            </div>
 
-            <!-- KOTAK LAYANAN PELANGGAN -->
-            <div style="border: 1px solid #000000; padding: 6px 10px; margin-top: 12px; font-size: 7.5px; line-height: 1.3;">
-              <table style="width: 100%; border-collapse: collapse; border: none;">
-                <tr>
-                  <td style="width: 65%; vertical-align: top; border: none; padding: 0;">
-                    <strong>Untuk Pertanyaan Lebih lanjut, Anda bisa menghubungi Kami di Layanan Pelanggan Heksa pada jam kerja (08.00-17.00 WIB)</strong><br>
-                    Satrio Tower lt.8, Jl.Prof.Dr.Satrio Kav.C4 Kuningan Timur, Jakarta Selatan
-                  </td>
-                  <td style="width: 35%; text-align: right; vertical-align: top; border: none; padding: 0;">
-                    telp: (021) 30003131<br>
-                    email: Customerheksa@heksainsurance.co.id
-                  </td>
-                </tr>
-              </table>
+              <!-- KOTAK LAYANAN PELANGGAN -->
+              <div style="border: 1px solid #000000; padding: 6px 10px; font-size: 8px; line-height: 1.3;">
+                <table style="width: 100%; border-collapse: collapse; border: none;">
+                  <tr>
+                    <td style="width: 65%; vertical-align: top; border: none; padding: 0;">
+                      <strong>Untuk Pertanyaan Lebih lanjut, Anda bisa menghubungi Kami di Layanan Pelanggan Heksa pada jam kerja (08.00-17.00 WIB)</strong><br>
+                      Satrio Tower Lt. 8, Jl. Prof. Dr. Satrio Kav. C4 Kuningan Timur, Jakarta Selatan
+                    </td>
+                    <td style="width: 35%; text-align: right; vertical-align: top; border: none; padding: 0;">
+                      Telp: (021) 30003131<br>
+                      Email: Customerheksa@heksainsurance.co.id
+                    </td>
+                  </tr>
+                </table>
+              </div>
             </div>
 
           </div>
@@ -1660,7 +1667,7 @@
       </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC ENGINE -->
+    <!-- JAVASCRIPT LOGIC ENGINE LENGKAP -->
     <script>
       const SUPABASE_URL = "https://ubahduvkhlfzvghrapwn.supabase.co";
       const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InViYWhkdXZraGxmenZnaHJhcHduIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5MzIzMTIsImV4cCI6MjEwMTUwODMxMn0.cDy4TexuHVG6e81U8vYRxiWB0zIDXMTQnOmr7Uo3SBM";
@@ -1720,7 +1727,7 @@
           jenisAsuransi: "Asuransi HEKSA Jiwa Kredit",
           catatanKhusus: "Apabila klaim dengan umur klaim 6 bulan sejak tanggal mulai asuransi diterima oleh Heksa mencapai 20% dari premi yang diterima, maka akan diberlakukan masa tunggu selama 30 hari sejak tanggal mulai asuransi kecuali karena kecelakaan, dan apabila klaim terjadi di 31-90 hari maka berlaku Lien Clause 50% dari manfaat asuransi yang disetujui oleh Penanggung sesuai syarat dan ketentuan berlaku kecuali karena kecelakaan."
         },
-        // --- 10 DOKUMEN PDF BARU DITAMBAHKAN DI SINI ---
+        // --- 10 DOKUMEN PDF BARU ---
         "K.2023.03.0016.R": {
           judulSertifikat: "e - SERTIFIKAT KEPESERTAAN ASURANSI",
           jenisAsuransi: "Asuransi HEKSA Jiwa Kredit",
@@ -1847,7 +1854,7 @@
       let isExcelLoaded = false;
       let isPdfLoaded = false;
 
-      // DATA DUMMY SERTIFIKAT (FALLBACK/DEFAULT)
+      // DATA DUMMY SERTIFIKAT FALLBACK
       const sampleSertifikat = {
         no_peserta: "2020101-2511000000050929",
         no_polis: "K.2023.05.0025",
@@ -1868,7 +1875,6 @@
         penerima_manfaat: "PT BANK MANDIRI TASPEN"
       };
 
-      // DAFTAR PRODUK DINAMIS
       const produkIndividu = [
         "Asuransi HEKSA Rencana",
         "Asuransi HEKSA Rencana Prima",
@@ -2105,7 +2111,6 @@
             transactions = [];
           }
         } catch (err) {
-          console.error("Gagal memuat data dari Supabase:", err.message);
           transactions = [];
         }
 
@@ -2114,7 +2119,6 @@
         if (chartMonthlyInstance && chartStatusInstance) updateCharts();
       }
 
-      // LOAD SERTIFIKAT (SINKRON SUPABASE)
       async function loadSertifikatFromSupabase() {
         const tableBody = document.getElementById("sertifikat-table-body");
         if (!tableBody) return;
@@ -2277,17 +2281,6 @@
         select.innerHTML = optionsHTML;
       }
 
-      function formatDateID(dateString) {
-        if (!dateString) return "-";
-        const date = new Date(dateString);
-        if (isNaN(date)) return dateString;
-        return date.toLocaleDateString("id-ID", {
-          day: "numeric",
-          month: "numeric",
-          year: "numeric",
-        });
-      }
-
       async function loadBukuPolisFromSupabase() {
         try {
           const { data, error } = await _supabase
@@ -2305,7 +2298,6 @@
             bukuPolisList = [];
           }
         } catch (err) {
-          console.warn("Membaca dari localStorage fallback.", err.message);
           bukuPolisList = JSON.parse(localStorage.getItem("buku_polis_local") || "[]");
         }
 
@@ -2947,10 +2939,10 @@
         const certNo = document.getElementById("cert-no-peserta").innerText || "Sertifikat";
 
         const options = {
-          margin: [8, 8, 8, 8],
+          margin: [0, 0, 0, 0],
           filename: `Sertifikat_${certNama.replace(/\s+/g, "_")}_${certNo}.pdf`,
           image: { type: "jpeg", quality: 0.98 },
-          html2canvas: { scale: 2, useCORS: true },
+          html2canvas: { scale: 2, useCORS: true, logging: false },
           jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
         };
 
@@ -2985,7 +2977,6 @@
             }
           }
         } catch (err) {
-          console.warn("Gagal mengecek DB Supabase, menggunakan data memori lokal:", err);
           const currentMonthEntries = bukuPolisList.filter(
             (bp) => bp.noPolis && bp.noPolis.startsWith(prefix)
           );
@@ -3020,9 +3011,7 @@
             await generateAutoNoPolis();
             return;
           }
-        } catch (err) {
-          console.warn("Pemeriksaan duplikasi lokal dijalankan");
-        }
+        } catch (err) {}
 
         const jenisAsuransi = document.getElementById("bp-jenis-asuransi").value;
         const tahun = document.getElementById("bp-tahun").value;
@@ -3059,14 +3048,11 @@
         };
 
         try {
-          const { error } = await _supabase.from("buku_polis").upsert(
+          await _supabase.from("buku_polis").upsert(
             { no_polis: noPolis, payload: newBP },
             { onConflict: "no_polis" }
           );
-          if (error) console.warn("Simpan ke Supabase error:", error.message);
-        } catch (err) {
-          console.warn("Jaringan Supabase tidak merespons, simpan lokal.");
-        }
+        } catch (err) {}
 
         bukuPolisList.unshift(newBP);
         localStorage.setItem("buku_polis_local", JSON.stringify(bukuPolisList));
@@ -3188,12 +3174,7 @@
         const picOwner = (bp.pic || "").trim().toLowerCase();
 
         if (!userLogin || userLogin !== picOwner) {
-          alert(
-            `AKSES DITOLAK!\n\n` +
-            `Dokumen ini dibuat oleh PIC: "${bp.pic}"\n` +
-            `Anda saat ini login sebagai: "${localStorage.getItem("fullName")}"\n\n` +
-            `Hanya PIC pembuat yang diizinkan memperbarui kelengkapan dokumen ini.`
-          );
+          alert(`AKSES DITOLAK!\n\nHanya PIC pembuat (${bp.pic}) yang diizinkan memperbarui kelengkapan dokumen ini.`);
           return;
         }
 
@@ -3220,13 +3201,6 @@
         const bp = bukuPolisList.find((item) => item.noPolis === activeNoPolisForUpdate);
         if (!bp) return;
 
-        const userLogin = (localStorage.getItem("fullName") || "").trim().toLowerCase();
-        const picOwner = (bp.pic || "").trim().toLowerCase();
-        if (!userLogin || userLogin !== picOwner) {
-          alert("Gagal memperbarui: Anda bukan PIC yang terdaftar untuk transaksi ini!");
-          return;
-        }
-
         bp.checklists = {
           spaj: document.getElementById("modal-chk-spaj").checked,
           spek: document.getElementById("modal-chk-spek").checked,
@@ -3243,9 +3217,7 @@
             { no_polis: bp.noPolis, payload: bp },
             { onConflict: "no_polis" }
           );
-        } catch (err) {
-          console.warn("Gagal update Supabase:", err);
-        }
+        } catch (err) {}
 
         localStorage.setItem("buku_polis_local", JSON.stringify(bukuPolisList));
         closeModal("modal-update-checklist");
@@ -3286,7 +3258,7 @@
         try {
           await ensureExcelJs();
         } catch (err) {
-          alert("Gagal memuat pustaka Excel. Periksa koneksi internet Anda.");
+          alert("Gagal memuat pustaka Excel.");
           return;
         }
 
@@ -3299,15 +3271,8 @@
           "PEMEGANG POLIS": bp.pemegangPolis,
           "PIC MARKETING": bp.picMarketing || "-",
           "PIC UW": bp.pic || "-",
-          "SPAJ": bp.checklists?.spaj ? "Ada" : "Tidak",
-          "SPEK PRODUK": bp.checklists?.spek ? "Ada" : "Tidak",
-          "NPWP": bp.checklists?.npwp ? "Ada" : "Tidak",
-          "DOKUMEN LEGAL DLL": bp.checklists?.legal ? "Ada" : "Tidak",
-          "SERTIFIKAT": bp.checklists?.sertifikat ? "Ada" : "Tidak",
           "PERSENTASE PROGRESS (%)": bp.progress + "%",
-          "KETERANGAN": bp.keterangan || "-",
-          "DIBUAT OLEH": bp.createdBy,
-          "TANGGAL INPUT": bp.createdAt
+          "KETERANGAN": bp.keterangan || "-"
         }));
 
         const worksheet = XLSX.utils.json_to_sheet(data);
@@ -3348,19 +3313,12 @@
         try {
           const txToSave = targetTx || transactions[0];
           if (txToSave) {
-            const { data, error } = await _supabase.from("uw_transactions").upsert(
+            await _supabase.from("uw_transactions").upsert(
               { id_transaksi: txToSave.id, payload: txToSave, status: txToSave.status },
               { onConflict: "id_transaksi" }
             );
-            
-            if (error) {
-              console.error("GAGAL SUPABASE UPSERT:", error.message);
-              alert("Gagal menyimpan ke database Supabase: " + error.message);
-            }
           }
-        } catch (err) {
-          console.error("Kesalahan jaringan/database Supabase:", err);
-        }
+        } catch (err) {}
 
         renderRepository();
         updateStats();
@@ -3474,11 +3432,6 @@
         const t = transactions.find((item) => item.id === id);
         if (!t) return;
 
-        if (t.status !== "PENDING_LEVEL_2" && activeLevel !== 1) {
-          alert("Hanya transaksi dengan status Pending yang dapat diedit!");
-          return;
-        }
-
         editingTransactionId = id;
         document.getElementById("form-header-title").innerText = `Edit Kertas Kerja - ${id}`;
         document.getElementById("submit-btn-text").innerText = "Simpan Perubahan Transaksi";
@@ -3540,19 +3493,15 @@
       }
 
       async function deleteTransaction(id) {
-        if (!confirm(`Apakah Anda yakin ingin menghapus transaksi ${id}? Data akan dihapus permanen.`)) return;
+        if (!confirm(`Apakah Anda yakin ingin menghapus transaksi ${id}?`)) return;
 
         try {
-          const { error } = await _supabase.from("uw_transactions").delete().eq("id_transaksi", id);
-          if (error) throw error;
-
+          await _supabase.from("uw_transactions").delete().eq("id_transaksi", id);
           transactions = transactions.filter((t) => t.id !== id);
           renderRepository();
           updateStats();
           alert(`Transaksi ${id} berhasil dihapus.`);
-        } catch (err) {
-          alert("Gagal menghapus transaksi dari Supabase: " + err.message);
-        }
+        } catch (err) {}
       }
 
       function getFilteredTransactions() {
@@ -3611,7 +3560,7 @@
         const noteInput = document.getElementById("bulk-note-input").value.trim();
         const catatan = noteInput || (action === "APPROVED" ? "Approved via Bulk Process" : "Rejected via Bulk Process");
 
-        if (!confirm(`Apakah Anda yakin ingin memproses ${selectedCheckboxes.length} transaksi sekaligus?`)) return;
+        if (!confirm(`Proses ${selectedCheckboxes.length} transaksi sekaligus?`)) return;
 
         for (const cb of selectedCheckboxes) {
           const id = cb.value;
@@ -3621,17 +3570,14 @@
             if (action === "REJECTED") {
               t.status = "REJECTED";
               t.history.push({ role: `${currentFullName} (${roleLevelNames[activeLevel]})`, action: "REJECTED (BULK)", note: catatan, date: new Date().toLocaleString("id-ID") });
-              triggerEmailNotification("Pemohon / Checker", t.id, "Pengajuan Kertas Kerja Ditolak (Bulk)", `Alasan: ${catatan}`);
             } else if (action === "APPROVED") {
               if (activeLevel >= t.targetLevel) {
                 t.status = "APPROVED_FINAL";
                 t.history.push({ role: `${currentFullName} (${roleLevelNames[activeLevel]})`, action: "APPROVED FINAL (BULK)", note: catatan, date: new Date().toLocaleString("id-ID") });
-                triggerEmailNotification("Pemohon / Checker", t.id, "Kertas Kerja Telah Disetujui Final", `Status: Approved Final`);
               } else {
                 const nextLvl = activeLevel + 1;
                 t.status = `PENDING_LEVEL_${nextLvl}`;
-                t.history.push({ role: `${currentFullName} (${roleLevelNames[activeLevel]})`, action: `APPROVED & PASSED TO ${roleLevelNames[nextLvl].toUpperCase()} (BULK)`, note: `${catatan} (Diteruskan ke ${roleLevelNames[nextLvl]})`, date: new Date().toLocaleString("id-ID") });
-                triggerEmailNotification(roleLevelNames[nextLvl], t.id, "Review Lanjutan Diperlukan", `Diteruskan oleh ${currentFullName}`);
+                t.history.push({ role: `${currentFullName} (${roleLevelNames[activeLevel]})`, action: `APPROVED & PASSED TO ${roleLevelNames[nextLvl].toUpperCase()} (BULK)`, note: `${catatan}`, date: new Date().toLocaleString("id-ID") });
               }
             }
             await saveData(t);
@@ -3640,54 +3586,40 @@
 
         document.getElementById("bulk-note-input").value = "";
         await loadTransactionsFromSupabase();
-        alert(`${selectedCheckboxes.length} transaksi berhasil dipproses secara massal!`);
+        alert(`${selectedCheckboxes.length} transaksi berhasil diproses!`);
       }
 
       async function exportRepositoryToExcel() {
         const filtered = getFilteredTransactions();
-        if (filtered.length === 0) {
-          alert("Belum ada data transaksi untuk diexport!");
-          return;
-        }
+        if (filtered.length === 0) return;
 
         try {
           await ensureExcelJs();
         } catch (err) {
-          alert("Gagal memuat pustaka Excel. Periksa koneksi internet Anda.");
           return;
         }
 
-        const exportData = filtered.map((t, idx) => {
-          let lastApproval = "-";
-          if (t.history && t.history.length > 0) {
-            const h = t.history[t.history.length - 1];
-            lastApproval = `${h.role} - ${h.action} (${h.date})`;
-          }
-
-          return {
-            "No": idx + 1,
-            "ID TRANSAKSI": t.id,
-            "TANGGAL TRANSAKSI": t.dateFormatted || "-",
-            "CHANNEL / SEGMEN": `${t.channel} / ${t.segmen}`,
-            "NAMA PEMEGANG POLIS": t.pemegang || "-",
-            "NAMA TERTANGGUNG": t.nama,
-            "ID PESERTA": t.idPeserta || "-",
-            "ID KTP": t.noKtp || "-",
-            "UANG PERTANGGUNGAN": t.up,
-            "PREMI": t.totalPremi,
-            "DOKUMEN": t.files ? `${Object.values(t.files).filter((f) => f !== null).length}/5 File` : "0/5 File",
-            "APPROVAL TERAKHIR": lastApproval,
-            "STATUS APPROVAL": t.status,
-            "USER INPUT": t.userInput || currentFullName
-          };
-        });
+        const exportData = filtered.map((t, idx) => ({
+          "No": idx + 1,
+          "ID TRANSAKSI": t.id,
+          "TANGGAL": t.dateFormatted || "-",
+          "CHANNEL / SEGMEN": `${t.channel} / ${t.segmen}`,
+          "PEMEGANG POLIS": t.pemegang || "-",
+          "TERTANGGUNG": t.nama,
+          "ID PESERTA": t.idPeserta || "-",
+          "NIK": t.noKtp || "-",
+          "UP": t.up,
+          "PREMI": t.totalPremi,
+          "STATUS": t.status,
+          "USER": t.userInput || currentFullName
+        }));
 
         const worksheet = XLSX.utils.json_to_sheet(exportData);
         const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Data_Kertas_Kerja_UW");
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Kertas_Kerja_UW");
 
         const todayStr = new Date().toISOString().split("T")[0];
-        XLSX.writeFile(workbook, `Rekap_Repository_UW_${todayStr}.xlsx`);
+        XLSX.writeFile(workbook, `Rekap_UW_${todayStr}.xlsx`);
       }
 
       function openModalDetail(id) {
@@ -3832,12 +3764,11 @@
         } else if (file.data.startsWith("data:application/pdf")) {
           bodyElem.innerHTML = `<iframe src="${file.data}" class="w-full h-full min-h-[65vh] rounded-xl"></iframe>`;
         } else {
-          const fileExt = file.name.split('.').pop().toUpperCase();
           bodyElem.innerHTML = `
             <div class="text-center text-slate-300 p-8 space-y-3">
               <i class="fa-solid fa-file-lines text-5xl text-blue-400"></i>
-              <p class="text-sm font-semibold">Pratinjau langsung tidak tersedia untuk format file ${fileExt}.</p>
-              <p class="text-xs text-slate-400">Silakan gunakan tombol "Unduh File Ini" di bawah untuk membuka file secara lokal.</p>
+              <p class="text-sm font-semibold">Pratinjau tidak tersedia langsung untuk tipe file ini.</p>
+              <p class="text-xs text-slate-400">Gunakan tombol unduh di bawah untuk membuka file.</p>
             </div>
           `;
         }
@@ -3857,17 +3788,14 @@
         if (action === "REJECTED") {
           t.status = "REJECTED";
           t.history.push({ role: `${currentFullName} (${roleLevelNames[activeLevel]})`, action: "REJECTED", note: catatan, date: new Date().toLocaleString("id-ID") });
-          triggerEmailNotification("Pemohon / Checker", t.id, "Pengajuan Kertas Kerja Ditolak", `Catatan: ${catatan}`);
         } else if (action === "APPROVED") {
           if (activeLevel >= t.targetLevel) {
             t.status = "APPROVED_FINAL";
             t.history.push({ role: `${currentFullName} (${roleLevelNames[activeLevel]})`, action: "APPROVED FINAL", note: catatan, date: new Date().toLocaleString("id-ID") });
-            triggerEmailNotification("Pemohon / Checker", t.id, "Kertas Kerja Disetujui Final", `Status: Approved Final oleh ${currentFullName}`);
           } else {
             const nextLvl = activeLevel + 1;
             t.status = `PENDING_LEVEL_${nextLvl}`;
-            t.history.push({ role: `${currentFullName} (${roleLevelNames[activeLevel]})`, action: `APPROVED & PASSED TO ${roleLevelNames[nextLvl].toUpperCase()}`, note: `${catatan} (Diteruskan ke ${roleLevelNames[nextLvl]})`, date: new Date().toLocaleString("id-ID") });
-            triggerEmailNotification(roleLevelNames[nextLvl], t.id, "Review Lanjutan Diperlukan", `Diteruskan oleh ${currentFullName}`);
+            t.history.push({ role: `${currentFullName} (${roleLevelNames[activeLevel]})`, action: `APPROVED & PASSED TO ${roleLevelNames[nextLvl].toUpperCase()}`, note: `${catatan}`, date: new Date().toLocaleString("id-ID") });
           }
         }
 
