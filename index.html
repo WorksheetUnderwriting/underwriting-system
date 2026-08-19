@@ -146,40 +146,44 @@
         margin-bottom: 8px !important;
       }
 
-      /* Style e-Sertifikat Presisi 1 Halaman A4 + Font Diperbesar */
+      /* Style e-Sertifikat Presisi 1 Halaman A4 + Font Diperbesar & Jarak Jeda Antar Paragraf */
       .cert-paper {
         width: 210mm;
         height: 297mm; /* Dikunci persis 1 halaman A4 */
         max-height: 297mm;
         background: #ffffff;
         color: #000000;
-        padding: 12mm 16mm;
+        padding: 10mm 16mm;
         border: 1px solid #000000;
         box-sizing: border-box;
         font-family: Arial, Helvetica, sans-serif;
-        font-size: 11px; /* Font diperbesar dari sebelumnya */
-        line-height: 1.3;
+        font-size: 10.5px; 
+        line-height: 1.35;
         margin: 0 auto;
         display: flex;
         flex-direction: column;
-        justify-content: flex-start;
+        justify-content: space-between;
         overflow: hidden; /* Mencegah meluber ke halaman 2 */
       }
       .cert-table {
         width: 100%;
         border-collapse: collapse;
-        margin-bottom: 10px;
+        margin-bottom: 6px;
       }
       .cert-table td {
-        padding: 3.5px 0;
+        padding: 2.5px 0;
         vertical-align: top;
-        font-size: 11px; /* Font diperbesar */
+        font-size: 10.5px; 
         border: none;
       }
       .cert-notes-area {
         margin-top: 4px;
-        font-size: 10px; /* Font catatan diperbesar */
-        line-height: 1.35;
+        font-size: 9.5px; 
+        line-height: 1.4;
+      }
+      /* Memberikan jarak jeda/enter antar kalimat di area footer */
+      .cert-notes-area p {
+        margin-bottom: 6px;
       }
 
       @media print {
@@ -1220,20 +1224,20 @@
             <!-- BAGIAN UTAMA (HEADER + TABEL DATA) -->
             <div>
               <!-- HEADER LOGO DAN PERUSAHAAN -->
-              <table class="cert-table" style="margin-bottom: 8px; border-bottom: 2px solid #000; padding-bottom: 6px;">
+              <table class="cert-table" style="margin-bottom: 6px; border-bottom: 2px solid #000; padding-bottom: 5px;">
                 <tr>
                   <td style="width: 20%; vertical-align: middle;">
-                    <img src="logo.png" alt="HEKSA Insurance" style="height: 38px; width: auto;" onerror="this.src='https://via.placeholder.com/120x40?text=HEKSA+LOGI';">
+                    <img src="logo.png" alt="HEKSA Insurance" style="height: 36px; width: auto;" onerror="this.src='https://via.placeholder.com/120x40?text=HEKSA+LOGI';">
                   </td>
                   <td style="width: 58%; text-align: center; vertical-align: middle;">
-                    <div style="font-size: 13px; font-weight: bold; color: #000; margin-bottom: 2px;">PT HEKSA SOLUTION INSURANCE</div>
-                    <div style="font-size: 8.5px; color: #333333; line-height: 1.25;">
+                    <div style="font-size: 12.5px; font-weight: bold; color: #000; margin-bottom: 1px;">PT HEKSA SOLUTION INSURANCE</div>
+                    <div style="font-size: 8px; color: #333333; line-height: 1.2;">
                       Satrio Tower Lantai 8 Jl. Prof. DR. Satrio Blok C4, Jakarta Selatan 12950<br>
                       E-mail: corp@heksainsurance.co.id | www.heksainsurance.co.id | Telp. (021) 27883999
                     </div>
                   </td>
                   <td style="width: 22%; text-align: right; vertical-align: middle;">
-                    <svg width="105" height="34" viewBox="0 0 160 55" xmlns="http://www.w3.org/2000/svg" style="display: inline-block;">
+                    <svg width="100" height="32" viewBox="0 0 160 55" xmlns="http://www.w3.org/2000/svg" style="display: inline-block;">
                       <rect x="25" y="2" width="110" height="13" rx="3" fill="#004080"/>
                       <text x="80" y="11" font-family="Arial, sans-serif" font-weight="bold" font-size="8" fill="#FFFFFF" text-anchor="middle">PAHAMI & MILIKI</text>
                       <path d="M12,22 L20,12 L28,22 L24,22 L24,32 L16,32 L16,22 Z" fill="#D92626"/>
@@ -1245,7 +1249,7 @@
               </table>
 
               <!-- JUDUL SERTIFIKAT DINAMIS -->
-              <div id="lbl-judul-sertifikat" style="text-align: center; font-size: 13.5px; font-weight: bold; text-transform: uppercase; margin-top: 6px; margin-bottom: 10px; letter-spacing: 0.5px; text-decoration: underline;">
+              <div id="lbl-judul-sertifikat" style="text-align: center; font-size: 13px; font-weight: bold; text-transform: uppercase; margin-top: 4px; margin-bottom: 6px; letter-spacing: 0.5px; text-decoration: underline;">
                 E-SERTIFIKAT KEPESERTAAN ASURANSI
               </div>
 
@@ -1324,28 +1328,28 @@
               </table>
             </div>
 
-            <!-- FOOTER / CATATAN & KLAUSULA -->
+            <!-- FOOTER / CATATAN & KLAUSULA (DENGAN JARAK JEDA ANTAR KALIMAT/PARAGRAF) -->
             <div class="cert-notes-area" style="text-align: justify;">
-              <div style="margin-bottom: 4px;">
+              <p>
                 Sertifikat ini dikeluarkan secara otomatis oleh sistem setelah dilakukan verifikasi, validasi dan Premi yang dibayarkan sudah diterima. Premi yang dibayarkan sudah termasuk komponen biaya administrasi, biaya asuransi dan imbal jasa pemasaran produk asuransi.
-              </div>
-              <div style="margin-bottom: 4px;">
+              </p>
+              <p>
                 *) Subject To No Claim adalah Periode dimana pertanggungan asuransi akan diterima oleh Penanggung dengan status tidak ada klaim sampai dengan data diterima dan/atau periode saat keterlambatan pembayaran premi sampai dengan terjadinya transaksi pembayaran premi.
-              </div>
-              <div style="margin-bottom: 4px;">
+              </p>
+              <p>
                 **) Penerima Manfaat memenuhi syarat dan ketentuan Banker Clause dimana Manfaat Asuransi (Uang pertanggungan) ditujukan kepada Pemegang Polis untuk sisa pinjaman, apabila terdapat sisa manfaat, akan diberikan kepada Ahli Waris Peserta/Tertanggung.
-              </div>
+              </p>
 
               <!-- AREA KLAUSULA KHUSUS DINAMIS BERDASARKAN POLIS -->
-              <div id="lbl-catatan-khusus" style="margin-top: 6px; margin-bottom: 6px; font-weight: bold; font-size: 10px; color: #000000; background-color: #f8fafc; padding: 5px; border-left: 3px solid #000; white-space: pre-line;"></div>
+              <div id="lbl-catatan-khusus" style="margin-top: 4px; margin-bottom: 6px; font-weight: bold; font-size: 9.5px; color: #000000; background-color: #f8fafc; padding: 4px 6px; border-left: 3px solid #000; white-space: pre-line;"></div>
 
-              <div style="margin-top: 4px; margin-bottom: 8px; font-weight: bold; font-size: 10px;">
+              <p style="margin-top: 4px; margin-bottom: 6px; font-weight: bold; font-size: 9.5px;">
                 Sertifikat ini merupakan bagian yang tidak terpisahkan dari Polis No. <span id="lbl-no-polis-footer">-</span>
-              </div>
+              </p>
 
               <!-- KOTAK LAYANAN PELANGGAN -->
-              <div style="border: 1px solid #000000; padding: 5px 8px; font-size: 9px; line-height: 1.25;">
-                <table style="width: 100%; border-collapse: collapse; border: none;">
+              <div style="border: 1px solid #000000; padding: 4px 6px; font-size: 8.5px; line-height: 1.2;">
+                <table style="width: 100%; border-collapse: collapse; border: none; margin-bottom: 0;">
                   <tr>
                     <td style="width: 65%; vertical-align: top; border: none; padding: 0;">
                       <strong>Untuk Pertanyaan Lebih lanjut, Anda bisa menghubungi Kami di Layanan Pelanggan Heksa pada jam kerja (08.00-17.00 WIB)</strong><br>
