@@ -1160,7 +1160,7 @@
       </main>
     </div>
 
-    <!-- MODAL KHUSUS PRATINJAU & UNDUH SERTIFIKAT KEPESERTAAN (DENGAN HEADER TABEL MURNI TERISOLASI) -->
+    <!-- MODAL KHUSUS PRATINJAU & UNDUH SERTIFIKAT KEPESERTAAN -->
     <div id="modal-view-sertifikat" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md flex items-center justify-center hidden z-50 p-4">
       <div class="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
         
@@ -1177,7 +1177,7 @@
         <div class="p-6 overflow-y-auto space-y-6 flex-1 bg-slate-100 flex justify-center">
           <div id="sertifikat-pdf-area" style="width: 100%; max-width: 790px; background: #ffffff; color: #000000; padding: 30px; border: 1.5px solid #000000; box-sizing: border-box; font-family: Arial, sans-serif;">
             
-            <!-- HEADER 3 LOGO MENGGUNAKAN TABEL MURNI (STABIL & TIDAK BERANTAK) -->
+            <!-- HEADER 3 LOGO MENGGUNAKAN TABEL MURNI -->
             <table style="width: 100%; border-collapse: collapse; border-bottom: 2px solid #000000; padding-bottom: 10px; margin-bottom: 20px;">
               <tr>
                 <!-- LOGO KIRI (logo.png) -->
@@ -1296,6 +1296,44 @@
             <div style="margin-top: 25px; padding-top: 10px; border-top: 1px solid #cccccc; font-size: 9px; color: #555555; line-height: 1.4; text-align: justify;">
               <p style="margin: 0 0 4px 0;">Sertifikat ini dikeluarkan secara otomatis oleh sistem setelah dilakukan verifikasi, validasi dan Premi yang dibayarkan sudah diterima.</p>
               <p style="margin: 0;">*) Subject To No Claim adalah Periode dimana pertanggungan asuransi akan diterima oleh Penanggung dengan status tidak ada klaim.</p>
+            </div>
+
+            <!-- KOTAK LAYANAN PELANGGAN (BAGIAN PALING BAWAH SERTIFIKAT) -->
+            <div style="border: 1px solid #000000; padding: 10px 14px; margin-top: 20px; font-family: Arial, sans-serif; font-size: 10px; color: #000000; line-height: 1.4; box-sizing: border-box;">
+              
+              <!-- Teks Kalimat Atas -->
+              <p style="margin: 0 0 8px 0; font-size: 10px;">
+                Untuk Pertanyaan Lebih lanjut, Anda bisa menghubungi Kami di Layanan Pelanggan Heksa pada jam kerja (08.00-17.00 WIB)
+              </p>
+
+              <!-- Tabel Alamat (Kiri) & Telepon/Email (Kanan) -->
+              <table style="width: 100%; border-collapse: collapse; border: none; font-size: 10px;">
+                <tr>
+                  <!-- Kolom Alamat Kiri -->
+                  <td style="width: 55%; vertical-align: top; border: none; padding: 0;">
+                    Satrio Tower lt.8<br />
+                    Jl.Prof.Dr.Satrio Kav.C4 Kuningan Timur<br />
+                    Jakarta selatan
+                  </td>
+
+                  <!-- Kolom Kontak Kanan -->
+                  <td style="width: 45%; vertical-align: top; text-align: right; border: none; padding: 0;">
+                    <table style="border-collapse: collapse; border: none; margin-left: auto; font-size: 10px; text-align: left;">
+                      <tr>
+                        <td style="padding: 0 4px 2px 0; border: none;">telp</td>
+                        <td style="padding: 0 4px 2px 0; border: none;">:</td>
+                        <td style="padding: 0 0 2px 0; border: none;">(021) 30003131</td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 0 4px 0 0; border: none;">email</td>
+                        <td style="padding: 0 4px 0 0; border: none;">:</td>
+                        <td style="padding: 0; border: none;">Customerheksa@heksainsurance.co.id</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
             </div>
 
           </div>
@@ -2404,7 +2442,6 @@
           localStorage.removeItem("fullName");
           localStorage.removeItem("userRoleLevel");
           localStorage.removeItem("activeRoleLevel");
-          localStorage.removeItem("userModule");
           window.location.replace("login.html");
         }
       }
