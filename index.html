@@ -153,37 +153,37 @@
         max-height: 297mm;
         background: #ffffff;
         color: #000000;
-        padding: 10mm 16mm;
+        padding: 8mm 16mm;
         border: 1px solid #000000;
         box-sizing: border-box;
         font-family: Arial, Helvetica, sans-serif;
-        font-size: 10.5px; 
-        line-height: 1.35;
+        font-size: 10px; 
+        line-height: 1.25;
         margin: 0 auto;
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
+        justify-content: flex-start;
         overflow: hidden; /* Mencegah meluber ke halaman 2 */
       }
       .cert-table {
         width: 100%;
         border-collapse: collapse;
-        margin-bottom: 6px;
+        margin-bottom: 4px;
       }
       .cert-table td {
-        padding: 2.5px 0;
+        padding: 1.5px 0;
         vertical-align: top;
-        font-size: 10.5px; 
+        font-size: 10px; 
         border: none;
       }
       .cert-notes-area {
-        margin-top: 4px;
-        font-size: 9.5px; 
-        line-height: 1.4;
+        margin-top: 2px;
+        font-size: 9px; 
+        line-height: 1.25;
       }
       /* Memberikan jarak jeda/enter antar kalimat di area footer */
       .cert-notes-area p {
-        margin-bottom: 6px;
+        margin-bottom: 4px;
       }
 
       @media print {
@@ -201,7 +201,7 @@
         }
         .pdf-template, .cert-paper {
           border: none;
-          padding: 10mm 14mm;
+          padding: 8mm 14mm;
           width: 210mm;
           height: 297mm;
           max-height: 297mm;
@@ -1224,20 +1224,20 @@
             <!-- BAGIAN UTAMA (HEADER + TABEL DATA) -->
             <div>
               <!-- HEADER LOGO DAN PERUSAHAAN -->
-              <table class="cert-table" style="margin-bottom: 6px; border-bottom: 2px solid #000; padding-bottom: 5px;">
+              <table class="cert-table" style="margin-bottom: 4px; border-bottom: 2px solid #000; padding-bottom: 3px;">
                 <tr>
                   <td style="width: 20%; vertical-align: middle;">
-                    <img src="logo.png" alt="HEKSA Insurance" style="height: 36px; width: auto;" onerror="this.src='https://via.placeholder.com/120x40?text=HEKSA+LOGI';">
+                    <img src="logo.png" alt="HEKSA Insurance" style="height: 32px; width: auto;" onerror="this.src='https://via.placeholder.com/120x40?text=HEKSA+LOGI';">
                   </td>
                   <td style="width: 58%; text-align: center; vertical-align: middle;">
-                    <div style="font-size: 12.5px; font-weight: bold; color: #000; margin-bottom: 1px;">PT HEKSA SOLUTION INSURANCE</div>
-                    <div style="font-size: 8px; color: #333333; line-height: 1.2;">
+                    <div style="font-size: 11.5px; font-weight: bold; color: #000; margin-bottom: 1px;">PT HEKSA SOLUTION INSURANCE</div>
+                    <div style="font-size: 7.5px; color: #333333; line-height: 1.15;">
                       Satrio Tower Lantai 8 Jl. Prof. DR. Satrio Blok C4, Jakarta Selatan 12950<br>
                       E-mail: corp@heksainsurance.co.id | www.heksainsurance.co.id | Telp. (021) 27883999
                     </div>
                   </td>
                   <td style="width: 22%; text-align: right; vertical-align: middle;">
-                    <svg width="100" height="32" viewBox="0 0 160 55" xmlns="http://www.w3.org/2000/svg" style="display: inline-block;">
+                    <svg width="90" height="28" viewBox="0 0 160 55" xmlns="http://www.w3.org/2000/svg" style="display: inline-block;">
                       <rect x="25" y="2" width="110" height="13" rx="3" fill="#004080"/>
                       <text x="80" y="11" font-family="Arial, sans-serif" font-weight="bold" font-size="8" fill="#FFFFFF" text-anchor="middle">PAHAMI & MILIKI</text>
                       <path d="M12,22 L20,12 L28,22 L24,22 L24,32 L16,32 L16,22 Z" fill="#D92626"/>
@@ -1249,7 +1249,7 @@
               </table>
 
               <!-- JUDUL SERTIFIKAT DINAMIS -->
-              <div id="lbl-judul-sertifikat" style="text-align: center; font-size: 13px; font-weight: bold; text-transform: uppercase; margin-top: 4px; margin-bottom: 6px; letter-spacing: 0.5px; text-decoration: underline;">
+              <div id="lbl-judul-sertifikat" style="text-align: center; font-size: 12px; font-weight: bold; text-transform: uppercase; margin-top: 2px; margin-bottom: 4px; letter-spacing: 0.5px; text-decoration: underline;">
                 E-SERTIFIKAT KEPESERTAAN ASURANSI
               </div>
 
@@ -1341,14 +1341,14 @@
               </p>
 
               <!-- AREA KLAUSULA KHUSUS DINAMIS BERDASARKAN POLIS -->
-              <div id="lbl-catatan-khusus" style="margin-top: 4px; margin-bottom: 6px; font-weight: bold; font-size: 9.5px; color: #000000; background-color: #f8fafc; padding: 4px 6px; border-left: 3px solid #000; white-space: pre-line;"></div>
+              <div id="lbl-catatan-khusus" style="margin-top: 2px; margin-bottom: 4px; font-weight: bold; font-size: 9px; color: #000000; background-color: #f8fafc; padding: 3px 5px; border-left: 3px solid #000; white-space: pre-line;"></div>
 
-              <p style="margin-top: 4px; margin-bottom: 6px; font-weight: bold; font-size: 9.5px;">
+              <p style="margin-top: 2px; margin-bottom: 4px; font-weight: bold; font-size: 9px;">
                 Sertifikat ini merupakan bagian yang tidak terpisahkan dari Polis No. <span id="lbl-no-polis-footer">-</span>
               </p>
 
               <!-- KOTAK LAYANAN PELANGGAN -->
-              <div style="border: 1px solid #000000; padding: 4px 6px; font-size: 8.5px; line-height: 1.2;">
+              <div style="border: 1px solid #000000; padding: 3px 5px; font-size: 8px; line-height: 1.15;">
                 <table style="width: 100%; border-collapse: collapse; border: none; margin-bottom: 0;">
                   <tr>
                     <td style="width: 65%; vertical-align: top; border: none; padding: 0;">
