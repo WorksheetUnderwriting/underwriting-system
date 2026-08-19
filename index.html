@@ -114,8 +114,8 @@
         font-family: "Arial", sans-serif;
         color: #000;
         background-color: #fff;
-        padding: 14px 16px;
-        border: 1.5px solid #000;
+        padding: 8px 12px;
+        border: 1px solid #000;
         width: 100%;
         max-width: 200mm;
         margin: 0 auto;
@@ -124,14 +124,14 @@
       .pdf-template table {
         width: 100%;
         border-collapse: collapse;
-        margin-bottom: 8px;
+        margin-bottom: 4px;
       }
       .pdf-template th,
       .pdf-template td {
         border: 1px solid #000;
-        padding: 4.5px 6px;
-        font-size: 9.5px;
-        line-height: 1.3;
+        padding: 3px 5px;
+        font-size: 8.5px;
+        line-height: 1.15;
       }
       .pdf-template .section-header {
         background-color: #f3f4f6;
@@ -139,15 +139,15 @@
         text-transform: uppercase;
         border-top: 1px solid #000;
         border-bottom: 1px solid #000;
-        padding: 4px 6px;
-        font-size: 10px;
-        margin-top: 10px;
-        margin-bottom: 6px;
+        padding: 3px 5px;
+        font-size: 9px;
+        margin-top: 6px;
+        margin-bottom: 4px;
       }
       #m-pdf-catatan {
-        min-height: 24px !important;
-        padding: 6px !important;
-        margin-bottom: 8px !important;
+        min-height: 20px !important;
+        padding: 4px !important;
+        margin-bottom: 4px !important;
       }
 
       .cert-paper {
@@ -156,36 +156,36 @@
         max-height: 297mm;
         background: #ffffff;
         color: #000000;
-        padding: 8mm 16mm;
+        padding: 6mm 12mm;
         border: 1px solid #000000;
         box-sizing: border-box;
         font-family: Arial, Helvetica, sans-serif;
-        font-size: 10px; 
-        line-height: 1.25;
+        font-size: 9px; 
+        line-height: 1.15;
         margin: 0 auto;
         display: flex;
         flex-direction: column;
-        justify-content: flex-start;
+        justify-content: space-between;
         overflow: hidden;
       }
       .cert-table {
         width: 100%;
         border-collapse: collapse;
-        margin-bottom: 4px;
+        margin-bottom: 2px;
       }
       .cert-table td {
-        padding: 1.5px 0;
-        vertical-align: top;
-        font-size: 10px; 
+        padding: 1px 0;
+        vertical-align: middle;
+        font-size: 9px; 
         border: none;
       }
       .cert-notes-area {
         margin-top: 2px;
-        font-size: 9px; 
-        line-height: 1.25;
+        font-size: 8px; 
+        line-height: 1.1;
       }
       .cert-notes-area p {
-        margin-bottom: 4px;
+        margin-bottom: 2px;
       }
 
       @media print {
@@ -203,7 +203,7 @@
         }
         .pdf-template, .cert-paper {
           border: none;
-          padding: 8mm 14mm;
+          padding: 6mm 12mm;
           width: 210mm;
           height: 297mm;
           max-height: 297mm;
@@ -1311,7 +1311,7 @@
               </table>
 
               <!-- JUDUL SERTIFIKAT DINAMIS -->
-              <div id="lbl-judul-sertifikat" style="text-align: center; font-size: 12px; font-weight: bold; text-transform: uppercase; margin-top: 2px; margin-bottom: 4px; letter-spacing: 0.5px; text-decoration: underline;">
+              <div id="lbl-judul-sertifikat" style="text-align: center; font-size: 11px; font-weight: bold; text-transform: uppercase; margin-top: 2px; margin-bottom: 3px; letter-spacing: 0.5px; text-decoration: underline;">
                 E-SERTIFIKAT KEPESERTAAN ASURANSI
               </div>
 
@@ -1403,14 +1403,14 @@
               </p>
 
               <!-- AREA KLAUSULA KHUSUS DINAMIS -->
-              <div id="lbl-catatan-khusus" style="margin-top: 2px; margin-bottom: 4px; font-weight: bold; font-size: 9px; color: #000000; background-color: #f8fafc; padding: 3px 5px; border-left: 3px solid #000; white-space: pre-line;"></div>
+              <div id="lbl-catatan-khusus" style="margin-top: 2px; margin-bottom: 3px; font-weight: bold; font-size: 8.5px; color: #000000; background-color: #f8fafc; padding: 2px 4px; border-left: 3px solid #000; white-space: pre-line;"></div>
 
-              <p style="margin-top: 2px; margin-bottom: 4px; font-weight: bold; font-size: 9px;">
+              <p style="margin-top: 2px; margin-bottom: 3px; font-weight: bold; font-size: 8.5px;">
                 Sertifikat ini merupakan bagian yang tidak terpisahkan dari Polis No. <span id="lbl-no-polis-footer">-</span>
               </p>
 
               <!-- KOTAK LAYANAN PELANGGAN -->
-              <div style="border: 1px solid #000000; padding: 3px 5px; font-size: 8px; line-height: 1.15;">
+              <div style="border: 1px solid #000000; padding: 2px 4px; font-size: 7.5px; line-height: 1.1;">
                 <table style="width: 100%; border-collapse: collapse; border: none; margin-bottom: 0;">
                   <tr>
                     <td style="width: 65%; vertical-align: top; border: none; padding: 0;">
@@ -1647,7 +1647,7 @@
             </table>
 
             <div class="section-header">CATATAN & JUSTIFIKASI UNDERWRITER</div>
-            <div class="border border-black font-mono text-[8.5px] bg-gray-50" id="m-pdf-catatan">-</div>
+            <div class="border border-black font-mono text-[8px] bg-gray-50" id="m-pdf-catatan">-</div>
 
             <div class="section-header">RIWAYAT APPROVAL & ESKALASI WORKFLOW</div>
             <table>
@@ -2277,7 +2277,6 @@
         tbody.innerHTML = htmlRows;
       }
 
-      // LOAD MASTER POLIS UNTUK MENU TAB LAMPIRAN HAL 2 & 3 (DIPERBAIKI DENGAN LIMIT AGAR RINGAN)
       async function loadMasterPolisForLampiran() {
         const tbody = document.getElementById("lampiran-table-body");
         if (!tbody) return;
@@ -2287,7 +2286,7 @@
             .from("master_polis")
             .select("no_polis, nama_pemegang_polis, jenis_asuransi, pdf_lampiran")
             .order("created_at", { ascending: false })
-            .limit(50); // Batasi pemuatan data agar performa tabel responsif
+            .limit(50);
 
           if (error) throw error;
 
@@ -2359,7 +2358,6 @@
         renderLampiranTable(filtered);
       }
 
-      // FUNGSI UPLOAD LAMPIRAN PDF (HALAMAN 2 & 3) LANGSUNG KE MASTER POLIS
       async function uploadCombinedPdfToMasterPolis(noPolis, inputElem) {
         if (!noPolis || noPolis.trim() === "" || noPolis === "-") {
           alert("Nomor Polis tidak valid!");
@@ -2386,7 +2384,7 @@
             name: customFileName,
             originalName: file.name,
             size: fileSizeMB.toFixed(2) + " MB",
-            data: e.target.result // Format Base64 PDF
+            data: e.target.result
           };
 
           try {
@@ -2495,7 +2493,6 @@
         select.innerHTML = optionsHTML;
       }
 
-      // FUNGSI PRATINJAU DOKUMEN (VIEW DI TAB BARU)
       async function viewSertifikatPDF() {
         if (!activeSelectedCertItem) {
           alert("Data sertifikat tidak valid!");
@@ -2533,7 +2530,6 @@
         }
       }
 
-      // FUNGSI OTOMATIS MENGGABUNGKAN HAL 1 (DARI HTML) DENGAN HAL 2 & 3 (DARI MASTER POLIS)
       async function mergeAndDownloadAllPages() {
         if (!activeSelectedCertItem) {
           alert("Data sertifikat tidak valid!");
@@ -4205,7 +4201,7 @@
         try {
           await html2pdf()
             .set({
-              margin: [0.15, 0.15, 0.15, 0.15],
+              margin: [0, 0, 0, 0],
               filename: `Kertas_Kerja_${activeTransactionId}.pdf`,
               image: { type: "jpeg", quality: 0.98 },
               html2canvas: { scale: 2, useCORS: true, logging: false },
