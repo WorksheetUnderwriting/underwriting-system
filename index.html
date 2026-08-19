@@ -146,10 +146,9 @@
         margin-bottom: 8px !important;
       }
 
-      /* Style e-Sertifikat Presisi 1 Halaman A4 + Font Diperbesar & Jarak Jeda Antar Paragraf */
       .cert-paper {
         width: 210mm;
-        height: 297mm; /* Dikunci persis 1 halaman A4 */
+        height: 297mm;
         max-height: 297mm;
         background: #ffffff;
         color: #000000;
@@ -163,7 +162,7 @@
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
-        overflow: hidden; /* Mencegah meluber ke halaman 2 */
+        overflow: hidden;
       }
       .cert-table {
         width: 100%;
@@ -181,7 +180,6 @@
         font-size: 9px; 
         line-height: 1.25;
       }
-      /* Memberikan jarak jeda/enter antar kalimat di area footer */
       .cert-notes-area p {
         margin-bottom: 4px;
       }
@@ -759,12 +757,12 @@
               <!-- Lampiran Dokumen Persyaratan -->
               <div>
                 <h4 class="text-xs font-bold text-blue-600 uppercase tracking-wider mb-4 flex items-center gap-2">
-                  <i class="fa-solid fa-paperclip"></i> 4. Lampiran Dokumen Persyaratan (Wajib & Pendukung)
+                  <i class="fa-solid fa-paperclip"></i> 4. Lampiran Dokumen Persyaratan (Wajib & Pendukung) [Batas Maks 3.0MB]
                 </h4>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white/80 p-6 rounded-2xl border border-slate-200/80 shadow-sm">
                   <div class="bg-white p-4.5 rounded-xl border border-slate-200/80 shadow-sm">
                     <label class="block text-xs font-bold text-slate-800 mb-1">1. Kartu Tanda Penduduk (KTP) <span class="text-rose-500">*</span></label>
-                    <p class="text-[11px] text-slate-500 mb-2.5">Format PDF / JPG / PNG (Maksimal 1.5MB)</p>
+                    <p class="text-[11px] text-slate-500 mb-2.5">Format PDF / JPG / PNG (Maksimal 3.0MB)</p>
                     <input type="file" id="attach-ktp" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileChange(this, 'ktp-info')" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer transition" />
                     <div id="ktp-info" class="mt-2 text-xs text-emerald-600 font-bold hidden flex items-center justify-between">
                       <span class="file-name truncate max-w-[200px]"></span>
@@ -774,7 +772,7 @@
 
                   <div class="bg-white p-4.5 rounded-xl border border-slate-200/80 shadow-sm">
                     <label class="block text-xs font-bold text-slate-800 mb-1">2. SPAJK / Deklarasi Kesehatan <span class="text-rose-500">*</span></label>
-                    <p class="text-[11px] text-slate-500 mb-2.5">Tandatangan lengkap (PDF / JPG / PNG - Max 1.5MB)</p>
+                    <p class="text-[11px] text-slate-500 mb-2.5">Tandatangan lengkap (PDF / JPG / PNG - Max 3.0MB)</p>
                     <input type="file" id="attach-spajk" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileChange(this, 'spajk-info')" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer transition" />
                     <div id="spajk-info" class="mt-2 text-xs text-emerald-600 font-bold hidden flex items-center justify-between">
                       <span class="file-name truncate max-w-[200px]"></span>
@@ -784,7 +782,7 @@
 
                   <div class="bg-white p-4.5 rounded-xl border border-slate-200/80 shadow-sm">
                     <label class="block text-xs font-bold text-slate-800 mb-1">3. RIPLAY Personal / Ringkasan Sertifikat <span class="text-rose-500">*</span></label>
-                    <p class="text-[11px] text-slate-500 mb-2.5">Ringkasan Informasi Produk (PDF / JPG / PNG - Max 1.5MB)</p>
+                    <p class="text-[11px] text-slate-500 mb-2.5">Ringkasan Informasi Produk (PDF / JPG / PNG - Max 3.0MB)</p>
                     <input type="file" id="attach-riplay" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileChange(this, 'riplay-info')" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer transition" />
                     <div id="riplay-info" class="mt-2 text-xs text-emerald-600 font-bold hidden flex items-center justify-between">
                       <span class="file-name truncate max-w-[200px]"></span>
@@ -794,7 +792,7 @@
 
                   <div class="bg-white p-4.5 rounded-xl border border-slate-200/80 shadow-sm">
                     <label class="block text-xs font-bold text-slate-800 mb-1">4. Slip Gaji / Bukti Finansial <span class="text-slate-400 font-normal">(Opsional)</span></label>
-                    <p class="text-[11px] text-slate-500 mb-2.5">Bukti Penghasilan / Rekening (PDF / JPG / PNG - Max 1.5MB)</p>
+                    <p class="text-[11px] text-slate-500 mb-2.5">Bukti Penghasilan / Rekening (PDF / JPG / PNG - Max 3.0MB)</p>
                     <input type="file" id="attach-gaji" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileChange(this, 'gaji-info')" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer transition" />
                     <div id="gaji-info" class="mt-2 text-xs text-emerald-600 font-bold hidden flex items-center justify-between">
                       <span class="file-name truncate max-w-[200px]"></span>
@@ -804,7 +802,7 @@
 
                   <div class="bg-white p-4.5 rounded-xl border border-slate-200/80 shadow-sm md:col-span-2">
                     <label class="block text-xs font-bold text-slate-800 mb-1">5. Hasil Lab / MCU / Dokumen Lainnya <span class="text-slate-400 font-normal">(Opsional)</span></label>
-                    <p class="text-[11px] text-slate-500 mb-2.5">Hasil Pemeriksaan Medis / Surat Keterangan / Excel List (PDF / ZIP / XLSX - Max 1.5MB)</p>
+                    <p class="text-[11px] text-slate-500 mb-2.5">Hasil Pemeriksaan Medis / Surat Keterangan / Excel List (PDF / ZIP / XLSX - Max 3.0MB)</p>
                     <input type="file" id="attach-other" accept=".pdf,.jpg,.jpeg,.png,.zip,.xlsx,.csv" onchange="handleFileChange(this, 'other-info')" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer transition" />
                     <div id="other-info" class="mt-2 text-xs text-emerald-600 font-bold hidden flex items-center justify-between">
                       <span class="file-name truncate max-w-[200px]"></span>
@@ -1067,8 +1065,8 @@
                 </div>
 
                 <div class="pt-2 border-t border-slate-100">
-                  <label class="block text-xs font-bold text-slate-700 mb-1.5">Upload Lampiran Dokumen Polis (Opsional / ZIP / PDF)</label>
-                  <p class="text-[11px] text-slate-500 mb-2">Format PDF / JPG / PNG / ZIP (Maksimal 1.5MB per file)</p>
+                  <label class="block text-xs font-bold text-slate-700 mb-1.5">Upload Lampiran Dokumen Polis (Opsional / ZIP / PDF) [Max 3.0MB]</label>
+                  <p class="text-[11px] text-slate-500 mb-2">Format PDF / JPG / PNG / ZIP (Maksimal 3.0MB per file)</p>
                   <input
                     type="file"
                     id="bp-doc-file"
@@ -1328,7 +1326,7 @@
               </table>
             </div>
 
-            <!-- FOOTER / CATATAN & KLAUSULA (DENGAN JARAK JEDA ANTAR KALIMAT/PARAGRAF) -->
+            <!-- FOOTER / CATATAN & KLAUSULA -->
             <div class="cert-notes-area" style="text-align: justify;">
               <p>
                 Sertifikat ini dikeluarkan secara otomatis oleh sistem setelah dilakukan verifikasi, validasi dan Premi yang dibayarkan sudah diterima. Premi yang dibayarkan sudah termasuk komponen biaya administrasi, biaya asuransi dan imbal jasa pemasaran produk asuransi.
@@ -1340,7 +1338,7 @@
                 **) Penerima Manfaat memenuhi syarat dan ketentuan Banker Clause dimana Manfaat Asuransi (Uang pertanggungan) ditujukan kepada Pemegang Polis untuk sisa pinjaman, apabila terdapat sisa manfaat, akan diberikan kepada Ahli Waris Peserta/Tertanggung.
               </p>
 
-              <!-- AREA KLAUSULA KHUSUS DINAMIS BERDASARKAN POLIS -->
+              <!-- AREA KLAUSULA KHUSUS DINAMIS -->
               <div id="lbl-catatan-khusus" style="margin-top: 2px; margin-bottom: 4px; font-weight: bold; font-size: 9px; color: #000000; background-color: #f8fafc; padding: 3px 5px; border-left: 3px solid #000; white-space: pre-line;"></div>
 
               <p style="margin-top: 2px; margin-bottom: 4px; font-weight: bold; font-size: 9px;">
@@ -1370,8 +1368,8 @@
         <!-- FOOTER MODAL AKSI -->
         <div class="p-4 border-t border-slate-200 bg-slate-50 flex justify-end gap-3 no-print">
           <button onclick="closeModal('modal-view-sertifikat')" class="px-4 py-2 bg-slate-200 text-slate-700 hover:bg-slate-300 text-xs font-bold rounded-xl cursor-pointer transition">Tutup</button>
-          <button onclick="downloadSertifikatPDF()" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl flex items-center gap-2 cursor-pointer shadow-md">
-            <i class="fa-solid fa-file-arrow-down"></i> Unduh Sertifikat PDF (1 Halaman)
+          <button id="btn-download-cert" onclick="downloadSertifikatPDF()" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl flex items-center gap-2 cursor-pointer shadow-md">
+            <i class="fa-solid fa-file-arrow-down"></i> <span id="btn-cert-text">Unduh Sertifikat PDF (1 Halaman)</span>
           </button>
         </div>
 
@@ -1616,8 +1614,8 @@
         </div>
 
         <div class="p-4 border-t border-slate-200 bg-slate-50 flex justify-between items-center no-print">
-          <button onclick="downloadPDF()" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl flex items-center gap-2 cursor-pointer shadow-md">
-            <i class="fa-solid fa-file-pdf"></i> Download PDF Kertas Kerja
+          <button id="btn-download-pdf" onclick="downloadPDF()" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl flex items-center gap-2 cursor-pointer shadow-md">
+            <i class="fa-solid fa-file-pdf"></i> <span id="btn-pdf-text">Download PDF Kertas Kerja</span>
           </button>
           <button onclick="closeModal('modal-detail')" class="px-4 py-2 bg-slate-200 text-slate-700 hover:bg-slate-300 text-xs font-bold rounded-xl cursor-pointer transition">Tutup</button>
         </div>
@@ -1689,7 +1687,7 @@
       const { createClient } = supabase;
       const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      // ATURAN MASTER POLIS DAN KLAUSULA KHUSUS LENGKAP (TERMASUK 10 POLIS PDF BARU)
+      // ATURAN MASTER POLIS DAN KLAUSULA KHUSUS LENGKAP
       const MASTER_POLIS_CONFIG = {
         "K.2019.09.0025.R": {
           judulSertifikat: "SERTIFIKAT KEPESERTAAN ASURANSI HEKSA JIWA KREDIT",
@@ -1741,7 +1739,6 @@
           jenisAsuransi: "Asuransi HEKSA Jiwa Kredit",
           catatanKhusus: "Apabila klaim dengan umur klaim 6 bulan sejak tanggal mulai asuransi diterima oleh Heksa mencapai 20% dari premi yang diterima, maka akan diberlakukan masa tunggu selama 30 hari sejak tanggal mulai asuransi kecuali karena kecelakaan, dan apabila klaim terjadi di 31-90 hari maka berlaku Lien Clause 50% dari manfaat asuransi yang disetujui oleh Penanggung sesuai syarat dan ketentuan berlaku kecuali karena kecelakaan."
         },
-        // --- 10 DOKUMEN PDF BARU ---
         "K.2023.03.0016.R": {
           judulSertifikat: "e - SERTIFIKAT KEPESERTAAN ASURANSI",
           jenisAsuransi: "Asuransi HEKSA Jiwa Kredit",
@@ -1834,7 +1831,8 @@
         }, 100);
       }
 
-      const MAX_FILE_SIZE_MB = 1.5;
+      // REKOMENDASI PENINGKATAN: Batas Maksimal File Dinaikkan ke 3.0MB agar lebih toleran
+      const MAX_FILE_SIZE_MB = 3.0;
       const roleLevelNames = {
         1: "Underwriter / Checker",
         2: "Supervisor",
@@ -1868,7 +1866,6 @@
       let isExcelLoaded = false;
       let isPdfLoaded = false;
 
-      // DATA DUMMY SERTIFIKAT FALLBACK
       const sampleSertifikat = {
         no_peserta: "2020101-2511000000050929",
         no_polis: "K.2023.05.0025",
@@ -2437,6 +2434,18 @@
         return String(val).replace(/^'+|'+$/g, "").trim();
       }
 
+      // HELPER: Pengecekan Header Fleksibel (Case-Insensitive & Spasi Diabaikan)
+      function getRowValueByKeys(row, possibleKeys) {
+        const rowKeys = Object.keys(row);
+        for (const key of possibleKeys) {
+          const foundKey = rowKeys.find(k => k.trim().toLowerCase().replace(/[\s_]/g, "") === key.trim().toLowerCase().replace(/[\s_]/g, ""));
+          if (foundKey !== undefined && row[foundKey] !== undefined && row[foundKey] !== "") {
+            return row[foundKey];
+          }
+        }
+        return "";
+      }
+
       async function handleExcelUpload(input) {
         if (!input.files || !input.files[0]) return;
         const file = input.files[0];
@@ -2495,25 +2504,26 @@
         if (excelMasterData.length === 0) return;
 
         const matches = excelMasterData.filter((row) => {
-          let idVal = cleanStringValue(row["IDUpload"] !== undefined ? row["IDUpload"] : row["idupload"] || row["ID_UPLOAD"] || "").toLowerCase();
+          let idVal = cleanStringValue(getRowValueByKeys(row, ["IDUpload", "idupload", "ID_UPLOAD"])).toLowerCase();
           if (idVal.endsWith(".0")) idVal = idVal.slice(0, -2);
           return idVal === query;
         });
 
         if (matches.length > 0) {
           const primary = matches[0];
-          document.getElementById("input-id-peserta").value = cleanStringValue(primary["IDPeserta"] || primary["idpeserta"] || primary["ID_PESERTA"] || "");
-          const noKtpValue = cleanStringValue(primary["No_Ktp"] || primary["NO_KTP"] || primary["NIK"] || "");
+          document.getElementById("input-id-peserta").value = cleanStringValue(getRowValueByKeys(primary, ["IDPeserta", "idpeserta", "ID_PESERTA"]));
+          
+          const noKtpValue = cleanStringValue(getRowValueByKeys(primary, ["No_Ktp", "NO_KTP", "NIK", "noktp"]));
           document.getElementById("input-no-ktp").value = noKtpValue;
           
           const pemegangPolisExcel = cleanStringValue(
-            primary["Pemegang Polis"] || primary["PEMEGANG POLIS"] || primary["Nama Pemegang Polis"] || primary["NAMA PEMEGANG POLIS"] || primary["Unit Pemegang Polis"] || primary["UNIT PEMEGANG POLIS"] || ""
+            getRowValueByKeys(primary, ["Pemegang Polis", "PEMEGANG POLIS", "Nama Pemegang Polis", "NAMA PEMEGANG POLIS", "Unit Pemegang Polis"])
           );
           document.getElementById("input-pemegang").value = pemegangPolisExcel;
 
-          document.getElementById("input-nama").value = cleanStringValue(primary["NamaTtg"] || primary["NAMATTG"] || primary["Nama Tertanggung"] || "");
+          document.getElementById("input-nama").value = cleanStringValue(getRowValueByKeys(primary, ["NamaTtg", "NAMATTG", "Nama Tertanggung", "NAMA_TERTANGGUNG"]));
 
-          let rawDate = primary["TlhTtg"] || primary["TLHTTG"] || "";
+          let rawDate = getRowValueByKeys(primary, ["TlhTtg", "TLHTTG", "Tanggal Lahir", "TANGGAL_LAHIR"]);
           if (rawDate) {
             if (typeof rawDate === "number") {
               const dateObj = XLSX.SSF.parse_date_code(rawDate);
@@ -2541,20 +2551,20 @@
             calculateAgeFromDOB();
           }
 
-          document.getElementById("input-masa").value = cleanStringValue(primary["MasaAs"] || primary["MASAAS"] || "");
-          const premiVal = parseExcelNumber(primary["Premi"] || primary["PREMI"] || 0);
+          document.getElementById("input-masa").value = cleanStringValue(getRowValueByKeys(primary, ["MasaAs", "MASAAS", "Masa Asuransi"]));
+          const premiVal = parseExcelNumber(getRowValueByKeys(primary, ["Premi", "PREMI", "Jumlah Premi"]));
           document.getElementById("input-premi").value = formatNumberInput(premiVal);
 
-          const singleUP = parseExcelNumber(primary["UP"] || primary["up"] || primary["Up"] || primary["Uang Pertanggungan"] || primary["Platfon"] || primary["Plafond"] || 0);
+          const singleUP = parseExcelNumber(getRowValueByKeys(primary, ["UP", "up", "Up", "Uang Pertanggungan", "Platfon", "Plafond"]));
           document.getElementById("input-up").value = formatNumberInput(singleUP);
 
           let totalAccumulatedUP = singleUP;
           if (noKtpValue) {
             const sameKtpRows = excelMasterData.filter((row) => {
-              const rowKtp = cleanStringValue(row["No_Ktp"] || row["NO_KTP"] || row["NIK"] || "").toLowerCase();
+              const rowKtp = cleanStringValue(getRowValueByKeys(row, ["No_Ktp", "NO_KTP", "NIK", "noktp"])).toLowerCase();
               return rowKtp === noKtpValue.toLowerCase();
             });
-            totalAccumulatedUP = sameKtpRows.reduce((sum, item) => sum + parseExcelNumber(item["UP"] || item["up"] || item["Up"] || item["Uang Pertanggungan"] || item["Platfon"] || item["Plafond"]), 0);
+            totalAccumulatedUP = sameKtpRows.reduce((sum, item) => sum + parseExcelNumber(getRowValueByKeys(item, ["UP", "up", "Up", "Uang Pertanggungan", "Platfon", "Plafond"])), 0);
           }
 
           document.getElementById("input-uptotal").value = formatNumberInput(totalAccumulatedUP);
@@ -2946,11 +2956,17 @@
         switchTab("repository");
       }
 
+      // REKOMENDASI PENINGKATAN: Indikator Loading Visual saat Unduh PDF Sertifikat
       async function downloadSertifikatPDF() {
         await ensurePdfJs();
         const element = document.getElementById("sertifikat-pdf-area");
         const certNama = document.getElementById("cert-nama-peserta").innerText || "Peserta";
         const certNo = document.getElementById("cert-no-peserta").innerText || "Sertifikat";
+
+        const btnText = document.getElementById("btn-cert-text");
+        const btnDownload = document.getElementById("btn-download-cert");
+        btnText.innerText = "Memproses PDF...";
+        btnDownload.disabled = true;
 
         const options = {
           margin: [0, 0, 0, 0],
@@ -2960,7 +2976,12 @@
           jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
         };
 
-        html2pdf().set(options).from(element).save();
+        try {
+          await html2pdf().set(options).from(element).save();
+        } finally {
+          btnText.innerText = "Unduh Sertifikat PDF (1 Halaman)";
+          btnDownload.disabled = false;
+        }
       }
 
       async function generateAutoNoPolis() {
@@ -3245,7 +3266,7 @@
           const userLogin = (localStorage.getItem("fullName") || "").trim().toLowerCase();
           const picOwner = (bp.pic || "").trim().toLowerCase();
           if (userLogin !== picOwner) {
-            alert(`Akses Ditolak!\n\nHanya PIC (${bp.pic}) yang dapat menghapus data buku polis ini.`);
+            alert(`Akses Ditolak!\n\Hanya PIC (${bp.pic}) yang dapat menghapus data buku polis ini.`);
             return;
           }
         }
@@ -3766,7 +3787,7 @@
         const file = t.files[key];
         const bodyElem = document.getElementById("preview-file-body");
         document.getElementById("preview-file-title").innerText = `Preview: ${file.name}`;
-        document.getElementById("preview-file-sub").innerText = `Ukuran: ${file.size || "1.5MB Max"}`;
+        document.getElementById("preview-file-sub").innerText = `Ukuran: ${file.size || "3.0MB Max"}`;
 
         const downloadBtn = document.getElementById("preview-download-btn");
         downloadBtn.href = file.data;
@@ -3871,20 +3892,32 @@
         document.getElementById("confirm-password").value = "";
       }
 
+      // REKOMENDASI PENINGKATAN: Indikator Loading Visual saat Unduh PDF Kertas Kerja
       async function downloadPDF() {
         await ensurePdfJs();
 
+        const btnText = document.getElementById("btn-pdf-text");
+        const btnDownload = document.getElementById("btn-download-pdf");
+        btnText.innerText = "Memproses PDF...";
+        btnDownload.disabled = true;
+
         const element = document.querySelector(".pdf-template");
-        html2pdf()
-          .set({
-            margin: [0.15, 0.15, 0.15, 0.15],
-            filename: `Kertas_Kerja_${activeTransactionId}.pdf`,
-            image: { type: "jpeg", quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true, logging: false },
-            jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
-          })
-          .from(element)
-          .save();
+        
+        try {
+          await html2pdf()
+            .set({
+              margin: [0.15, 0.15, 0.15, 0.15],
+              filename: `Kertas_Kerja_${activeTransactionId}.pdf`,
+              image: { type: "jpeg", quality: 0.98 },
+              html2canvas: { scale: 2, useCORS: true, logging: false },
+              jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+            })
+            .from(element)
+            .save();
+        } finally {
+          btnText.innerText = "Download PDF Kertas Kerja";
+          btnDownload.disabled = false;
+        }
       }
     </script>
   </body>
