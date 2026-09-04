@@ -1893,6 +1893,10 @@
         updateCharts();
       }
 
+      let selectedProdukPills = [];
+      let selectedBulanPills = [];
+      let chartInstances = {};
+
       async function loadProduksiFromSupabase() {
         try {
           const { data, error } = await _supabase.from('tabel_produksi').select('*');
@@ -1902,16 +1906,299 @@
             bulan_produksi: row["BULAN PRODUKSI"] || row["bulan_produksi"] || "-",
             kode_produk: row["KODE PRODUK"] || row["kode_produk"] || "-",
             pemegang_polis: row["PEMEGANG POLIS"] || row["pemegang_polis"] || "-",
+            keterangan_uw: row["KETERANGAN UW"] || row["keterangan_uw"] || "-",
+            produk: row["PRODUK"] || row["produk"] || "-",
             provinsi: row["PROVINSI"] || row["provinsi"] || "-",
-            count_id_peserta: row["PESERTA"] || row["count_id_peserta"] || 0,
-            sum_of_premi: row["PREMI"] || row["sum_of_premi"] || 0
+            sebaran_peserta: row["SEBARAN PESERTA"] || row["sebaran_peserta"] || "-",
+            range_up: row["RANGE UANG PERTANGGUNGAN"] || row["range_up"] || "-",
+            range_masa: row["range masa asuransi"] || row["range_masa"] || "-",
+            count_id_peserta: Number(row["PESERTA"] || row["count_id_peserta"] || 0),
+            sum_of_up: Number(row["UANG PERTANGGUNGAN"] || row["sum_of_up"] || 0),
+            sum_of_premi: Number(row["PREMI"] || row["sum_of_premi"] || 0)
           }));
 
           populateProduksiFilters();
-          updateProduksiUI();
+          renderProduksiDashboard();
         } catch (err) {
-          console.error("Gagal memuat data produksi:", err.message);
+          console.error("Gagal memuat data dari Supabase:", err.message);
         }
+      }
+
+      function populateProduksiFilters() {
+        const provSelect = document.getElementById("prod-filter-prov");
+        const polisSelect = document.getElementById("prod-filter-polis");
+        if (!provSelect || !polisSelect) return;
+
+        const currentProv = provSelect.value;
+        const currentPolis = polisSelect.value;
+
+        const provs = [...new Set(produksiMasterData.map(r => r.provinsi).filter(Boolean))].sort();
+        const polisList = [...new Set(produksiMasterData.map(r => r.pemegang_polis).filter(Boolean))].sort();
+
+        provSelect.innerHTML = '<option value="">Choose options</option>';
+        provs.forEach(p => {
+          const opt = document.createElement("option");
+          opt.value = p;
+          opt.textContent = p;
+          if (p === currentProv) opt.selected = true;
+          provSelect.appendChild(opt);
+        });
+
+        polisSelect.innerHTML = '<option value="">Choose options</option>';
+        polisList.forEach(pl => {
+          const opt = document.createElement("option");
+          opt.value = pl;
+          opt.textContent = pl;
+          if (pl === currentPolis) opt.selected = true;
+          polisSelect.appendChild(opt);
+        });
+
+        // Populate Pills Produk
+        const produkList = [...new Set(produksiMasterData.map(r => r.produk).filter(Boolean))].sort();
+        const produkContainer = document.getElementById("prod-filter-produk-pills");
+        produkContainer.innerHTML = "";
+        produkList.forEach(prod => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = `px-3 py-1.5 rounded-full text-xs font-bold transition cursor-pointer border ${selectedProdukPills.includes(prod) ? 'bg-sky-500 text-white border-sky-400 shadow-md' : 'bg-[#030712] text-slate-300 border-sky-500/30 hover:border-sky-400'}`;
+          btn.textContent = prod;
+          btn.onclick = () => {
+            if (selectedProdukPills.includes(prod)) {
+              selectedProdukPills = selectedProdukPills.filter(p => p !== prod);
+            } else {
+              selectedProdukPills.push(prod);
+            }
+            populateProduksiFilters();
+            renderProduksiDashboard();
+          };
+          produkContainer.appendChild(btn);
+        });
+
+        // Populate Pills Bulan
+        const allBulan = ['JANUARI', 'FEBRUARI', 'MARET', 'APRIL', 'MEI', 'JUNI', 'JULI', 'AGUSTUS', 'SEPTEMBER', 'OKTOBER', 'NOVEMBER', 'DESEMBER'];
+        const bulanContainer = document.getElementById("prod-filter-bulan-pills");
+        bulanContainer.innerHTML = "";
+        allBulan.forEach(bln => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = `px-3 py-1.5 rounded-full text-xs font-bold transition cursor-pointer border ${selectedBulanPills.includes(bln) ? 'bg-sky-500 text-white border-sky-400 shadow-md' : 'bg-[#030712] text-slate-300 border-sky-500/30 hover:border-sky-400'}`;
+          btn.textContent = bln;
+          btn.onclick = () => {
+            if (selectedBulanPills.includes(bln)) {
+              selectedBulanPills = selectedBulanPills.filter(b => b !== bln);
+            } else {
+              selectedBulanPills.push(bln);
+            }
+            populateProduksiFilters();
+            renderProduksiDashboard();
+          };
+          bulanContainer.appendChild(btn);
+        });
+      }
+
+      function getFilteredProduksiData() {
+        const provFilter = document.getElementById("prod-filter-prov")?.value || "";
+        const polisFilter = document.getElementById("prod-filter-polis")?.value || "";
+
+        return produksiMasterData.filter(row => {
+          const matchProv = !provFilter || row.provinsi === provFilter;
+          const matchPolis = !polisFilter || row.pemegang_polis === polisFilter;
+          const matchProduk = selectedProdukPills.length === 0 || selectedProdukPills.includes(row.produk);
+          const matchBulan = selectedBulanPills.length === 0 || selectedBulanPills.includes(row.bulan_produksi);
+          return matchProv && matchPolis && matchProduk && matchBulan;
+        });
+      }
+
+      function renderProduksiDashboard() {
+        const filtered = getFilteredProduksiData();
+        let totalPeserta = 0;
+        let totalUP = 0;
+        let totalPremi = 0;
+
+        filtered.forEach(row => {
+          totalPeserta += row.count_id_peserta;
+          totalUP += row.sum_of_up;
+          totalPremi += row.sum_of_premi;
+        });
+
+        document.getElementById("prod-stat-peserta").innerText = totalPeserta.toLocaleString('id-ID');
+        document.getElementById("prod-stat-up").innerText = `Rp ${totalUP.toLocaleString('id-ID')}`;
+        document.getElementById("prod-stat-premi").innerText = `Rp ${totalPremi.toLocaleString('id-ID')}`;
+
+        renderProduksiTable();
+        initAllProduksiCharts(filtered);
+      }
+
+      function renderProduksiTable() {
+        const tbody = document.getElementById("produksi-table-body");
+        if (!tbody) return;
+        tbody.innerHTML = "";
+
+        const filtered = getFilteredProduksiData();
+        const query = (document.getElementById("search-produksi")?.value || "").toLowerCase();
+        const finalData = filtered.filter(row => JSON.stringify(row).toLowerCase().includes(query));
+
+        if (finalData.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400 font-medium">Tidak ada data ditemukan.</td></tr>`;
+          return;
+        }
+
+        finalData.slice(0, 100).forEach(row => {
+          const tr = document.createElement("tr");
+          tr.className = "hover:bg-slate-800/50 transition border-b border-slate-800";
+          tr.innerHTML = `
+            <td class="p-3.5 font-bold text-white">${row.bulan_produksi}</td>
+            <td class="p-3.5 font-mono text-sky-400">${row.kode_produk}</td>
+            <td class="p-3.5 font-bold text-slate-200">${row.pemegang_polis}</td>
+            <td class="p-3.5 text-slate-300">${row.provinsi}</td>
+            <td class="p-3.5 font-semibold text-slate-200">${row.count_id_peserta.toLocaleString('id-ID')}</td>
+            <td class="p-3.5 font-bold text-emerald-400">Rp ${row.sum_of_premi.toLocaleString('id-ID')}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      async function initAllProduksiCharts(filtered) {
+        await ensureChartJs();
+
+        // 1. Top 10 Provinsi Chart
+        const provMap = {};
+        filtered.forEach(r => { provMap[r.provinsi] = (provMap[r.provinsi] || 0) + r.sum_of_premi; });
+        const topProv = Object.entries(provMap).sort((a,b) => b[1] - a[1]).slice(0, 10).reverse();
+        
+        if (chartInstances['topProv']) chartInstances['topProv'].destroy();
+        chartInstances['topProv'] = new Chart(document.getElementById("chartTopProvinsi"), {
+          type: 'bar',
+          data: {
+            labels: topProv.map(x => x[0]),
+            datasets: [{ data: topProv.map(x => x[1]), backgroundColor: '#00F5D4', borderRadius: 4 }]
+          },
+          options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { x: { ticks: { color: '#CBD5E1' } }, y: { ticks: { color: '#CBD5E1', font: { size: 10 } } } }
+          }
+        });
+
+        const topProvName = topProv.length > 0 ? topProv[topProv.length - 1][0] : "-";
+        const topProvVal = topProv.length > 0 ? topProv[topProv.length - 1][1] : 0;
+        document.getElementById("geo-insight-text").innerHTML = `• Berdasarkan data aktif, sebaran volume premi tertinggi terpusat pada wilayah <b>${topProvName}</b>.<br><br>• Akumulasi kontribusi wilayah ini mencapai <b>Rp ${topProvVal.toLocaleString('id-ID')}</b>, mendominasi peta sebaran nasional.`;
+        document.getElementById("prov-insight-text").innerHTML = `• 10 Provinsi teratas menyumbang proporsi premi aktif.<br><br>• <b>${topProvName}</b> memimpin urutan pertama sebagai kontributor terbesar dalam daftar ini.`;
+
+        // 2. Product Composition
+        const prodMap = {};
+        filtered.forEach(r => { prodMap[r.produk] = (prodMap[r.produk] || 0) + r.sum_of_premi; });
+        if (chartInstances['prodComp']) chartInstances['prodComp'].destroy();
+        chartInstances['prodComp'] = new Chart(document.getElementById("chartProductComp"), {
+          type: 'doughnut',
+          data: {
+            labels: Object.keys(prodMap),
+            datasets: [{ data: Object.values(prodMap), backgroundColor: ['#38BDF8', '#00F5D4', '#818CF8', '#EC4899', '#F59E0B'] }]
+          },
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#F8FAFC', font: { size: 10 } } } } }
+        });
+
+        // 3. Monthly Trend
+        const urutanBulan = ['JANUARI', 'FEBRUARI', 'MARET', 'APRIL', 'MEI', 'JUNI', 'JULI', 'AGUSTUS', 'SEPTEMBER', 'OKTOBER', 'NOVEMBER', 'DESEMBER'];
+        const bulanMap = {};
+        urutanBulan.forEach(b => bulanMap[b] = 0);
+        filtered.forEach(r => { if(bulanMap[r.bulan_produksi] !== undefined) bulanMap[r.bulan_produksi] += r.sum_of_premi; });
+        
+        if (chartInstances['monthlyTrend']) chartInstances['monthlyTrend'].destroy();
+        chartInstances['monthlyTrend'] = new Chart(document.getElementById("chartMonthlyTrend"), {
+          type: 'bar',
+          data: {
+            labels: urutanBulan,
+            datasets: [{ data: Object.values(bulanMap), backgroundColor: '#00F5D4', borderRadius: 4 }]
+          },
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#CBD5E1', font: { size: 9 } } }, y: { ticks: { color: '#CBD5E1' } } } }
+        });
+
+        // 4. UW Status
+        const uwMap = {};
+        filtered.forEach(r => { uwMap[r.keterangan_uw] = (uwMap[r.keterangan_uw] || 0) + r.sum_of_premi; });
+        if (chartInstances['uwStatus']) chartInstances['uwStatus'].destroy();
+        chartInstances['uwStatus'] = new Chart(document.getElementById("chartUWStatus"), {
+          type: 'doughnut',
+          data: {
+            labels: Object.keys(uwMap),
+            datasets: [{ data: Object.values(uwMap), backgroundColor: ['#10B981', '#F59E0B', '#3B82F6', '#EF4444'] }]
+          },
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#F8FAFC', font: { size: 10 } } } } }
+        });
+
+        // 5. Entry Age Distribution
+        const ageMap = {};
+        filtered.forEach(r => { ageMap[r.sebaran_peserta] = (ageMap[r.sebaran_peserta] || 0) + r.count_id_peserta; });
+        if (chartInstances['ageDist']) chartInstances['ageDist'].destroy();
+        chartInstances['ageDist'] = new Chart(document.getElementById("chartAgeDist"), {
+          type: 'bar',
+          data: {
+            labels: Object.keys(ageMap),
+            datasets: [{ data: Object.values(ageMap), backgroundColor: '#38BDF8', borderRadius: 4 }]
+          },
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#CBD5E1' } }, y: { ticks: { color: '#CBD5E1' } } } }
+        });
+        document.getElementById("age-insight-text").innerHTML = "• Kelompok rentang usia masuk menunjukkan konsentrasi kuat pada segmen portofolio aktif saat ini.";
+
+        // 6. Range UP & Masa Asuransi
+        const upMap = {};
+        filtered.forEach(r => { upMap[r.range_up] = (upMap[r.range_up] || 0) + r.count_id_peserta; });
+        if (chartInstances['rangeUP']) chartInstances['rangeUP'].destroy();
+        chartInstances['rangeUP'] = new Chart(document.getElementById("chartRangeUP"), {
+          type: 'bar',
+          data: { labels: Object.keys(upMap), datasets: [{ data: Object.values(upMap), backgroundColor: '#38BDF8', borderRadius: 4 }] },
+          options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        });
+
+        const masaMap = {};
+        filtered.forEach(r => { masaMap[r.range_masa] = (masaMap[r.range_masa] || 0) + r.count_id_peserta; });
+        if (chartInstances['rangeMasa']) chartInstances['rangeMasa'].destroy();
+        chartInstances['rangeMasa'] = new Chart(document.getElementById("chartRangeMasa"), {
+          type: 'bar',
+          data: { labels: Object.keys(masaMap), datasets: [{ data: Object.values(masaMap), backgroundColor: '#38BDF8', borderRadius: 4 }] },
+          options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        });
+
+        // 7. Top 5 Policy Holders
+        const polisPremi = {};
+        const polisUP = {};
+        const polisPeserta = {};
+        filtered.forEach(r => {
+          polisPremi[r.pemegang_polis] = (polisPremi[r.pemegang_polis] || 0) + r.sum_of_premi;
+          polisUP[r.pemegang_polis] = (polisUP[r.pemegang_polis] || 0) + r.sum_of_up;
+          polisPeserta[r.pemegang_polis] = (polisPeserta[r.pemegang_polis] || 0) + r.count_id_peserta;
+        });
+
+        const topPremi = Object.entries(polisPremi).sort((a,b) => b[1] - a[1]).slice(0, 5);
+        const topUP = Object.entries(polisUP).sort((a,b) => b[1] - a[1]).slice(0, 5);
+        const topPeserta = Object.entries(polisPeserta).sort((a,b) => b[1] - a[1]).slice(0, 5);
+
+        if (chartInstances['topPremi']) chartInstances['topPremi'].destroy();
+        chartInstances['topPremi'] = new Chart(document.getElementById("chartTopPremi"), {
+          type: 'bar',
+          data: { labels: topPremi.map(x => x[0].substring(0, 15)), datasets: [{ data: topPremi.map(x => x[1]), backgroundColor: '#38BDF8', borderRadius: 4 }] },
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#CBD5E1', font: { size: 9 } } }, y: { ticks: { color: '#CBD5E1' } } } }
+        });
+        document.getElementById("top-premi-insight").innerHTML = `• Kontribusi pendapatan premi terbesar dipimpin oleh institusi <b>${topPremi.length > 0 ? topPremi[0][0] : '-'}</b>.<br><br>• Menunjukkan ketergantungan dan topangan utama dari sektor korporat/perbankan tersebut.`;
+
+        if (chartInstances['topUP']) chartInstances['topUP'].destroy();
+        chartInstances['topUP'] = new Chart(document.getElementById("chartTopUP"), {
+          type: 'bar',
+          data: { labels: topUP.map(x => x[0].substring(0, 15)), datasets: [{ data: topUP.map(x => x[1]), backgroundColor: '#38BDF8', borderRadius: 4 }] },
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#CBD5E1', font: { size: 9 } } }, y: { ticks: { color: '#CBD5E1' } } } }
+        });
+        document.getElementById("top-up-insight").innerHTML = `• Kapasitas risiko dan tanggungan terbesar dipegang oleh <b>${topUP.length > 0 ? topUP[0][0] : '-'}</b>.<br><br>• Mencerminkan eksposur nilai pertanggungan tertinggi dalam portofolio mitra utama.`;
+
+        if (chartInstances['topPeserta']) chartInstances['topPeserta'].destroy();
+        chartInstances['topPeserta'] = new Chart(document.getElementById("chartTopPeserta"), {
+          type: 'bar',
+          data: { labels: topPeserta.map(x => x[0].substring(0, 15)), datasets: [{ data: topPeserta.map(x => x[1]), backgroundColor: '#38BDF8', borderRadius: 4 }] },
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#CBD5E1', font: { size: 9 } } }, y: { ticks: { color: '#CBD5E1' } } } }
+        });
+        document.getElementById("top-peserta-insight").innerHTML = `• Basis massa peserta terbanyak dikelola melalui skema dari <b>${topPeserta.length > 0 ? topPeserta[0][0] : '-'}</b>.<br><br>• Menjadi pilar utama volume kepesertaan dalam jangkauan layanan portofolio.`;
       }
 
       function populateProduksiFilters() {
