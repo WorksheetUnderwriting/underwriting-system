@@ -1098,9 +1098,14 @@
                   <h3 class="text-lg font-bold text-slate-800">Laporan Analisis Produksi (Supabase Database)</h3>
                   <p class="text-xs text-slate-500">Visualisasi data historis produksi dari database Supabase (tabel_produksi).</p>
                 </div>
-                <button onclick="loadProduksiFromSupabase()" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-md cursor-pointer">
-                  <i class="fa-solid fa-rotate"></i> Muat Ulang Data
-                </button>
+                <div class="flex items-center gap-3">
+                  <a href="http://localhost:8501" target="_blank" class="px-4 py-2.5 bg-gradient-to-r from-sky-600 to-teal-500 hover:opacity-90 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-md cursor-pointer">
+                    <i class="fa-solid fa-satellite-dish"></i> Buka Full Streamlit Dashboard
+                  </a>
+                  <button onclick="loadProduksiFromSupabase()" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-md cursor-pointer">
+                    <i class="fa-solid fa-rotate"></i> Muat Ulang Data
+                  </button>
+                </div>
               </div>
 
               <!-- Statistik Kartu Produksi -->
