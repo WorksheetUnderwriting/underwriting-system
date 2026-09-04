@@ -13,7 +13,8 @@
     />
     <!-- Supabase JS Library CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- html2pdf.js Library CDN -->
+    <!-- Chart.js & html2pdf.js Library CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <!-- SCRIPT PROTEKSI HAK AKSES PRODUCTION -->
@@ -223,6 +224,14 @@
             >
               <i class="fa-solid fa-database w-5 text-center text-amber-400"></i>
               Repository Transaksi
+            </button>
+            <button
+              onclick="switchTab('produksi')"
+              id="nav-produksi"
+              class="w-full flex items-center gap-3.5 px-4 py-3 text-sm font-semibold rounded-xl hover:bg-blue-950/50 transition cursor-pointer text-slate-400 hover:text-white"
+            >
+              <i class="fa-solid fa-chart-line w-5 text-center text-emerald-400"></i>
+              Laporan Produksi
             </button>
           </nav>
         </div>
@@ -1080,6 +1089,82 @@
               </div>
             </div>
           </div>
+
+          <!-- 5. LAPORAN PRODUKSI TAB -->
+          <div id="tab-produksi" class="tab-anim hidden space-y-6">
+            <div class="glossy-card rounded-2xl p-8 space-y-6">
+              <div class="border-b border-slate-200/80 pb-4 flex justify-between items-center">
+                <div>
+                  <h3 class="text-lg font-bold text-slate-800">Laporan Analisis Produksi (Supabase Database)</h3>
+                  <p class="text-xs text-slate-500">Visualisasi data historis produksi dari database Supabase (tabel_produksi).</p>
+                </div>
+                <button onclick="loadProduksiFromSupabase()" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-md cursor-pointer">
+                  <i class="fa-solid fa-rotate"></i> Muat Ulang Data
+                </button>
+              </div>
+
+              <!-- Statistik Kartu Produksi -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="glossy-card p-5 rounded-2xl flex items-center justify-between">
+                  <div>
+                    <p class="text-xs text-slate-500 font-bold uppercase">Total Peserta</p>
+                    <h3 id="prod-stat-peserta" class="text-2xl font-black text-slate-900 mt-1">0</h3>
+                  </div>
+                  <div class="p-3 bg-emerald-500/10 text-emerald-600 rounded-2xl"><i class="fa-solid fa-users text-xl"></i></div>
+                </div>
+                <div class="glossy-card p-5 rounded-2xl flex items-center justify-between">
+                  <div>
+                    <p class="text-xs text-slate-500 font-bold uppercase">Akumulasi Premi</p>
+                    <h3 id="prod-stat-premi" class="text-2xl font-black text-blue-600 mt-1">Rp 0</h3>
+                  </div>
+                  <div class="p-3 bg-blue-600/10 text-blue-600 rounded-2xl"><i class="fa-solid fa-wallet text-xl"></i></div>
+                </div>
+                <div class="glossy-card p-5 rounded-2xl flex items-center justify-between">
+                  <div>
+                    <p class="text-xs text-slate-500 font-bold uppercase">Total Record Data</p>
+                    <h3 id="prod-stat-records" class="text-2xl font-black text-indigo-600 mt-1">0</h3>
+                  </div>
+                  <div class="p-3 bg-indigo-500/10 text-indigo-600 rounded-2xl"><i class="fa-solid fa-database text-xl"></i></div>
+                </div>
+              </div>
+
+              <!-- Grafik Visualisasi -->
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="glossy-card p-6 rounded-2xl space-y-4">
+                  <h4 class="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Tren Premi Berdasarkan Bulan</h4>
+                  <div class="h-64 relative flex items-center justify-center"><canvas id="chartProduksiBulan"></canvas></div>
+                </div>
+                <div class="glossy-card p-6 rounded-2xl space-y-4">
+                  <h4 class="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Komposisi Pemegang Polis Teratas</h4>
+                  <div class="h-64 relative flex items-center justify-center"><canvas id="chartProduksiPolis"></canvas></div>
+                </div>
+              </div>
+
+              <!-- Tabel Data Produksi -->
+              <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                  <h4 class="text-sm font-bold text-slate-800">Tabel Rincian Data Produksi</h4>
+                  <input type="text" id="search-produksi" onkeyup="renderProduksiTable()" placeholder="Cari data produksi..." class="border border-slate-300 text-xs rounded-xl px-3.5 py-2 w-64 focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white font-medium" />
+                </div>
+                <div class="overflow-x-auto border border-slate-200/80 rounded-2xl bg-white shadow-sm max-h-96">
+                  <table class="w-full text-left border-collapse">
+                    <thead class="sticky top-0 bg-slate-100 z-10">
+                      <tr class="text-slate-500 uppercase text-[10px] font-bold tracking-wider border-b border-slate-200">
+                        <th class="p-3">BULAN</th>
+                        <th class="p-3">KODE PRODUK</th>
+                        <th class="p-3">PEMEGANG POLIS</th>
+                        <th class="p-3">PROVINSI</th>
+                        <th class="p-3">PESERTA</th>
+                        <th class="p-3">PREMI (RP)</th>
+                      </tr>
+                    </thead>
+                    <tbody id="produksi-table-body" class="divide-y divide-slate-200/80 text-xs bg-white"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </main>
     </div>
@@ -1450,6 +1535,7 @@
 
       let transactions = [];
       let bukuPolisList = [];
+      let produksiMasterData = [];
       let tempBukuPolisFile = null;
       let activeNoPolisForUpdate = null;
 
@@ -1459,6 +1545,8 @@
       let excelMasterData = [];
       let chartMonthlyInstance = null;
       let chartStatusInstance = null;
+      let chartProdBulanInstance = null;
+      let chartProdPolisInstance = null;
       let cachedNextID = "";
 
       let currentPage = 1;
@@ -1555,14 +1643,14 @@
       }
 
       async function ensureChartJs() {
-        if (!isChartLoaded) {
+        if (!isChartLoaded || typeof Chart === 'undefined') {
           await loadScript("https://cdn.jsdelivr.net/npm/chart.js");
           isChartLoaded = true;
         }
       }
 
       async function ensureExcelJs() {
-        if (!isExcelLoaded) {
+        if (!isExcelLoaded || typeof XLSX === 'undefined') {
           await loadScript("https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js");
           isExcelLoaded = true;
         }
@@ -1661,6 +1749,113 @@
         }
 
         updateCharts();
+      }
+
+      async function loadProduksiFromSupabase() {
+        try {
+          const { data, error } = await _supabase.from('tabel_produksi').select('*');
+          if (error) throw error;
+          
+          produksiMasterData = data || [];
+          updateProduksiUI();
+        } catch (err) {
+          console.error("Gagal memuat data produksi:", err.message);
+        }
+      }
+
+      function updateProduksiUI() {
+        let totalPeserta = 0;
+        let totalPremi = 0;
+
+        produksiMasterData.forEach(row => {
+          totalPeserta += Number(row.count_id_peserta || 0);
+          totalPremi += Number(row.sum_of_premi || 0);
+        });
+
+        document.getElementById("prod-stat-peserta").innerText = totalPeserta.toLocaleString('id-ID');
+        document.getElementById("prod-stat-premi").innerText = `Rp ${totalPremi.toLocaleString('id-ID')}`;
+        document.getElementById("prod-stat-records").innerText = produksiMasterData.length.toLocaleString('id-ID');
+
+        renderProduksiTable();
+        initProduksiCharts();
+      }
+
+      function renderProduksiTable() {
+        const tbody = document.getElementById("produksi-table-body");
+        if (!tbody) return;
+        tbody.innerHTML = "";
+
+        const query = (document.getElementById("search-produksi")?.value || "").toLowerCase();
+        const filtered = produksiMasterData.filter(row => JSON.stringify(row).toLowerCase().includes(query));
+
+        if (filtered.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400 font-medium">Tidak ada data ditemukan.</td></tr>`;
+          return;
+        }
+
+        filtered.slice(0, 100).forEach((row) => {
+          const tr = document.createElement("tr");
+          tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+          tr.innerHTML = `
+            <td class="p-3 font-bold text-slate-700">${row.bulan_produksi || "-"}</td>
+            <td class="p-3 font-mono text-slate-600">${row.kode_produk || "-"}</td>
+            <td class="p-3 font-bold text-slate-800">${row.pemegang_polis || "-"}</td>
+            <td class="p-3 text-slate-600">${row.provinsi || "-"}</td>
+            <td class="p-3 font-semibold text-slate-700">${Number(row.count_id_peserta || 0).toLocaleString('id-ID')}</td>
+            <td class="p-3 font-bold text-blue-600">Rp ${Number(row.sum_of_premi || 0).toLocaleString('id-ID')}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      async function initProduksiCharts() {
+        await ensureChartJs();
+        const ctxBulan = document.getElementById("chartProduksiBulan");
+        const ctxPolis = document.getElementById("chartProduksiPolis");
+        if (!ctxBulan || !ctxPolis) return;
+
+        const bulanMap = {};
+        const polisMap = {};
+        produksiMasterData.forEach(row => {
+          const bln = row.bulan_produksi || "LAINNYA";
+          bulanMap[bln] = (bulanMap[bln] || 0) + Number(row.sum_of_premi || 0);
+
+          const pls = row.pemegang_polis || "LAINNYA";
+          polisMap[pls] = (polisMap[pls] || 0) + Number(row.sum_of_premi || 0);
+        });
+
+        const topPolis = Object.entries(polisMap).sort((a,b) => b[1] - a[1]).slice(0, 5);
+
+        if (chartProdBulanInstance) chartProdBulanInstance.destroy();
+        chartProdBulanInstance = new Chart(ctxBulan, {
+          type: 'line',
+          data: {
+            labels: Object.keys(bulanMap),
+            datasets: [{
+              label: 'Akumulasi Premi (Rp)',
+              data: Object.values(bulanMap),
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.1)',
+              fill: true,
+              tension: 0.3
+            }]
+          },
+          options: { responsive: true, maintainAspectRatio: false }
+        });
+
+        if (chartProdPolisInstance) chartProdPolisInstance.destroy();
+        chartProdPolisInstance = new Chart(ctxPolis, {
+          type: 'bar',
+          data: {
+            labels: topPolis.map(item => item[0]),
+            datasets: [{
+              label: 'Premi (Rp)',
+              data: topPolis.map(item => item[1]),
+              backgroundColor: '#3b82f6'
+            }]
+          },
+          options: { responsive: true, maintainAspectRatio: false }
+        });
       }
 
       function updateCharts() {
@@ -2010,7 +2205,7 @@
       }
 
       async function switchTab(tab) {
-        ["dashboard", "form", "buku-polis", "repository"].forEach((t) => {
+        ["dashboard", "form", "buku-polis", "repository", "produksi"].forEach((t) => {
           const tabElem = document.getElementById(`tab-${t}`);
           const navElem = document.getElementById(`nav-${t}`);
           if (tabElem) tabElem.classList.add("hidden");
@@ -2026,7 +2221,8 @@
           dashboard: "Dashboard Underwriting",
           form: "Form Kertas Kerja Underwriting",
           "buku-polis": "Buku Polis & Legalitas Dokumen",
-          repository: "Repository Transaksi Kertas Kerja"
+          repository: "Repository Transaksi Kertas Kerja",
+          produksi: "Laporan Analisis Produksi"
         };
         if (titles[tab]) {
           document.getElementById("page-title").innerText = titles[tab];
@@ -2040,6 +2236,14 @@
         if (tab === "buku-polis") {
           await generateAutoNoPolis();
           renderBukuPolisTable();
+        }
+
+        if (tab === "produksi") {
+          if (produksiMasterData.length === 0) {
+            loadProduksiFromSupabase();
+          } else {
+            initProduksiCharts();
+          }
         }
 
         if (tab === "dashboard") {
