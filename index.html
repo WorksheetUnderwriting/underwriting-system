@@ -1756,7 +1756,15 @@
           const { data, error } = await _supabase.from('tabel_produksi').select('*');
           if (error) throw error;
           
-          produksiMasterData = data || [];
+          produksiMasterData = (data || []).map(row => ({
+            bulan_produksi: row["BULAN PRODUKSI"] || row["bulan_produksi"] || "-",
+            kode_produk: row["KODE PRODUK"] || row["kode_produk"] || "-",
+            pemegang_polis: row["PEMEGANG POLIS"] || row["pemegang_polis"] || "-",
+            provinsi: row["PROVINSI"] || row["provinsi"] || "-",
+            count_id_peserta: row["PESERTA"] || row["count_id_peserta"] || 0,
+            sum_of_premi: row["PREMI"] || row["sum_of_premi"] || 0
+          }));
+
           updateProduksiUI();
         } catch (err) {
           console.error("Gagal memuat data produksi:", err.message);
@@ -2239,11 +2247,7 @@
         }
 
         if (tab === "produksi") {
-          if (produksiMasterData.length === 0) {
-            loadProduksiFromSupabase();
-          } else {
-            initProduksiCharts();
-          }
+          loadProduksiFromSupabase();
         }
 
         if (tab === "dashboard") {
