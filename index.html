@@ -1092,80 +1092,109 @@
 
           <!-- 5. LAPORAN PRODUKSI TAB -->
           <div id="tab-produksi" class="tab-anim hidden space-y-6">
-            <div class="glossy-card rounded-2xl p-8 space-y-6">
-              <div class="border-b border-slate-200/80 pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="bg-gradient-to-r from-blue-900/30 via-teal-500/20 to-blue-900/30 border-y border-teal-400/40 p-4 text-center font-bold text-white text-base tracking-widest uppercase shadow-[0_0_20px_rgba(0,245,212,0.2)] rounded-xl">
+              🌌 Theme In-depth Analysis & Strategic Command Center
+            </div>
+
+            <!-- FILTER BOX -->
+            <div class="bg-[#0b192c]/85 border border-sky-400/30 p-5 rounded-xl shadow-inner space-y-4">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <h3 class="text-lg font-bold text-slate-800">Laporan Analisis Produksi (Supabase Database)</h3>
-                  <p class="text-xs text-slate-500">Visualisasi data historis produksi dari database Supabase (tabel_produksi).</p>
+                  <label class="block text-xs font-bold text-sky-400 uppercase tracking-wider mb-1.5">🗺️ Filter Provinsi:</label>
+                  <select id="prod-filter-prov" onchange="renderProduksiTable()" class="w-full bg-[#030712] border border-sky-400/30 text-white text-xs rounded-xl p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none cursor-pointer">
+                    <option value="">Semua Provinsi</option>
+                  </select>
                 </div>
-                <div class="flex items-center gap-3">
-                  <a href="http://localhost:8501" target="_blank" class="px-4 py-2.5 bg-gradient-to-r from-sky-600 to-teal-500 hover:opacity-90 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-md cursor-pointer">
-                    <i class="fa-solid fa-satellite-dish"></i> Buka Full Streamlit Dashboard
-                  </a>
-                  <button onclick="loadProduksiFromSupabase()" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-md cursor-pointer">
-                    <i class="fa-solid fa-rotate"></i> Muat Ulang Data
-                  </button>
+                <div>
+                  <label class="block text-xs font-bold text-sky-400 uppercase tracking-wider mb-1.5">🏛️ Filter Pemegang Polis:</label>
+                  <select id="prod-filter-polis" onchange="renderProduksiTable()" class="w-full bg-[#030712] border border-sky-400/30 text-white text-xs rounded-xl p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none cursor-pointer">
+                    <option value="">Semua Pemegang Polis</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- KARTU STATISTIK UTAMA -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div class="bg-gradient-to-br from-[#0d1b2a]/90 to-[#030712]/98 border border-sky-500/50 rounded-xl p-5 shadow-[inset_0_0_25px_rgba(2,132,199,0.15),0_0_15px_rgba(0,0,0,0.7)] flex items-center justify-between">
+                <div>
+                  <p class="text-[11px] font-bold text-sky-400 uppercase tracking-wider">TOTAL PESERTA</p>
+                  <h3 id="prod-stat-peserta" class="text-2xl font-black text-white mt-1 drop-shadow-[0_0_10px_rgba(56,189,248,0.6)]">0</h3>
+                </div>
+                <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/30">
+                  <i class="fa-solid fa-users text-xl"></i>
                 </div>
               </div>
 
-              <!-- Statistik Kartu Produksi -->
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="glossy-card p-5 rounded-2xl flex items-center justify-between">
-                  <div>
-                    <p class="text-xs text-slate-500 font-bold uppercase">Total Peserta</p>
-                    <h3 id="prod-stat-peserta" class="text-2xl font-black text-slate-900 mt-1">0</h3>
-                  </div>
-                  <div class="p-3 bg-emerald-500/10 text-emerald-600 rounded-2xl"><i class="fa-solid fa-users text-xl"></i></div>
+              <div class="bg-gradient-to-br from-[#0d1b2a]/90 to-[#030712]/98 border border-sky-500/50 rounded-xl p-5 shadow-[inset_0_0_25px_rgba(2,132,199,0.15),0_0_15px_rgba(0,0,0,0.7)] flex items-center justify-between">
+                <div>
+                  <p class="text-[11px] font-bold text-sky-400 uppercase tracking-wider">AKUMULASI PREMI</p>
+                  <h3 id="prod-stat-premi" class="text-2xl font-black text-white mt-1 drop-shadow-[0_0_10px_rgba(56,189,248,0.6)]">Rp 0</h3>
                 </div>
-                <div class="glossy-card p-5 rounded-2xl flex items-center justify-between">
-                  <div>
-                    <p class="text-xs text-slate-500 font-bold uppercase">Akumulasi Premi</p>
-                    <h3 id="prod-stat-premi" class="text-2xl font-black text-blue-600 mt-1">Rp 0</h3>
-                  </div>
-                  <div class="p-3 bg-blue-600/10 text-blue-600 rounded-2xl"><i class="fa-solid fa-wallet text-xl"></i></div>
-                </div>
-                <div class="glossy-card p-5 rounded-2xl flex items-center justify-between">
-                  <div>
-                    <p class="text-xs text-slate-500 font-bold uppercase">Total Record Data</p>
-                    <h3 id="prod-stat-records" class="text-2xl font-black text-indigo-600 mt-1">0</h3>
-                  </div>
-                  <div class="p-3 bg-indigo-500/10 text-indigo-600 rounded-2xl"><i class="fa-solid fa-database text-xl"></i></div>
+                <div class="p-3 bg-blue-500/10 text-blue-400 rounded-xl border border-blue-500/30">
+                  <i class="fa-solid fa-wallet text-xl"></i>
                 </div>
               </div>
 
-              <!-- Grafik Visualisasi -->
-              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="glossy-card p-6 rounded-2xl space-y-4">
-                  <h4 class="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Tren Premi Berdasarkan Bulan</h4>
-                  <div class="h-64 relative flex items-center justify-center"><canvas id="chartProduksiBulan"></canvas></div>
+              <div class="bg-gradient-to-br from-[#0d1b2a]/90 to-[#030712]/98 border border-sky-500/50 rounded-xl p-5 shadow-[inset_0_0_25px_rgba(2,132,199,0.15),0_0_15px_rgba(0,0,0,0.7)] flex items-center justify-between">
+                <div>
+                  <p class="text-[11px] font-bold text-sky-400 uppercase tracking-wider">TOTAL RECORD DATA</p>
+                  <h3 id="prod-stat-records" class="text-2xl font-black text-white mt-1 drop-shadow-[0_0_10px_rgba(56,189,248,0.6)]">0</h3>
                 </div>
-                <div class="glossy-card p-6 rounded-2xl space-y-4">
-                  <h4 class="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Komposisi Pemegang Polis Teratas</h4>
-                  <div class="h-64 relative flex items-center justify-center"><canvas id="chartProduksiPolis"></canvas></div>
+                <div class="p-3 bg-indigo-500/10 text-indigo-400 rounded-xl border border-indigo-500/30">
+                  <i class="fa-solid fa-database text-xl"></i>
                 </div>
               </div>
+            </div>
 
-              <!-- Tabel Data Produksi -->
-              <div class="space-y-4">
-                <div class="flex justify-between items-center">
-                  <h4 class="text-sm font-bold text-slate-800">Tabel Rincian Data Produksi</h4>
-                  <input type="text" id="search-produksi" onkeyup="renderProduksiTable()" placeholder="Cari data produksi..." class="border border-slate-300 text-xs rounded-xl px-3.5 py-2 w-64 focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white font-medium" />
-                </div>
-                <div class="overflow-x-auto border border-slate-200/80 rounded-2xl bg-white shadow-sm max-h-96">
-                  <table class="w-full text-left border-collapse">
-                    <thead class="sticky top-0 bg-slate-100 z-10">
-                      <tr class="text-slate-500 uppercase text-[10px] font-bold tracking-wider border-b border-slate-200">
-                        <th class="p-3">BULAN</th>
-                        <th class="p-3">KODE PRODUK</th>
-                        <th class="p-3">PEMEGANG POLIS</th>
-                        <th class="p-3">PROVINSI</th>
-                        <th class="p-3">PESERTA</th>
-                        <th class="p-3">PREMI (RP)</th>
-                      </tr>
-                    </thead>
-                    <tbody id="produksi-table-body" class="divide-y divide-slate-200/80 text-xs bg-white"></tbody>
-                  </table>
-                </div>
+            <!-- HEADER KONTROL SUPABASE & STREAMLIT -->
+            <div class="bg-gradient-to-br from-[#0d1b2a]/90 to-[#030712]/98 border border-sky-500/50 rounded-xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl">
+              <div>
+                <h4 class="text-sm font-bold text-white uppercase tracking-wide">Laporan Analisis Produksi (Supabase Database)</h4>
+                <p class="text-xs text-sky-300/80 mt-0.5">Visualisasi data historis produksi dari database Supabase (tabel_produksi).</p>
+              </div>
+              <div class="flex items-center gap-3">
+                <a href="http://localhost:8501" target="_blank" class="px-4 py-2 bg-gradient-to-r from-sky-600 to-teal-500 hover:opacity-90 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-lg cursor-pointer">
+                  <i class="fa-solid fa-satellite-dish"></i> Buka Full Streamlit Dashboard
+                </a>
+                <button onclick="loadProduksiFromSupabase()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-lg cursor-pointer">
+                  <i class="fa-solid fa-rotate"></i> Muat Ulang Data
+                </button>
+              </div>
+            </div>
+
+            <!-- GRAFIK VISUALISASI -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div class="bg-gradient-to-br from-[#0d1b2a]/90 to-[#030712]/98 border border-sky-500/50 rounded-xl p-6 space-y-4 shadow-xl">
+                <h4 class="text-xs font-extrabold text-sky-400 uppercase tracking-widest text-center border-b border-sky-400/20 pb-2">Tren Premi Berdasarkan Bulan</h4>
+                <div class="h-64 relative flex items-center justify-center"><canvas id="chartProduksiBulan"></canvas></div>
+              </div>
+              <div class="bg-gradient-to-br from-[#0d1b2a]/90 to-[#030712]/98 border border-sky-500/50 rounded-xl p-6 space-y-4 shadow-xl">
+                <h4 class="text-xs font-extrabold text-sky-400 uppercase tracking-widest text-center border-b border-sky-400/20 pb-2">Komposisi Pemegang Polis Teratas</h4>
+                <div class="h-64 relative flex items-center justify-center"><canvas id="chartProduksiPolis"></canvas></div>
+              </div>
+            </div>
+
+            <!-- TABEL RINCIAN DATA PRODUKSI -->
+            <div class="bg-gradient-to-br from-[#0d1b2a]/90 to-[#030712]/98 border border-sky-500/50 rounded-xl p-6 space-y-4 shadow-xl">
+              <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                <h4 class="text-sm font-bold text-white uppercase tracking-wide">Tabel Rincian Data Produksi</h4>
+                <input type="text" id="search-produksi" onkeyup="renderProduksiTable()" placeholder="Cari data produksi..." class="bg-[#030712] border border-sky-400/30 text-white text-xs rounded-xl px-4 py-2 w-full md:w-72 focus:ring-2 focus:ring-sky-500 focus:outline-none" />
+              </div>
+              <div class="overflow-x-auto border border-sky-500/20 rounded-xl bg-[#030712]/60 max-h-96">
+                <table class="w-full text-left border-collapse">
+                  <thead class="sticky top-0 bg-[#0b192c] text-sky-400">
+                    <tr class="uppercase text-[10px] font-bold tracking-wider border-b border-sky-500/20">
+                      <th class="p-3.5">BULAN</th>
+                      <th class="p-3.5">KODE PRODUK</th>
+                      <th class="p-3.5">PEMEGANG POLIS</th>
+                      <th class="p-3.5">PROVINSI</th>
+                      <th class="p-3.5">PESERTA</th>
+                      <th class="p-3.5">PREMI (RP)</th>
+                    </tr>
+                  </thead>
+                  <tbody id="produksi-table-body" class="divide-y divide-slate-800 text-xs text-slate-300"></tbody>
+                </table>
               </div>
             </div>
           </div>
@@ -1770,27 +1799,70 @@
             sum_of_premi: row["PREMI"] || row["sum_of_premi"] || 0
           }));
 
+          populateProduksiFilters();
           updateProduksiUI();
         } catch (err) {
           console.error("Gagal memuat data produksi:", err.message);
         }
       }
 
+      function populateProduksiFilters() {
+        const provSelect = document.getElementById("prod-filter-prov");
+        const polisSelect = document.getElementById("prod-filter-polis");
+        if (!provSelect || !polisSelect) return;
+
+        const currentProv = provSelect.value;
+        const currentPolis = polisSelect.value;
+
+        const provs = [...new Set(produksiMasterData.map(r => r.provinsi).filter(Boolean))].sort();
+        const polisList = [...new Set(produksiMasterData.map(r => r.pemegang_polis).filter(Boolean))].sort();
+
+        provSelect.innerHTML = '<option value="">Semua Provinsi</option>';
+        provs.forEach(p => {
+          const opt = document.createElement("option");
+          opt.value = p;
+          opt.textContent = p;
+          if (p === currentProv) opt.selected = true;
+          provSelect.appendChild(opt);
+        });
+
+        polisSelect.innerHTML = '<option value="">Semua Pemegang Polis</option>';
+        polisList.forEach(pl => {
+          const opt = document.createElement("option");
+          opt.value = pl;
+          opt.textContent = pl;
+          if (pl === currentPolis) opt.selected = true;
+          polisSelect.appendChild(opt);
+        });
+      }
+
+      function getFilteredProduksiData() {
+        const provFilter = document.getElementById("prod-filter-prov")?.value || "";
+        const polisFilter = document.getElementById("prod-filter-polis")?.value || "";
+
+        return produksiMasterData.filter(row => {
+          const matchProv = !provFilter || row.provinsi === provFilter;
+          const matchPolis = !polisFilter || row.pemegang_polis === polisFilter;
+          return matchProv && matchPolis;
+        });
+      }
+
       function updateProduksiUI() {
+        const filtered = getFilteredProduksiData();
         let totalPeserta = 0;
         let totalPremi = 0;
 
-        produksiMasterData.forEach(row => {
+        filtered.forEach(row => {
           totalPeserta += Number(row.count_id_peserta || 0);
           totalPremi += Number(row.sum_of_premi || 0);
         });
 
         document.getElementById("prod-stat-peserta").innerText = totalPeserta.toLocaleString('id-ID');
-        document.getElementById("prod-stat-premi").innerText = `Rp ${totalPremi.toLocaleString('id-ID')}`;
-        document.getElementById("prod-stat-records").innerText = produksiMasterData.length.toLocaleString('id-ID');
+        document.getElementById("prod-stat-premi").innerText = `Rp ${totalPremi.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`.replace('.', ',').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+        document.getElementById("prod-stat-records").innerText = filtered.length.toLocaleString('id-ID');
 
         renderProduksiTable();
-        initProduksiCharts();
+        initProduksiCharts(filtered);
       }
 
       function renderProduksiTable() {
@@ -1798,30 +1870,31 @@
         if (!tbody) return;
         tbody.innerHTML = "";
 
+        const filteredByDropdown = getFilteredProduksiData();
         const query = (document.getElementById("search-produksi")?.value || "").toLowerCase();
-        const filtered = produksiMasterData.filter(row => JSON.stringify(row).toLowerCase().includes(query));
+        const finalFiltered = filteredByDropdown.filter(row => JSON.stringify(row).toLowerCase().includes(query));
 
-        if (filtered.length === 0) {
+        if (finalFiltered.length === 0) {
           tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400 font-medium">Tidak ada data ditemukan.</td></tr>`;
           return;
         }
 
-        filtered.slice(0, 100).forEach((row) => {
+        finalFiltered.slice(0, 100).forEach((row) => {
           const tr = document.createElement("tr");
-          tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+          tr.className = "hover:bg-slate-800/50 transition border-b border-slate-800";
           tr.innerHTML = `
-            <td class="p-3 font-bold text-slate-700">${row.bulan_produksi || "-"}</td>
-            <td class="p-3 font-mono text-slate-600">${row.kode_produk || "-"}</td>
-            <td class="p-3 font-bold text-slate-800">${row.pemegang_polis || "-"}</td>
-            <td class="p-3 text-slate-600">${row.provinsi || "-"}</td>
-            <td class="p-3 font-semibold text-slate-700">${Number(row.count_id_peserta || 0).toLocaleString('id-ID')}</td>
-            <td class="p-3 font-bold text-blue-600">Rp ${Number(row.sum_of_premi || 0).toLocaleString('id-ID')}</td>
+            <td class="p-3.5 font-bold text-white">${row.bulan_produksi || "-"}</td>
+            <td class="p-3.5 font-mono text-sky-400">${row.kode_produk || "-"}</td>
+            <td class="p-3.5 font-bold text-slate-200">${row.pemegang_polis || "-"}</td>
+            <td class="p-3.5 text-slate-300">${row.provinsi || "-"}</td>
+            <td class="p-3.5 font-semibold text-slate-200">${Number(row.count_id_peserta || 0).toLocaleString('id-ID')}</td>
+            <td class="p-3.5 font-bold text-emerald-400">Rp ${Number(row.sum_of_premi || 0).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
           `;
           tbody.appendChild(tr);
         });
       }
 
-      async function initProduksiCharts() {
+      async function initProduksiCharts(filteredData) {
         await ensureChartJs();
         const ctxBulan = document.getElementById("chartProduksiBulan");
         const ctxPolis = document.getElementById("chartProduksiPolis");
@@ -1829,7 +1902,7 @@
 
         const bulanMap = {};
         const polisMap = {};
-        produksiMasterData.forEach(row => {
+        filteredData.forEach(row => {
           const bln = row.bulan_produksi || "LAINNYA";
           bulanMap[bln] = (bulanMap[bln] || 0) + Number(row.sum_of_premi || 0);
 
@@ -1847,13 +1920,21 @@
             datasets: [{
               label: 'Akumulasi Premi (Rp)',
               data: Object.values(bulanMap),
-              borderColor: '#10b981',
-              backgroundColor: 'rgba(16, 185, 129, 0.1)',
+              borderColor: '#00F5D4',
+              backgroundColor: 'rgba(0, 245, 212, 0.1)',
               fill: true,
               tension: 0.3
             }]
           },
-          options: { responsive: true, maintainAspectRatio: false }
+          options: { 
+            responsive: true, 
+            maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: '#F8FAFC' } } },
+            scales: { 
+              x: { ticks: { color: '#CBD5E1' }, grid: { color: 'rgba(255,255,255,0.05)' } }, 
+              y: { ticks: { color: '#CBD5E1' }, grid: { color: 'rgba(255,255,255,0.05)' } } 
+            }
+          }
         });
 
         if (chartProdPolisInstance) chartProdPolisInstance.destroy();
@@ -1864,10 +1945,19 @@
             datasets: [{
               label: 'Premi (Rp)',
               data: topPolis.map(item => item[1]),
-              backgroundColor: '#3b82f6'
+              backgroundColor: '#3b82f6',
+              borderRadius: 6
             }]
           },
-          options: { responsive: true, maintainAspectRatio: false }
+          options: { 
+            responsive: true, 
+            maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: '#F8FAFC' } } },
+            scales: { 
+              x: { ticks: { color: '#CBD5E1' }, grid: { color: 'rgba(255,255,255,0.05)' } }, 
+              y: { ticks: { color: '#CBD5E1' }, grid: { color: 'rgba(255,255,255,0.05)' } } 
+            }
+          }
         });
       }
 
