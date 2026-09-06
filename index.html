@@ -1898,25 +1898,55 @@
 
         updateCharts();
       }
+      function parseIndonesianNumber(val) {
+        if (typeof val === 'number') return isNaN(val) ? 0 : val;
+        if (!val) return 0;
+        let str = val.toString().trim();
+        if (!str) return 0;
+        let cleanStr = str.replace(/\./g, '').replace(',', '.').replace(/[^0-9.-]/g, '');
+        let num = parseFloat(cleanStr);
+        return isNaN(num) ? 0 : num;
+      }
 
+      function normalizeBulan(val) {
+        if (!val) return "-";
+        const str = val.toString().trim().toUpperCase();
+        const monthMap = {
+          "01": "JANUARI", "1": "JANUARI", "JAN": "JANUARI", "JANUARI": "JANUARI",
+          "02": "FEBRUARI", "2": "FEBRUARI", "FEB": "FEBRUARI", "FEBRUARI": "FEBRUARI",
+          "03": "MARET", "3": "MARET", "MAR": "MARET", "MARET": "MARET",
+          "04": "APRIL", "4": "APRIL", "APR": "APRIL", "APRIL": "APRIL",
+          "05": "MEI", "5": "MEI", "MAY": "MEI", "MEI": "MEI",
+          "06": "JUNI", "6": "JUNI", "JUN": "JUNI", "JUNI": "JUNI",
+          "07": "JULI", "7": "JULI", "JUL": "JULI", "JULI": "JULI",
+          "08": "AGUSTUS", "8": "AGUSTUS", "AUG": "AGUSTUS", "AGS": "AGUSTUS", "AGUSTUS": "AGUSTUS",
+          "09": "SEPTEMBER", "9": "SEPTEMBER", "SEP": "SEPTEMBER", "SEPTEMBER": "SEPTEMBER",
+          "10": "OKTOBER", "10": "OKTOBER", "OKT": "OKTOBER", "OCT": "OKTOBER", "OKTOBER": "OKTOBER",
+          "11": "NOVEMBER", "11": "NOVEMBER", "NOV": "NOVEMBER", "NOVEMBER": "NOVEMBER",
+          "12": "DESEMBER", "12": "DESEMBER", "DES": "DESEMBER", "DEC": "DESEMBER", "DESEMBER": "DESEMBER"
+        };
+        return monthMap[str] || str;
+      }
+
+      
       async function loadProduksiFromSupabase() {
         try {
           const { data, error } = await _supabase.from('tabel_produksi').select('*');
           if (error) throw error;
           
           produksiMasterData = (data || []).map(row => ({
-            bulan_produksi: row["BULAN PRODUKSI"] || row["bulan_produksi"] || "-",
-            kode_produk: row["KODE PRODUK"] || row["kode_produk"] || "-",
-            pemegang_polis: row["PEMEGANG POLIS"] || row["pemegang_polis"] || "-",
-            keterangan_uw: row["KETERANGAN UW"] || row["keterangan_uw"] || "-",
-            produk: row["PRODUK"] || row["produk"] || "-",
-            provinsi: row["PROVINSI"] || row["provinsi"] || "-",
-            sebaran_peserta: row["SEBARAN PESERTA"] || row["sebaran_peserta"] || "-",
-            range_up: row["RANGE UANG PERTANGGUNGAN"] || row["range_up"] || "-",
-            range_masa: row["range masa asuransi"] || row["range_masa"] || "-",
-            count_id_peserta: Number(row["PESERTA"] || row["count_id_peserta"] || 0),
-            sum_of_up: Number(row["UANG PERTANGGUNGAN"] || row["sum_of_up"] || 0),
-            sum_of_premi: Number(row["PREMI"] || row["sum_of_premi"] || 0)
+            bulan_produksi: normalizeBulan(row["BULAN PRODUKSI"] || row["bulan_produksi"]),
+            kode_produk: String(row["KODE PRODUK"] || row["kode_produk"] || "-").trim(),
+            pemegang_polis: String(row["PEMEGANG POLIS"] || row["pemegang_polis"] || "-").trim(),
+            keterangan_uw: String(row["KETERANGAN UW"] || row["keterangan_uw"] || "-").trim(),
+            produk: String(row["PRODUK"] || row["produk"] || "-").trim(),
+            provinsi: String(row["PROVINSI"] || row["provinsi"] || "-").trim(),
+            sebaran_peserta: String(row["SEBARAN PESERTA"] || row["sebaran_peserta"] || "-").trim(),
+            range_up: String(row["RANGE UANG PERTANGGUNGAN"] || row["range_up"] || "-").trim(),
+            range_masa: String(row["RANGE MASA ASURANSI"] || row["range masa asuransi"] || row["range_masa"] || "-").trim(),
+            count_id_peserta: parseIndonesianNumber(row["PESERTA"] || row["count_id_peserta"]),
+            sum_of_up: parseIndonesianNumber(row["UANG PERTANGGUNGAN"] || row["sum_of_up"]),
+            sum_of_premi: parseIndonesianNumber(row["PREMI"] || row["sum_of_premi"])
           }));
 
           populateProduksiFilters();
@@ -2003,14 +2033,14 @@
       }
 
       function getFilteredProduksiData() {
-        const provFilter = document.getElementById("prod-filter-prov")?.value || "";
-        const polisFilter = document.getElementById("prod-filter-polis")?.value || "";
+        const provFilter = (document.getElementById("prod-filter-prov")?.value || "").trim().toUpperCase();
+        const polisFilter = (document.getElementById("prod-filter-polis")?.value || "").trim().toUpperCase();
 
         return produksiMasterData.filter(row => {
-          const matchProv = !provFilter || row.provinsi === provFilter;
-          const matchPolis = !polisFilter || row.pemegang_polis === polisFilter;
-          const matchProduk = selectedProdukPills.length === 0 || selectedProdukPills.includes(row.produk);
-          const matchBulan = selectedBulanPills.length === 0 || selectedBulanPills.includes(row.bulan_produksi);
+          const matchProv = !provFilter || row.provinsi.toUpperCase() === provFilter;
+          const matchPolis = !polisFilter || row.pemegang_polis.toUpperCase() === polisFilter;
+          const matchProduk = selectedProdukPills.length === 0 || selectedProdukPills.some(p => p.trim().toUpperCase() === row.produk.toUpperCase());
+          const matchBulan = selectedBulanPills.length === 0 || selectedBulanPills.some(b => normalizeBulan(b) === row.bulan_produksi);
           return matchProv && matchPolis && matchProduk && matchBulan;
         });
       }
@@ -2027,9 +2057,8 @@
           totalPremi += row.sum_of_premi;
         });
 
-        document.getElementById("prod-stat-peserta").innerText = totalPeserta.toLocaleString('id-ID');
-        document.getElementById("prod-stat-up").innerText = `Rp ${totalUP.toLocaleString('id-ID')}`;
-        document.getElementById("prod-stat-premi").innerText = `Rp ${totalPremi.toLocaleString('id-ID')}`;
+        document.getElementById("prod-stat-up").innerText = `Rp ${totalUP.toLocaleString('id-ID', { maximumFractionDigits: 2 })}`;
+        document.getElementById("prod-stat-premi").innerText = `Rp ${totalPremi.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
 
         renderProduksiTable();
         initAllProduksiCharts(filtered);
@@ -2058,7 +2087,7 @@
             <td class="p-3.5 font-bold text-slate-200">${row.pemegang_polis}</td>
             <td class="p-3.5 text-slate-300">${row.provinsi}</td>
             <td class="p-3.5 font-semibold text-slate-200">${row.count_id_peserta.toLocaleString('id-ID')}</td>
-            <td class="p-3.5 font-bold text-emerald-400">Rp ${row.sum_of_premi.toLocaleString('id-ID')}</td>
+            <td class="p-3.5 font-bold text-emerald-400">Rp ${row.sum_of_premi.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}</td>
           `;
           tbody.appendChild(tr);
         });
@@ -2119,7 +2148,10 @@
         const urutanBulan = ['JANUARI', 'FEBRUARI', 'MARET', 'APRIL', 'MEI', 'JUNI', 'JULI', 'AGUSTUS', 'SEPTEMBER', 'OKTOBER', 'NOVEMBER', 'DESEMBER'];
         const bulanMap = {};
         urutanBulan.forEach(b => bulanMap[b] = 0);
-        filtered.forEach(r => { if(bulanMap[r.bulan_produksi] !== undefined) bulanMap[r.bulan_produksi] += r.sum_of_premi; });
+        filtered.forEach(r => {
+          const bNorm = normalizeBulan(r.bulan_produksi);
+          if (bulanMap[bNorm] !== undefined) bulanMap[bNorm] += r.sum_of_premi;
+        });
         
         if (chartInstances['monthlyTrend']) chartInstances['monthlyTrend'].destroy();
         const elemMonthly = document.getElementById("chartMonthlyTrend");
