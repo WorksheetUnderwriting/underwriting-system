@@ -1935,18 +1935,18 @@
           if (error) throw error;
           
           produksiMasterData = (data || []).map(row => ({
-            bulan_produksi: normalizeBulan(row["BULAN PRODUKSI"] || row["bulan_produksi"]),
-            kode_produk: String(row["KODE PRODUK"] || row["kode_produk"] || "-").trim(),
-            pemegang_polis: String(row["PEMEGANG POLIS"] || row["pemegang_polis"] || "-").trim(),
-            keterangan_uw: String(row["KETERANGAN UW"] || row["keterangan_uw"] || "-").trim(),
-            produk: String(row["PRODUK"] || row["produk"] || "-").trim(),
-            provinsi: String(row["PROVINSI"] || row["provinsi"] || "-").trim(),
-            sebaran_peserta: String(row["SEBARAN PESERTA"] || row["sebaran_peserta"] || "-").trim(),
-            range_up: String(row["RANGE UANG PERTANGGUNGAN"] || row["range_up"] || "-").trim(),
-            range_masa: String(row["RANGE MASA ASURANSI"] || row["range masa asuransi"] || row["range_masa"] || "-").trim(),
-            count_id_peserta: parseIndonesianNumber(row["PESERTA"] || row["count_id_peserta"]),
-            sum_of_up: parseIndonesianNumber(row["UANG PERTANGGUNGAN"] || row["sum_of_up"]),
-            sum_of_premi: parseIndonesianNumber(row["PREMI"] || row["sum_of_premi"])
+            bulan_produksi: normalizeBulan(row.bulan_produksi),
+            kode_produk: String(row.kode_produk || "-").trim(),
+            pemegang_polis: String(row.pemegang_polis || "-").trim(),
+            keterangan_uw: String(row.keterangan_uw || "-").trim(),
+            produk: String(row.produk || "-").trim(),
+            provinsi: String(row.provinsi || "-").trim(),
+            sebaran_peserta: String(row.sebaran_peserta || "-").trim(),
+            range_up: String(row.range_up || "-").trim(),
+            range_masa: String(row.range_masa_asuransi || "-").trim(),
+            count_id_peserta: parseIndonesianNumber(row.count_id_peserta),
+            sum_of_up: parseIndonesianNumber(row.sum_of_up),
+            sum_of_premi: parseIndonesianNumber(row.sum_of_premi)
           }));
 
           populateProduksiFilters();
