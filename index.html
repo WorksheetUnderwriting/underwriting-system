@@ -1093,8 +1093,12 @@
 
           <!-- 5. LAPORAN PRODUKSI TAB -->
           <div id="tab-produksi" class="tab-anim hidden space-y-6">
-            <div class="bg-gradient-to-r from-blue-900/30 via-teal-500/20 to-blue-900/30 border-y border-teal-400/40 p-4 text-center font-bold text-white text-base tracking-widest uppercase shadow-[0_0_20px_rgba(0,245,212,0.2)] rounded-xl">
-              💎 THEME IN-DEPTH ANALYSIS & STRATEGIC COMMAND CENTER
+            <div class="bg-gradient-to-r from-blue-900/30 via-teal-500/20 to-blue-900/30 border-y border-teal-400/40 p-4 flex flex-col md:flex-row justify-between items-center gap-3 font-bold text-white text-base tracking-widest uppercase shadow-[0_0_20px_rgba(0,245,212,0.2)] rounded-xl">
+              <span>💎 THEME IN-DEPTH ANALYSIS & STRATEGIC COMMAND CENTER</span>
+              <label class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-3.5 py-2 rounded-xl cursor-pointer transition flex items-center gap-2 font-semibold normal-case tracking-normal shadow-lg">
+                <i class="fa-solid fa-file-csv text-sm"></i> Upload CSV Database (tabel_produksi_rows.csv)
+                <input type="file" id="input-produksi-csv" accept=".csv" class="hidden" onchange="handleProduksiCSVUpload(event)" />
+              </label>
             </div>
 
             <!-- FILTER BOX -->
@@ -1926,33 +1930,42 @@
           "12": "DESEMBER", "12": "DESEMBER", "DES": "DESEMBER", "DEC": "DESEMBER", "DESEMBER": "DESEMBER"
         };
         return monthMap[str] || str;
-      }
+      } 
+       function parseCSVText(csvText) {
+        const lines = csvText.split(/\r?\n/);
+        if (lines.length < 2) return [];
+        
+        function splitCSVLine(line) {
+          const result = [];
+          let cur = '';
+          let inQuotes = false;
+          for (let i = 0; i < line.length; i++) {
+            const char = line[i];
+            if (char === '"') {
+              inQuotes = !inQuotes;
+            } else if (char === ',' && !inQuotes) {
+              result.push(cur.trim());
+              cur = '';
+            } else {
+              cur += char;
+            }
+          }
+          result.push(cur.trim());
+          return result;
 
-      
       async function loadProduksiFromSupabase() {
         try {
           const { data, error } = await _supabase.from('tabel_produksi').select('*');
           if (error) throw error;
           
-          produksiMasterData = (data || []).map(row => ({
-            bulan_produksi: normalizeBulan(row["BULAN PRODUKSI"] || row["bulan_produksi"]),
-            kode_produk: String(row["KODE PRODUK"] || row["kode_produk"] || "-").trim(),
-            pemegang_polis: String(row["PEMEGANG POLIS"] || row["pemegang_polis"] || "-").trim(),
-            keterangan_uw: String(row["KETERANGAN UW"] || row["keterangan_uw"] || "-").trim(),
-            produk: String(row["PRODUK"] || row["produk"] || "-").trim(),
-            provinsi: String(row["PROVINSI"] || row["provinsi"] || "-").trim(),
-            sebaran_peserta: String(row["SEBARAN PESERTA"] || row["sebaran_peserta"] || "-").trim(),
-            range_up: String(row["RANGE UANG PERTANGGUNGAN"] || row["range_up"] || "-").trim(),
-            range_masa: String(row["RANGE MASA ASURANSI"] || row["range masa asuransi"] || row["range_masa"] || "-").trim(),
-            count_id_peserta: parseIndonesianNumber(row["PESERTA"] || row["count_id_peserta"]),
-            sum_of_up: parseIndonesianNumber(row["UANG PERTANGGUNGAN"] || row["sum_of_up"]),
-            sum_of_premi: parseIndonesianNumber(row["PREMI"] || row["sum_of_premi"])
-          }));
-
-          populateProduksiFilters();
-          renderProduksiDashboard();
+          if (data && data.length > 0) {
+            parseAndLoadProduksiData(data);
+            return;
+          }
+          throw new Error("Tabel Supabase kosong (0 baris).");
         } catch (err) {
-          console.error("Gagal memuat data produksi dari Supabase:", err.message);
+          console.warn("Gagal memuat dari Supabase, beralih ke tabel_produksi_rows.csv:", err.message);
+          await loadProduksiFromCSV();
         }
       }
 
