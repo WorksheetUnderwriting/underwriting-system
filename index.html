@@ -1681,7 +1681,7 @@
 
       let transactions = [];
       let bukuPolisList = [];
-      let Data = [];
+      let produksiMasterData = [];
       let tempBukuPolisFile = null;
       let activeNoPolisForUpdate = null;
 
@@ -1935,96 +1935,19 @@
           if (error) throw error;
           
           produksiMasterData = (data || []).map(row => ({
-            bulan_produksi: String(row.bulan_produksi || "-").trim(),
-            kode_produk: String(row.kode_produk || "-").trim(),
-            pemegang_polis: String(row.pemegang_polis || "-").trim(),
-            keterangan_uw: String(row.keterangan_uw || "-").trim(),
-            produk: String(row.produk || "-").trim(),
-            provinsi: String(row.provinsi || "-").trim(),
-            sebaran_peserta: String(row.sebaran_peserta || "-").trim(),
-            range_up: String(row.range_up || "-").trim(),
-            range_masa: String(row.range_masa_asuransi || "-").trim(),
-            count_id_peserta: Number(row.count_id_peserta || 0),
-            sum_of_up: Number(row.sum_of_up || 0),
-            sum_of_premi: Number(row.sum_of_premi || 0)
+            bulan_produksi: normalizeBulan(row["BULAN PRODUKSI"] || row["bulan_produksi"]),
+            kode_produk: String(row["KODE PRODUK"] || row["kode_produk"] || "-").trim(),
+            pemegang_polis: String(row["PEMEGANG POLIS"] || row["pemegang_polis"] || "-").trim(),
+            keterangan_uw: String(row["KETERANGAN UW"] || row["keterangan_uw"] || "-").trim(),
+            produk: String(row["PRODUK"] || row["produk"] || "-").trim(),
+            provinsi: String(row["PROVINSI"] || row["provinsi"] || "-").trim(),
+            sebaran_peserta: String(row["SEBARAN PESERTA"] || row["sebaran_peserta"] || "-").trim(),
+            range_up: String(row["RANGE UANG PERTANGGUNGAN"] || row["range_up"] || "-").trim(),
+            range_masa: String(row["RANGE MASA ASURANSI"] || row["range masa asuransi"] || row["range_masa"] || "-").trim(),
+            count_id_peserta: parseIndonesianNumber(row["PESERTA"] || row["count_id_peserta"]),
+            sum_of_up: parseIndonesianNumber(row["UANG PERTANGGUNGAN"] || row["sum_of_up"]),
+            sum_of_premi: parseIndonesianNumber(row["PREMI"] || row["sum_of_premi"])
           }));
-
-          populateProduksiFilters();
-          renderProduksiDashboard();
-        } catch (err) {
-          console.error("Gagal memuat data dari Supabase:", err.message);
-        }
-      }
-
-      async function initAllProduksiCharts(filtered) {
-        await ensureChartJs();
-
-        // 1. Top 10 Provinsi Chart
-        const provMap = {};
-        filtered.forEach(r => { provMap[r.provinsi] = (provMap[r.provinsi] || 0) + r.sum_of_premi; });
-        const topProv = Object.entries(provMap).sort((a,b) => b[1] - a[1]).slice(0, 10).reverse();
-        
-        const chartTopProvEl = document.getElementById("chartTopProvinsi");
-        if (chartTopProvEl) {
-          if (chartInstances['topProv']) chartInstances['topProv'].destroy();
-          chartInstances['topProv'] = new Chart(chartTopProvEl, {
-            type: 'bar',
-            data: {
-              labels: topProv.map(x => x[0]),
-              datasets: [{ data: topProv.map(x => x[1]), backgroundColor: '#00F5D4', borderRadius: 4 }]
-            },
-            options: {
-              indexAxis: 'y',
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: { legend: { display: false } },
-              scales: { x: { ticks: { color: '#CBD5E1' } }, y: { ticks: { color: '#CBD5E1', font: { size: 10 } } } }
-            }
-          });
-        }
-
-        const topProvName = topProv.length > 0 ? topProv[topProv.length - 1][0] : "-";
-        const topProvVal = topProv.length > 0 ? topProv[topProv.length - 1][1] : 0;
-        
-        const geoInsight = document.getElementById("geo-insight-text");
-        if (geoInsight) {
-          geoInsight.innerHTML = `• Berdasarkan data aktif, sebaran volume premi tertinggi terpusat pada wilayah <b>${topProvName}</b>.<br><br>• Akumulasi kontribusi wilayah ini mencapai <b>Rp ${topProvVal.toLocaleString('id-ID')}</b>, mendominasi peta sebaran nasional.`;
-        }
-        const provInsight = document.getElementById("prov-insight-text");
-        if (provInsight) {
-          provInsight.innerHTML = `• 10 Provinsi teratas menyumbang proporsi premi aktif.<br><br>• <b>${topProvName}</b> memimpin urutan pertama sebagai kontributor terbesar dalam daftar ini.`;
-        }
-
-        // 2. Product Composition
-        const prodMap = {};
-        filtered.forEach(r => { prodMap[r.produk] = (prodMap[r.produk] || 0) + r.sum_of_premi; });
-        const chartProdCompEl = document.getElementById("chartProductComp");
-        if (chartProdCompEl) {
-          if (chartInstances['prodComp']) chartInstances['prodComp'].destroy();
-          chartInstances['prodComp'] = new Chart(chartProdCompEl, {
-            type: 'doughnut',
-            data: {
-              labels: Object.keys(prodMap),
-              datasets: [{ data: Object.values(prodMap), backgroundColor: ['#38BDF8', '#00F5D4', '#818CF8', '#EC4899', '#F59E0B'] }]
-            },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#F8FAFC', font: { size: 10 } } } } }
-          });
-        }
-      }
-
-          populateProduksiFilters();
-          renderProduksiDashboard();
-        } catch (err) {
-          console.error("Gagal memuat data dari Supabase:", err.message);
-        }
-      }
-
-          populateProduksiFilters();
-          renderProduksiDashboard();
-        } catch (err) {
-          console.error("Gagal memuat data dari Supabase:", err.message);
-        }
-      }
 
           populateProduksiFilters();
           renderProduksiDashboard();
@@ -3999,5 +3922,6 @@
     </script>
   </body>
 </html>
+
 
 
