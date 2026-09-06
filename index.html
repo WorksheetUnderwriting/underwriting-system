@@ -1681,7 +1681,7 @@
 
       let transactions = [];
       let bukuPolisList = [];
-      let produksiMasterData = [];
+      let Data = [];
       let tempBukuPolisFile = null;
       let activeNoPolisForUpdate = null;
 
@@ -1948,6 +1948,13 @@
             sum_of_up: Number(row.sum_of_up || 0),
             sum_of_premi: Number(row.sum_of_premi || 0)
           }));
+
+          populateProduksiFilters();
+          renderProduksiDashboard();
+        } catch (err) {
+          console.error("Gagal memuat data dari Supabase:", err.message);
+        }
+      }
 
           populateProduksiFilters();
           renderProduksiDashboard();
