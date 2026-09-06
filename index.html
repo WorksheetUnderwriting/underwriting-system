@@ -1935,7 +1935,7 @@
           if (error) throw error;
           
           produksiMasterData = (data || []).map(row => ({
-            bulan_produksi: normalizeBulan(row.bulan_produksi),
+            bulan_produksi: String(row.bulan_produksi || "-").trim(),
             kode_produk: String(row.kode_produk || "-").trim(),
             pemegang_polis: String(row.pemegang_polis || "-").trim(),
             keterangan_uw: String(row.keterangan_uw || "-").trim(),
@@ -1944,10 +1944,17 @@
             sebaran_peserta: String(row.sebaran_peserta || "-").trim(),
             range_up: String(row.range_up || "-").trim(),
             range_masa: String(row.range_masa_asuransi || "-").trim(),
-            count_id_peserta: parseIndonesianNumber(row.count_id_peserta),
-            sum_of_up: parseIndonesianNumber(row.sum_of_up),
-            sum_of_premi: parseIndonesianNumber(row.sum_of_premi)
+            count_id_peserta: Number(row.count_id_peserta || 0),
+            sum_of_up: Number(row.sum_of_up || 0),
+            sum_of_premi: Number(row.sum_of_premi || 0)
           }));
+
+          populateProduksiFilters();
+          renderProduksiDashboard();
+        } catch (err) {
+          console.error("Gagal memuat data dari Supabase:", err.message);
+        }
+      }
 
           populateProduksiFilters();
           renderProduksiDashboard();
