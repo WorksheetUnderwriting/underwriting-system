@@ -1956,6 +1956,69 @@
         }
       }
 
+      async function initAllProduksiCharts(filtered) {
+        await ensureChartJs();
+
+        // 1. Top 10 Provinsi Chart
+        const provMap = {};
+        filtered.forEach(r => { provMap[r.provinsi] = (provMap[r.provinsi] || 0) + r.sum_of_premi; });
+        const topProv = Object.entries(provMap).sort((a,b) => b[1] - a[1]).slice(0, 10).reverse();
+        
+        const chartTopProvEl = document.getElementById("chartTopProvinsi");
+        if (chartTopProvEl) {
+          if (chartInstances['topProv']) chartInstances['topProv'].destroy();
+          chartInstances['topProv'] = new Chart(chartTopProvEl, {
+            type: 'bar',
+            data: {
+              labels: topProv.map(x => x[0]),
+              datasets: [{ data: topProv.map(x => x[1]), backgroundColor: '#00F5D4', borderRadius: 4 }]
+            },
+            options: {
+              indexAxis: 'y',
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { display: false } },
+              scales: { x: { ticks: { color: '#CBD5E1' } }, y: { ticks: { color: '#CBD5E1', font: { size: 10 } } } }
+            }
+          });
+        }
+
+        const topProvName = topProv.length > 0 ? topProv[topProv.length - 1][0] : "-";
+        const topProvVal = topProv.length > 0 ? topProv[topProv.length - 1][1] : 0;
+        
+        const geoInsight = document.getElementById("geo-insight-text");
+        if (geoInsight) {
+          geoInsight.innerHTML = `• Berdasarkan data aktif, sebaran volume premi tertinggi terpusat pada wilayah <b>${topProvName}</b>.<br><br>• Akumulasi kontribusi wilayah ini mencapai <b>Rp ${topProvVal.toLocaleString('id-ID')}</b>, mendominasi peta sebaran nasional.`;
+        }
+        const provInsight = document.getElementById("prov-insight-text");
+        if (provInsight) {
+          provInsight.innerHTML = `• 10 Provinsi teratas menyumbang proporsi premi aktif.<br><br>• <b>${topProvName}</b> memimpin urutan pertama sebagai kontributor terbesar dalam daftar ini.`;
+        }
+
+        // 2. Product Composition
+        const prodMap = {};
+        filtered.forEach(r => { prodMap[r.produk] = (prodMap[r.produk] || 0) + r.sum_of_premi; });
+        const chartProdCompEl = document.getElementById("chartProductComp");
+        if (chartProdCompEl) {
+          if (chartInstances['prodComp']) chartInstances['prodComp'].destroy();
+          chartInstances['prodComp'] = new Chart(chartProdCompEl, {
+            type: 'doughnut',
+            data: {
+              labels: Object.keys(prodMap),
+              datasets: [{ data: Object.values(prodMap), backgroundColor: ['#38BDF8', '#00F5D4', '#818CF8', '#EC4899', '#F59E0B'] }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#F8FAFC', font: { size: 10 } } } } }
+          });
+        }
+      }
+
+          populateProduksiFilters();
+          renderProduksiDashboard();
+        } catch (err) {
+          console.error("Gagal memuat data dari Supabase:", err.message);
+        }
+      }
+
           populateProduksiFilters();
           renderProduksiDashboard();
         } catch (err) {
