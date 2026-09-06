@@ -1678,6 +1678,9 @@
       let transactions = [];
       let bukuPolisList = [];
       let produksiMasterData = [];
+      let selectedProdukPills = [];
+      let selectedBulanPills = [];
+      let chartInstances = {};
       let tempBukuPolisFile = null;
       let activeNoPolisForUpdate = null;
 
@@ -1687,8 +1690,6 @@
       let excelMasterData = [];
       let chartMonthlyInstance = null;
       let chartStatusInstance = null;
-      let chartProdBulanInstance = null;
-      let chartProdPolisInstance = null;
       let cachedNextID = "";
 
       let currentPage = 1;
@@ -1821,6 +1822,7 @@
         await Promise.all([
           loadTransactionsFromSupabase(),
           loadBukuPolisFromSupabase(),
+          loadProduksiFromSupabase(),
           preFetchNextID()
         ]);
 
@@ -1893,10 +1895,6 @@
         updateCharts();
       }
 
-      let selectedProdukPills = [];
-      let selectedBulanPills = [];
-      let chartInstances = {};
-
       async function loadProduksiFromSupabase() {
         try {
           const { data, error } = await _supabase.from('tabel_produksi').select('*');
@@ -1935,7 +1933,7 @@
         const provs = [...new Set(produksiMasterData.map(r => r.provinsi).filter(Boolean))].sort();
         const polisList = [...new Set(produksiMasterData.map(r => r.pemegang_polis).filter(Boolean))].sort();
 
-        provSelect.innerHTML = '<option value="">Choose options</option>';
+        provSelect.innerHTML = '<option value="">Semua Provinsi</option>';
         provs.forEach(p => {
           const opt = document.createElement("option");
           opt.value = p;
@@ -1944,7 +1942,7 @@
           provSelect.appendChild(opt);
         });
 
-        polisSelect.innerHTML = '<option value="">Choose options</option>';
+        polisSelect.innerHTML = '<option value="">Semua Pemegang Polis</option>';
         polisList.forEach(pl => {
           const opt = document.createElement("option");
           opt.value = pl;
@@ -1953,47 +1951,49 @@
           polisSelect.appendChild(opt);
         });
 
-        // Populate Pills Produk
         const produkList = [...new Set(produksiMasterData.map(r => r.produk).filter(Boolean))].sort();
         const produkContainer = document.getElementById("prod-filter-produk-pills");
-        produkContainer.innerHTML = "";
-        produkList.forEach(prod => {
-          const btn = document.createElement("button");
-          btn.type = "button";
-          btn.className = `px-3 py-1.5 rounded-full text-xs font-bold transition cursor-pointer border ${selectedProdukPills.includes(prod) ? 'bg-sky-500 text-white border-sky-400 shadow-md' : 'bg-[#030712] text-slate-300 border-sky-500/30 hover:border-sky-400'}`;
-          btn.textContent = prod;
-          btn.onclick = () => {
-            if (selectedProdukPills.includes(prod)) {
-              selectedProdukPills = selectedProdukPills.filter(p => p !== prod);
-            } else {
-              selectedProdukPills.push(prod);
-            }
-            populateProduksiFilters();
-            renderProduksiDashboard();
-          };
-          produkContainer.appendChild(btn);
-        });
+        if (produkContainer) {
+          produkContainer.innerHTML = "";
+          produkList.forEach(prod => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = `px-3 py-1.5 rounded-full text-xs font-bold transition cursor-pointer border ${selectedProdukPills.includes(prod) ? 'bg-sky-500 text-white border-sky-400 shadow-md' : 'bg-[#030712] text-slate-300 border-sky-500/30 hover:border-sky-400'}`;
+            btn.textContent = prod;
+            btn.onclick = () => {
+              if (selectedProdukPills.includes(prod)) {
+                selectedProdukPills = selectedProdukPills.filter(p => p !== prod);
+              } else {
+                selectedProdukPills.push(prod);
+              }
+              populateProduksiFilters();
+              renderProduksiDashboard();
+            };
+            produkContainer.appendChild(btn);
+          });
+        }
 
-        // Populate Pills Bulan
         const allBulan = ['JANUARI', 'FEBRUARI', 'MARET', 'APRIL', 'MEI', 'JUNI', 'JULI', 'AGUSTUS', 'SEPTEMBER', 'OKTOBER', 'NOVEMBER', 'DESEMBER'];
         const bulanContainer = document.getElementById("prod-filter-bulan-pills");
-        bulanContainer.innerHTML = "";
-        allBulan.forEach(bln => {
-          const btn = document.createElement("button");
-          btn.type = "button";
-          btn.className = `px-3 py-1.5 rounded-full text-xs font-bold transition cursor-pointer border ${selectedBulanPills.includes(bln) ? 'bg-sky-500 text-white border-sky-400 shadow-md' : 'bg-[#030712] text-slate-300 border-sky-500/30 hover:border-sky-400'}`;
-          btn.textContent = bln;
-          btn.onclick = () => {
-            if (selectedBulanPills.includes(bln)) {
-              selectedBulanPills = selectedBulanPills.filter(b => b !== bln);
-            } else {
-              selectedBulanPills.push(bln);
-            }
-            populateProduksiFilters();
-            renderProduksiDashboard();
-          };
-          bulanContainer.appendChild(btn);
-        });
+        if (bulanContainer) {
+          bulanContainer.innerHTML = "";
+          allBulan.forEach(bln => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = `px-3 py-1.5 rounded-full text-xs font-bold transition cursor-pointer border ${selectedBulanPills.includes(bln) ? 'bg-sky-500 text-white border-sky-400 shadow-md' : 'bg-[#030712] text-slate-300 border-sky-500/30 hover:border-sky-400'}`;
+            btn.textContent = bln;
+            btn.onclick = () => {
+              if (selectedBulanPills.includes(bln)) {
+                selectedBulanPills = selectedBulanPills.filter(b => b !== bln);
+              } else {
+                selectedBulanPills.push(bln);
+              }
+              populateProduksiFilters();
+              renderProduksiDashboard();
+            };
+            bulanContainer.appendChild(btn);
+          });
+        }
       }
 
       function getFilteredProduksiData() {
@@ -2061,7 +2061,6 @@
       async function initAllProduksiCharts(filtered) {
         await ensureChartJs();
 
-        // 1. Top 10 Provinsi Chart
         const provMap = {};
         filtered.forEach(r => { provMap[r.provinsi] = (provMap[r.provinsi] || 0) + r.sum_of_premi; });
         const topProv = Object.entries(provMap).sort((a,b) => b[1] - a[1]).slice(0, 10).reverse();
@@ -2084,10 +2083,13 @@
 
         const topProvName = topProv.length > 0 ? topProv[topProv.length - 1][0] : "-";
         const topProvVal = topProv.length > 0 ? topProv[topProv.length - 1][1] : 0;
-        document.getElementById("geo-insight-text").innerHTML = `• Berdasarkan data aktif, sebaran volume premi tertinggi terpusat pada wilayah <b>${topProvName}</b>.<br><br>• Akumulasi kontribusi wilayah ini mencapai <b>Rp ${topProvVal.toLocaleString('id-ID')}</b>, mendominasi peta sebaran nasional.`;
-        document.getElementById("prov-insight-text").innerHTML = `• 10 Provinsi teratas menyumbang proporsi premi aktif.<br><br>• <b>${topProvName}</b> memimpin urutan pertama sebagai kontributor terbesar dalam daftar ini.`;
+        if (document.getElementById("geo-insight-text")) {
+          document.getElementById("geo-insight-text").innerHTML = `• Berdasarkan data aktif, sebaran volume premi tertinggi terpusat pada wilayah <b>${topProvName}</b>.<br><br>• Akumulasi kontribusi wilayah ini mencapai <b>Rp ${topProvVal.toLocaleString('id-ID')}</b>, mendominasi peta sebaran nasional.`;
+        }
+        if (document.getElementById("prov-insight-text")) {
+          document.getElementById("prov-insight-text").innerHTML = `• 10 Provinsi teratas menyumbang proporsi premi aktif.<br><br>• <b>${topProvName}</b> memimpin urutan pertama sebagai kontributor terbesar dalam daftar ini.`;
+        }
 
-        // 2. Product Composition
         const prodMap = {};
         filtered.forEach(r => { prodMap[r.produk] = (prodMap[r.produk] || 0) + r.sum_of_premi; });
         if (chartInstances['prodComp']) chartInstances['prodComp'].destroy();
@@ -2100,69 +2102,81 @@
           options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#F8FAFC', font: { size: 10 } } } } }
         });
 
-        // 3. Monthly Trend
         const urutanBulan = ['JANUARI', 'FEBRUARI', 'MARET', 'APRIL', 'MEI', 'JUNI', 'JULI', 'AGUSTUS', 'SEPTEMBER', 'OKTOBER', 'NOVEMBER', 'DESEMBER'];
         const bulanMap = {};
         urutanBulan.forEach(b => bulanMap[b] = 0);
         filtered.forEach(r => { if(bulanMap[r.bulan_produksi] !== undefined) bulanMap[r.bulan_produksi] += r.sum_of_premi; });
         
         if (chartInstances['monthlyTrend']) chartInstances['monthlyTrend'].destroy();
-        chartInstances['monthlyTrend'] = new Chart(document.getElementById("chartMonthlyTrend"), {
-          type: 'bar',
-          data: {
-            labels: urutanBulan,
-            datasets: [{ data: Object.values(bulanMap), backgroundColor: '#00F5D4', borderRadius: 4 }]
-          },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#CBD5E1', font: { size: 9 } } }, y: { ticks: { color: '#CBD5E1' } } } }
-        });
+        const chartMonthlyTrendEl = document.getElementById("chartMonthlyTrend");
+        if (chartMonthlyTrendEl) {
+          chartInstances['monthlyTrend'] = new Chart(chartMonthlyTrendEl, {
+            type: 'bar',
+            data: {
+              labels: urutanBulan,
+              datasets: [{ data: Object.values(bulanMap), backgroundColor: '#00F5D4', borderRadius: 4 }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#CBD5E1', font: { size: 9 } } }, y: { ticks: { color: '#CBD5E1' } } } }
+          });
+        }
 
-        // 4. UW Status
         const uwMap = {};
         filtered.forEach(r => { uwMap[r.keterangan_uw] = (uwMap[r.keterangan_uw] || 0) + r.sum_of_premi; });
         if (chartInstances['uwStatus']) chartInstances['uwStatus'].destroy();
-        chartInstances['uwStatus'] = new Chart(document.getElementById("chartUWStatus"), {
-          type: 'doughnut',
-          data: {
-            labels: Object.keys(uwMap),
-            datasets: [{ data: Object.values(uwMap), backgroundColor: ['#10B981', '#F59E0B', '#3B82F6', '#EF4444'] }]
-          },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#F8FAFC', font: { size: 10 } } } } }
-        });
+        const chartUWStatusEl = document.getElementById("chartUWStatus");
+        if (chartUWStatusEl) {
+          chartInstances['uwStatus'] = new Chart(chartUWStatusEl, {
+            type: 'doughnut',
+            data: {
+              labels: Object.keys(uwMap),
+              datasets: [{ data: Object.values(uwMap), backgroundColor: ['#10B981', '#F59E0B', '#3B82F6', '#EF4444'] }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#F8FAFC', font: { size: 10 } } } } }
+          });
+        }
 
-        // 5. Entry Age Distribution
         const ageMap = {};
         filtered.forEach(r => { ageMap[r.sebaran_peserta] = (ageMap[r.sebaran_peserta] || 0) + r.count_id_peserta; });
         if (chartInstances['ageDist']) chartInstances['ageDist'].destroy();
-        chartInstances['ageDist'] = new Chart(document.getElementById("chartAgeDist"), {
-          type: 'bar',
-          data: {
-            labels: Object.keys(ageMap),
-            datasets: [{ data: Object.values(ageMap), backgroundColor: '#38BDF8', borderRadius: 4 }]
-          },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#CBD5E1' } }, y: { ticks: { color: '#CBD5E1' } } } }
-        });
-        document.getElementById("age-insight-text").innerHTML = "• Kelompok rentang usia masuk menunjukkan konsentrasi kuat pada segmen portofolio aktif saat ini.";
+        const chartAgeDistEl = document.getElementById("chartAgeDist");
+        if (chartAgeDistEl) {
+          chartInstances['ageDist'] = new Chart(chartAgeDistEl, {
+            type: 'bar',
+            data: {
+              labels: Object.keys(ageMap),
+              datasets: [{ data: Object.values(ageMap), backgroundColor: '#38BDF8', borderRadius: 4 }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#CBD5E1' } }, y: { ticks: { color: '#CBD5E1' } } } }
+          });
+        }
+        if (document.getElementById("age-insight-text")) {
+          document.getElementById("age-insight-text").innerHTML = "• Kelompok rentang usia masuk menunjukkan konsentrasi kuat pada segmen portofolio aktif saat ini.";
+        }
 
-        // 6. Range UP & Masa Asuransi
         const upMap = {};
         filtered.forEach(r => { upMap[r.range_up] = (upMap[r.range_up] || 0) + r.count_id_peserta; });
         if (chartInstances['rangeUP']) chartInstances['rangeUP'].destroy();
-        chartInstances['rangeUP'] = new Chart(document.getElementById("chartRangeUP"), {
-          type: 'bar',
-          data: { labels: Object.keys(upMap), datasets: [{ data: Object.values(upMap), backgroundColor: '#38BDF8', borderRadius: 4 }] },
-          options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
+        const chartRangeUPEl = document.getElementById("chartRangeUP");
+        if (chartRangeUPEl) {
+          chartInstances['rangeUP'] = new Chart(chartRangeUPEl, {
+            type: 'bar',
+            data: { labels: Object.keys(upMap), datasets: [{ data: Object.values(upMap), backgroundColor: '#38BDF8', borderRadius: 4 }] },
+            options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+          });
+        }
 
         const masaMap = {};
         filtered.forEach(r => { masaMap[r.range_masa] = (masaMap[r.range_masa] || 0) + r.count_id_peserta; });
         if (chartInstances['rangeMasa']) chartInstances['rangeMasa'].destroy();
-        chartInstances['rangeMasa'] = new Chart(document.getElementById("chartRangeMasa"), {
-          type: 'bar',
-          data: { labels: Object.keys(masaMap), datasets: [{ data: Object.values(masaMap), backgroundColor: '#38BDF8', borderRadius: 4 }] },
-          options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
+        const chartRangeMasaEl = document.getElementById("chartRangeMasa");
+        if (chartRangeMasaEl) {
+          chartInstances['rangeMasa'] = new Chart(chartRangeMasaEl, {
+            type: 'bar',
+            data: { labels: Object.keys(masaMap), datasets: [{ data: Object.values(masaMap), backgroundColor: '#38BDF8', borderRadius: 4 }] },
+            options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+          });
+        }
 
-        // 7. Top 5 Policy Holders
         const polisPremi = {};
         const polisUP = {};
         const polisPeserta = {};
@@ -2177,183 +2191,86 @@
         const topPeserta = Object.entries(polisPeserta).sort((a,b) => b[1] - a[1]).slice(0, 5);
 
         if (chartInstances['topPremi']) chartInstances['topPremi'].destroy();
-        chartInstances['topPremi'] = new Chart(document.getElementById("chartTopPremi"), {
-          type: 'bar',
-          data: { labels: topPremi.map(x => x[0].substring(0, 15)), datasets: [{ data: topPremi.map(x => x[1]), backgroundColor: '#38BDF8', borderRadius: 4 }] },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#CBD5E1', font: { size: 9 } } }, y: { ticks: { color: '#CBD5E1' } } } }
-        });
-        document.getElementById("top-premi-insight").innerHTML = `• Kontribusi pendapatan premi terbesar dipimpin oleh institusi <b>${topPremi.length > 0 ? topPremi[0][0] : '-'}</b>.<br><br>• Menunjukkan ketergantungan dan topangan utama dari sektor korporat/perbankan tersebut.`;
-
-        if (chartInstances['topUP']) chartInstances['topUP'].destroy();
-        chartInstances['topUP'] = new Chart(document.getElementById("chartTopUP"), {
-          type: 'bar',
-          data: { labels: topUP.map(x => x[0].substring(0, 15)), datasets: [{ data: topUP.map(x => x[1]), backgroundColor: '#38BDF8', borderRadius: 4 }] },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#CBD5E1', font: { size: 9 } } }, y: { ticks: { color: '#CBD5E1' } } } }
-        });
-        document.getElementById("top-up-insight").innerHTML = `• Kapasitas risiko dan tanggungan terbesar dipegang oleh <b>${topUP.length > 0 ? topUP[0][0] : '-'}</b>.<br><br>• Mencerminkan eksposur nilai pertanggungan tertinggi dalam portofolio mitra utama.`;
-
-        if (chartInstances['topPeserta']) chartInstances['topPeserta'].destroy();
-        chartInstances['topPeserta'] = new Chart(document.getElementById("chartTopPeserta"), {
-          type: 'bar',
-          data: { labels: topPeserta.map(x => x[0].substring(0, 15)), datasets: [{ data: topPeserta.map(x => x[1]), backgroundColor: '#38BDF8', borderRadius: 4 }] },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#CBD5E1', font: { size: 9 } } }, y: { ticks: { color: '#CBD5E1' } } } }
-        });
-        document.getElementById("top-peserta-insight").innerHTML = `• Basis massa peserta terbanyak dikelola melalui skema dari <b>${topPeserta.length > 0 ? topPeserta[0][0] : '-'}</b>.<br><br>• Menjadi pilar utama volume kepesertaan dalam jangkauan layanan portofolio.`;
-      }
-
-      function populateProduksiFilters() {
-        const provSelect = document.getElementById("prod-filter-prov");
-        const polisSelect = document.getElementById("prod-filter-polis");
-        if (!provSelect || !polisSelect) return;
-
-        const currentProv = provSelect.value;
-        const currentPolis = polisSelect.value;
-
-        const provs = [...new Set(produksiMasterData.map(r => r.provinsi).filter(Boolean))].sort();
-        const polisList = [...new Set(produksiMasterData.map(r => r.pemegang_polis).filter(Boolean))].sort();
-
-        provSelect.innerHTML = '<option value="">Semua Provinsi</option>';
-        provs.forEach(p => {
-          const opt = document.createElement("option");
-          opt.value = p;
-          opt.textContent = p;
-          if (p === currentProv) opt.selected = true;
-          provSelect.appendChild(opt);
-        });
-
-        polisSelect.innerHTML = '<option value="">Semua Pemegang Polis</option>';
-        polisList.forEach(pl => {
-          const opt = document.createElement("option");
-          opt.value = pl;
-          opt.textContent = pl;
-          if (pl === currentPolis) opt.selected = true;
-          polisSelect.appendChild(opt);
-        });
-      }
-
-      function getFilteredProduksiData() {
-        const provFilter = document.getElementById("prod-filter-prov")?.value || "";
-        const polisFilter = document.getElementById("prod-filter-polis")?.value || "";
-
-        return produksiMasterData.filter(row => {
-          const matchProv = !provFilter || row.provinsi === provFilter;
-          const matchPolis = !polisFilter || row.pemegang_polis === polisFilter;
-          return matchProv && matchPolis;
-        });
-      }
-
-      function updateProduksiUI() {
-        const filtered = getFilteredProduksiData();
-        let totalPeserta = 0;
-        let totalPremi = 0;
-
-        filtered.forEach(row => {
-          totalPeserta += Number(row.count_id_peserta || 0);
-          totalPremi += Number(row.sum_of_premi || 0);
-        });
-
-        document.getElementById("prod-stat-peserta").innerText = totalPeserta.toLocaleString('id-ID');
-        document.getElementById("prod-stat-premi").innerText = `Rp ${totalPremi.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`.replace('.', ',').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
-        document.getElementById("prod-stat-records").innerText = filtered.length.toLocaleString('id-ID');
-
-        renderProduksiTable();
-        initProduksiCharts(filtered);
-      }
-
-      function renderProduksiTable() {
-        const tbody = document.getElementById("produksi-table-body");
-        if (!tbody) return;
-        tbody.innerHTML = "";
-
-        const filteredByDropdown = getFilteredProduksiData();
-        const query = (document.getElementById("search-produksi")?.value || "").toLowerCase();
-        const finalFiltered = filteredByDropdown.filter(row => JSON.stringify(row).toLowerCase().includes(query));
-
-        if (finalFiltered.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400 font-medium">Tidak ada data ditemukan.</td></tr>`;
-          return;
+        const chartTopPremiEl = document.getElementById("chartTopPremi");
+        if (chartTopPremiEl) {
+          chartInstances['topPremi'] = new Chart(chartTopPremiEl, {
+            type: 'bar',
+            data: { labels: topPremi.map(x => x[0].substring(0, 15)), datasets: [{ data: topPremi.map(x => x[1]), backgroundColor: '#38BDF8', borderRadius: 4 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#CBD5E1', font: { size: 9 } } }, y: { ticks: { color: '#CBD5E1' } } } }
+          });
+        }
+        if (document.getElementById("top-premi-insight")) {
+          document.getElementById("top-premi-insight").innerHTML = `• Kontribusi pendapatan premi terbesar dipimpin oleh institusi <b>${topPremi.length > 0 ? topPremi[0][0] : '-'}</b>.<br><br>• Menunjukkan ketergantungan dan topangan utama dari sektor korporat/perbankan tersebut.`;
         }
 
-        finalFiltered.slice(0, 100).forEach((row) => {
-          const tr = document.createElement("tr");
-          tr.className = "hover:bg-slate-800/50 transition border-b border-slate-800";
-          tr.innerHTML = `
-            <td class="p-3.5 font-bold text-white">${row.bulan_produksi || "-"}</td>
-            <td class="p-3.5 font-mono text-sky-400">${row.kode_produk || "-"}</td>
-            <td class="p-3.5 font-bold text-slate-200">${row.pemegang_polis || "-"}</td>
-            <td class="p-3.5 text-slate-300">${row.provinsi || "-"}</td>
-            <td class="p-3.5 font-semibold text-slate-200">${Number(row.count_id_peserta || 0).toLocaleString('id-ID')}</td>
-            <td class="p-3.5 font-bold text-emerald-400">Rp ${Number(row.sum_of_premi || 0).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-          `;
-          tbody.appendChild(tr);
-        });
+        if (chartInstances['topUP']) chartInstances['topUP'].destroy();
+        const chartTopUPEl = document.getElementById("chartTopUP");
+        if (chartTopUPEl) {
+          chartInstances['topUP'] = new Chart(chartTopUPEl, {
+            type: 'bar',
+            data: { labels: topUP.map(x => x[0].substring(0, 15)), datasets: [{ data: topUP.map(x => x[1]), backgroundColor: '#38BDF8', borderRadius: 4 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#CBD5E1', font: { size: 9 } } }, y: { ticks: { color: '#CBD5E1' } } } }
+          });
+        }
+        if (document.getElementById("top-up-insight")) {
+          document.getElementById("top-up-insight").innerHTML = `• Kapasitas risiko dan tanggungan terbesar dipegang oleh <b>${topUP.length > 0 ? topUP[0][0] : '-'}</b>.<br><br>• Mencerminkan eksposur nilai pertanggungan tertinggi dalam portofolio mitra utama.`;
+        }
+
+        if (chartInstances['topPeserta']) chartInstances['topPeserta'].destroy();
+        const chartTopPesertaEl = document.getElementById("chartTopPeserta");
+        if (chartTopPesertaEl) {
+          chartInstances['topPeserta'] = new Chart(chartTopPesertaEl, {
+            type: 'bar',
+            data: { labels: topPeserta.map(x => x[0].substring(0, 15)), datasets: [{ data: topPeserta.map(x => x[1]), backgroundColor: '#38BDF8', borderRadius: 4 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#CBD5E1', font: { size: 9 } } }, y: { ticks: { color: '#CBD5E1' } } } }
+          });
+        }
+        if (document.getElementById("top-peserta-insight")) {
+          document.getElementById("top-peserta-insight").innerHTML = `• Basis massa peserta terbanyak dikelola melalui skema dari <b>${topPeserta.length > 0 ? topPeserta[0][0] : '-'}</b>.<br><br>• Menjadi pilar utama volume kepesertaan dalam jangkauan layanan portofolio.`;
+        }
       }
 
-      async function initProduksiCharts(filteredData) {
-        await ensureChartJs();
-        const ctxBulan = document.getElementById("chartProduksiBulan");
-        const ctxPolis = document.getElementById("chartProduksiPolis");
-        if (!ctxBulan || !ctxPolis) return;
-
-        const bulanMap = {};
-        const polisMap = {};
-        filteredData.forEach(row => {
-          const bln = row.bulan_produksi || "LAINNYA";
-          bulanMap[bln] = (bulanMap[bln] || 0) + Number(row.sum_of_premi || 0);
-
-          const pls = row.pemegang_polis || "LAINNYA";
-          polisMap[pls] = (polisMap[pls] || 0) + Number(row.sum_of_premi || 0);
+      async function switchTab(tab) {
+        ["dashboard", "form", "buku-polis", "repository", "produksi"].forEach((t) => {
+          const tabElem = document.getElementById(`tab-${t}`);
+          const navElem = document.getElementById(`nav-${t}`);
+          if (tabElem) tabElem.classList.add("hidden");
+          if (navElem) navElem.classList.remove("sidebar-item-active");
         });
 
-        const topPolis = Object.entries(polisMap).sort((a,b) => b[1] - a[1]).slice(0, 5);
+        const activeTab = document.getElementById(`tab-${tab}`);
+        const activeNav = document.getElementById(`nav-${tab}`);
+        if (activeTab) activeTab.classList.remove("hidden");
+        if (activeNav) activeNav.classList.add("sidebar-item-active");
 
-        if (chartProdBulanInstance) chartProdBulanInstance.destroy();
-        chartProdBulanInstance = new Chart(ctxBulan, {
-          type: 'line',
-          data: {
-            labels: Object.keys(bulanMap),
-            datasets: [{
-              label: 'Akumulasi Premi (Rp)',
-              data: Object.values(bulanMap),
-              borderColor: '#00F5D4',
-              backgroundColor: 'rgba(0, 245, 212, 0.1)',
-              fill: true,
-              tension: 0.3
-            }]
-          },
-          options: { 
-            responsive: true, 
-            maintainAspectRatio: false,
-            plugins: { legend: { labels: { color: '#F8FAFC' } } },
-            scales: { 
-              x: { ticks: { color: '#CBD5E1' }, grid: { color: 'rgba(255,255,255,0.05)' } }, 
-              y: { ticks: { color: '#CBD5E1' }, grid: { color: 'rgba(255,255,255,0.05)' } } 
-            }
-          }
-        });
+        const titles = {
+          dashboard: "Dashboard Underwriting",
+          form: "Form Kertas Kerja Underwriting",
+          "buku-polis": "Buku Polis & Legalitas Dokumen",
+          repository: "Repository Transaksi Kertas Kerja",
+          produksi: "Laporan Analisis Produksi"
+        };
+        if (titles[tab]) {
+          document.getElementById("page-title").innerText = titles[tab];
+        }
 
-        if (chartProdPolisInstance) chartProdPolisInstance.destroy();
-        chartProdPolisInstance = new Chart(ctxPolis, {
-          type: 'bar',
-          data: {
-            labels: topPolis.map(item => item[0]),
-            datasets: [{
-              label: 'Premi (Rp)',
-              data: topPolis.map(item => item[1]),
-              backgroundColor: '#3b82f6',
-              borderRadius: 6
-            }]
-          },
-          options: { 
-            responsive: true, 
-            maintainAspectRatio: false,
-            plugins: { legend: { labels: { color: '#F8FAFC' } } },
-            scales: { 
-              x: { ticks: { color: '#CBD5E1' }, grid: { color: 'rgba(255,255,255,0.05)' } }, 
-              y: { ticks: { color: '#CBD5E1' }, grid: { color: 'rgba(255,255,255,0.05)' } } 
-            }
-          }
-        });
+        if (tab === "form" && !editingTransactionId) {
+          document.getElementById("form-id-display").innerText = cachedNextID || "WS-2026-0001";
+          preFetchNextID();
+        }
+
+        if (tab === "buku-polis") {
+          await generateAutoNoPolis();
+          renderBukuPolisTable();
+        }
+
+        if (tab === "produksi") {
+          loadProduksiFromSupabase();
+        }
+
+        if (tab === "dashboard") {
+          await initCharts();
+        }
       }
 
       function updateCharts() {
@@ -2499,20 +2416,6 @@
         updateStats();
       }
 
-      function triggerEmailNotification(recipientRole, txId, subject, message) {
-        const toast = document.getElementById("email-toast");
-        const titleElem = document.getElementById("toast-title");
-        const msgElem = document.getElementById("toast-msg");
-
-        titleElem.innerText = `Email Otomatis: ${recipientRole}`;
-        msgElem.innerHTML = `<strong>[${txId}]</strong> ${subject}<br>${message}`;
-        
-        toast.classList.remove("hidden");
-        setTimeout(() => {
-          toast.classList.add("hidden");
-        }, 5000);
-      }
-
       function formatNumberInput(val) {
         if (val === undefined || val === null || val === "") return "";
         let cleanStr = String(val).replace(/[^0-9]/g, "");
@@ -2524,171 +2427,6 @@
         if (!val) return 0;
         let cleanStr = String(val).replace(/[^0-9]/g, "");
         return parseInt(cleanStr, 10) || 0;
-      }
-
-      function parseExcelNumber(val) {
-        if (val === undefined || val === null || val === "") return 0;
-        if (typeof val === "number") return val;
-        let cleanStr = String(val).replace(/^'+|'+$/g, "").replace(/[^0-9,-]/g, "").replace(",", ".");
-        let num = parseFloat(cleanStr);
-        return isNaN(num) ? 0 : num;
-      }
-
-      function cleanStringValue(val) {
-        if (val === undefined || val === null) return "";
-        return String(val).replace(/^'+|'+$/g, "").trim();
-      }
-
-      function getRowValueByKeys(row, possibleKeys) {
-        const rowKeys = Object.keys(row);
-        for (const key of possibleKeys) {
-          const foundKey = rowKeys.find(k => k.trim().toLowerCase().replace(/[\s_]/g, "") === key.trim().toLowerCase().replace(/[\s_]/g, ""));
-          if (foundKey !== undefined && row[foundKey] !== undefined && row[foundKey] !== "") {
-            return row[foundKey];
-          }
-        }
-        return "";
-      }
-
-      async function handleExcelUpload(input) {
-        if (!input.files || !input.files[0]) return;
-        const file = input.files[0];
-        
-        document.getElementById("excel-status").innerText = "Memuat modul Excel...";
-        
-        try {
-          await ensureExcelJs();
-        } catch (err) {
-          alert("Gagal memuat modul Excel. Periksa koneksi internet Anda.");
-          document.getElementById("excel-status").innerText = "Gagal memuat modul Excel";
-          return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          try {
-            const data = new Uint8Array(e.target.result);
-            const workbook = XLSX.read(data, { type: "array" });
-            const firstSheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[firstSheetName];
-            excelMasterData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
-
-            document.getElementById("excel-status").innerText = `✓ Loaded (${excelMasterData.length} baris data)`;
-            document.getElementById("excel-status").className = "text-[11px] font-bold text-emerald-600";
-            alert(`File "${file.name}" berhasil diunggah! (${excelMasterData.length} data nasabah siap diautofill)`);
-          } catch (err) {
-            alert("Gagal membaca file Excel. Pastikan format file .xlsx/.xls valid!");
-            document.getElementById("excel-status").innerText = "Gagal memuat file";
-          }
-        };
-        reader.readAsArrayBuffer(file);
-      }
-
-      function resetExcelData() {
-        excelMasterData = [];
-        document.getElementById("excel-file-input").value = "";
-        document.getElementById("excel-status").innerText = "Belum ada file diunggah";
-        document.getElementById("excel-status").className = "text-[11px] font-semibold text-slate-500";
-      }
-
-      function lookupExcelData(searchId) {
-        document.getElementById("alert-already-submitted").classList.add("hidden");
-        if (!searchId || String(searchId).trim() === "") return;
-        let query = String(searchId).trim().toLowerCase();
-        if (query.endsWith(".0")) query = query.slice(0, -2);
-
-        const existingTx = transactions.find((t) => t.idUpload && String(t.idUpload).trim().toLowerCase() === query);
-        if (existingTx) {
-          const alertBox = document.getElementById("alert-already-submitted");
-          const alertText = document.getElementById("alert-already-text");
-          alertText.innerHTML = `Peserta dengan IDUpload <strong>"${query}"</strong> sudah pernah di-input sebelumnya pada Transaksi <strong>${existingTx.id}</strong> (Status: ${existingTx.status}).`;
-          alertBox.classList.remove("hidden");
-        }
-
-        if (excelMasterData.length === 0) return;
-
-        const matches = excelMasterData.filter((row) => {
-          let idVal = cleanStringValue(getRowValueByKeys(row, ["IDUpload", "idupload", "ID_UPLOAD"])).toLowerCase();
-          if (idVal.endsWith(".0")) idVal = idVal.slice(0, -2);
-          return idVal === query;
-        });
-
-        if (matches.length > 0) {
-          const primary = matches[0];
-          document.getElementById("input-id-peserta").value = cleanStringValue(getRowValueByKeys(primary, ["IDPeserta", "idpeserta", "ID_PESERTA"]));
-          
-          const noKtpValue = cleanStringValue(getRowValueByKeys(primary, ["No_Ktp", "NO_KTP", "NIK", "noktp"]));
-          document.getElementById("input-no-ktp").value = noKtpValue;
-          
-          const pemegangPolisExcel = cleanStringValue(
-            getRowValueByKeys(primary, ["Pemegang Polis", "PEMEGANG POLIS", "Nama Pemegang Polis", "NAMA PEMEGANG POLIS", "Unit Pemegang Polis"])
-          );
-          document.getElementById("input-pemegang").value = pemegangPolisExcel;
-
-          document.getElementById("input-nama").value = cleanStringValue(getRowValueByKeys(primary, ["NamaTtg", "NAMATTG", "Nama Tertanggung", "NAMA_TERTANGGUNG"]));
-
-          let rawDate = getRowValueByKeys(primary, ["TlhTtg", "TLHTTG", "Tanggal Lahir", "TANGGAL_LAHIR"]);
-          if (rawDate) {
-            if (typeof rawDate === "number") {
-              const dateObj = XLSX.SSF.parse_date_code(rawDate);
-              if (dateObj) {
-                const m = String(dateObj.m).padStart(2, "0");
-                const d = String(dateObj.d).padStart(2, "0");
-                rawDate = `${dateObj.y}-${m}-${d}`;
-              }
-            } else {
-              let cleanDateStr = cleanStringValue(rawDate).split("T")[0];
-              if (cleanDateStr.includes("/") || cleanDateStr.includes("-")) {
-                const parts = cleanDateStr.split(/[\/\-]/);
-                if (parts.length === 3) {
-                  if (parts[0].length === 4) {
-                    rawDate = `${parts[0]}-${parts[1].padStart(2, "0")}-${parts[2].padStart(2, "0")}`;
-                  } else if (parts[2].length === 4) {
-                    rawDate = `${parts[2]}-${parts[1].padStart(2, "0")}-${parts[0].padStart(2, "0")}`;
-                  }
-                }
-              } else {
-                rawDate = cleanDateStr;
-              }
-            }
-            document.getElementById("input-tgllahir").value = rawDate;
-            calculateAgeFromDOB();
-          }
-
-          document.getElementById("input-masa").value = cleanStringValue(getRowValueByKeys(primary, ["MasaAs", "MASAAS", "Masa Asuransi"]));
-          const premiVal = parseExcelNumber(getRowValueByKeys(primary, ["Premi", "PREMI", "Jumlah Premi"]));
-          document.getElementById("input-premi").value = formatNumberInput(premiVal);
-
-          const singleUP = parseExcelNumber(getRowValueByKeys(primary, ["UP", "up", "Up", "Uang Pertanggungan", "Platfon", "Plafond"]));
-          document.getElementById("input-up").value = formatNumberInput(singleUP);
-
-          let totalAccumulatedUP = singleUP;
-          if (noKtpValue) {
-            const sameKtpRows = excelMasterData.filter((row) => {
-              const rowKtp = cleanStringValue(getRowValueByKeys(row, ["No_Ktp", "NO_KTP", "NIK", "noktp"])).toLowerCase();
-              return rowKtp === noKtpValue.toLowerCase();
-            });
-            totalAccumulatedUP = sameKtpRows.reduce((sum, item) => sum + parseExcelNumber(getRowValueByKeys(item, ["UP", "up", "Up", "Uang Pertanggungan", "Platfon", "Plafond"])), 0);
-          }
-
-          document.getElementById("input-uptotal").value = formatNumberInput(totalAccumulatedUP);
-          calculateTotalPremi();
-          runAutoEvaluation();
-        }
-      }
-
-      function calculateAgeFromDOB() {
-        const dobVal = document.getElementById("input-tgllahir").value;
-        if (!dobVal) return;
-        const dob = new Date(dobVal);
-        const today = new Date();
-        let age = today.getFullYear() - dob.getFullYear();
-        const m = today.getMonth() - dob.getMonth();
-        if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
-        if (age > 0) {
-          document.getElementById("input-usia").value = age;
-          runAutoEvaluation();
-        }
       }
 
       function handleLogout() {
